@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway;
+package com.example.iotcloudgateway.SubMqtt;
 
 
 import org.eclipse.paho.client.mqttv3.*;
@@ -15,7 +15,7 @@ public class MqttConnect {
      */
     public MqttConnect() throws MqttException {
         // MemoryPersistence设置clientid的保存形式，默认为以内存保存
-        client = new MqttClient(SubMQTT.HOST, clientid, new MemoryPersistence());
+        client = new MqttClient(MqttServer.HOST, clientid, new MemoryPersistence());
         connect();
     }
 
@@ -24,16 +24,16 @@ public class MqttConnect {
     public MqttMessage message;
 
     //定义一个主题
-    String UP_TOPIC = "up/dev/" + SubMQTT.DEV_PK + "/" + SubMQTT.DEV_ID;
-    String DOWN_TOPIC = "down" +"/dev/" + SubMQTT.DEV_PK + "/" + SubMQTT.DEV_ID;
+    String UP_TOPIC = "up/dev/" + MqttServer.DEV_PK + "/" + MqttServer.DEV_ID;
+    String DOWN_TOPIC = "down" +"/dev/" + MqttServer.DEV_PK + "/" + MqttServer.DEV_ID;
     // 定义MQTT的ID，可以在MQTT服务配置中指定// 网关的clientid
-    String clientid = "dev:" + SubMQTT.DEV_PK + ":" + SubMQTT.DEV_ID;
+    String clientid = "dev:" + MqttServer.DEV_PK + ":" + MqttServer.DEV_ID;
 
     public void connect() {
         MqttConnectOptions options = new MqttConnectOptions();
         options.setCleanSession(true);
-        options.setUserName(SubMQTT.userName);
-        options.setPassword(SubMQTT.passWord.toCharArray());
+        options.setUserName(MqttServer.userName);
+        options.setPassword(MqttServer.passWord.toCharArray());
         // 设置超时时间
         options.setConnectionTimeout(10);
         // 设置会话心跳时间
