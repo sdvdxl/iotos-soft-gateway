@@ -1,8 +1,9 @@
+server.port: 8701
 tio:
   core:
     server:
       # websocket port default 9876
-      port: 6789
+      port: 7000
       # 心跳时间
       heartbeat-timeout: 30000
       # 监控时段,多个之间用逗号隔开

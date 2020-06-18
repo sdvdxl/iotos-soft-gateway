@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: iot-cloud-os-gateway
+  cloud:
+    consul:
+      host: 10.1.1.100
+      port: 8500
+      discovery:
+        prefer-ip-address: true
+        instance-id: ${spring.application.name}:${spring.application.instance_id:debug}:${server.port}
+        health-check-critical-timeout: 120s
+        health-check-interval: 30s
+        register-health-check: false
+    inetutils:
+      useOnlySiteLocalInterfaces: true

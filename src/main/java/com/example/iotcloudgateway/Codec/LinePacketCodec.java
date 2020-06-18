@@ -2,6 +2,7 @@ package com.example.iotcloudgateway.Codec;
 
 import com.example.iotcloudgateway.dto.TcpPacket;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.tio.core.ChannelContext;
 import org.tio.core.TioConfig;
 import org.tio.core.exception.AioDecodeException;
@@ -14,6 +15,7 @@ import java.nio.ByteBuffer;
  *
  */
 @Slf4j
+@Component
 public class LinePacketCodec implements PacketCodec {
   public static final byte SPLIT = '\n';
 
