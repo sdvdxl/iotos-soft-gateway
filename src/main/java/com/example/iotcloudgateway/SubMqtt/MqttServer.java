@@ -3,6 +3,7 @@ package com.example.iotcloudgateway.SubMqtt;
 import com.example.iotcloudgateway.SubMqtt.MqttConnect;
 import com.example.iotcloudgateway.SubMqtt.SubKLink;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import javax.annotation.PostConstruct;
  * 添加设备和配置流程详情请见《设备连接软网关数据上报说明书》
  */
 @Service
+@Slf4j
 public class MqttServer {
   /** 以此开始配置设备信息，以及连接参数 */
   // tcp://MQTT安装的服务器地址:MQTT定义的端口号
@@ -51,15 +53,38 @@ public class MqttServer {
     //
     mqttconnect.message.setPayload(klink.addSub(DEV_PK, DEV_ID, SUBDEV_PK, SUBDEV_ID).getBytes());
     mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
-    System.out.println(mqttconnect.message.isRetained() + "------ratained状态");
+    log.debug(mqttconnect.message.isRetained() + "------ratained状态");
+
   }
 
   @SneakyThrows
-  public void devLogin(String subDevPk, String subDevId) {
+  public void addDev(String subDevPk, String subDevId) {
     this.mqttconnect.message.setPayload(SubKLink.addSub(DEV_PK, DEV_ID, subDevPk, subDevId).getBytes());
     this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
-
-  // devSend
-  public void devSend(String subDevPk, String subDevId) {}
+  @SneakyThrows
+  public void devLogin(String subDevPk, String subDevId) {
+    this.mqttconnect.message.setPayload(SubKLink.subLogin(subDevPk, subDevId).getBytes());
+    this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  }
+  @SneakyThrows
+  public void devLogout(String subDevPk, String subDevId) {
+    this.mqttconnect.message.setPayload(SubKLink.subLogout(subDevPk, subDevId).getBytes());
+    this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  }
+  @SneakyThrows
+  public void devTopo() {
+    this.mqttconnect.message.setPayload(SubKLink.subTopo(DEV_PK, DEV_ID).getBytes());
+    this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  }
+  @SneakyThrows
+  public void delDev(String subDevPk, String subDevId) {
+    this.mqttconnect.message.setPayload(SubKLink.delSub(DEV_PK, DEV_ID, subDevPk, subDevId).getBytes());
+    this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  }
+  @SneakyThrows
+  public void devSend(String kLink) {
+    this.mqttconnect.message.setPayload(kLink.getBytes());
+    this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  }
 }

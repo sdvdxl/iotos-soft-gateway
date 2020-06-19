@@ -18,36 +18,6 @@
         <java.version>1.8</java.version>
     </properties>
 
-    <!-- 使用aliyun镜像 -->
-<!--    <repositories>-->
-<!--        <repository>-->
-<!--            <id>aliyun-repo</id>-->
-<!--            <url>http://maven.aliyun.com/nexus/content/groups/public</url>-->
-<!--        </repository>-->
-<!--        <repository>-->
-<!--            <id>my-lib-repo</id>-->
-<!--            <url>https://repo.rdc.aliyun.com/repository/30275-release-kUFPjh/</url>-->
-<!--        </repository>-->
-<!--        <repository>-->
-<!--            <id>my-lib-repo-2</id>-->
-<!--            <url>https://repo.rdc.aliyun.com/repository/30275-snapshot-AYhH3f/</url>-->
-<!--        </repository>-->
-<!--    </repositories>-->
-<!--    <pluginRepositories>-->
-<!--        <pluginRepository>-->
-<!--            <id>central</id>-->
-<!--            <url>http://maven.aliyun.com/nexus/content/groups/public</url>-->
-<!--        </pluginRepository>-->
-<!--        <pluginRepository>-->
-<!--            <id>my-lib-repo</id>-->
-<!--            <url>https://repo.rdc.aliyun.com/repository/30275-release-kUFPjh/</url>-->
-<!--        </pluginRepository>-->
-<!--        <pluginRepository>-->
-<!--            <id>my-lib-repo-2</id>-->
-<!--            <url>https://repo.rdc.aliyun.com/repository/30275-snapshot-AYhH3f/</url>-->
-<!--        </pluginRepository>-->
-<!--    </pluginRepositories>-->
-
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>

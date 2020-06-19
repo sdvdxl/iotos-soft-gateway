@@ -24,7 +24,7 @@ import java.nio.ByteBuffer;
 @Slf4j
 public class TcpServerMsgHandler implements ServerAioHandler {
     @Autowired private LinePacketCodec packetCodec;
-//    @Autowired private MqttServer mqttServer;
+    @Autowired private MqttServer mqttServer;
 
     @Override
     public Packet decode(
@@ -61,54 +61,27 @@ public class TcpServerMsgHandler implements ServerAioHandler {
             if (klinkDev != null && klinkDev.getAction().equals("heartbeat")) {
                 return;
             }
-//            TransferPacket transferPacket = new TransferPacket();
-//            transferPacket.setFinger(redisStreamService.getStreamFinger());
-//            transferPacket.setSessionId(channelContext.getId());
-//            Device deviceInfo = new Device(channelContext.userid);
-//            transferPacket.setPk(deviceInfo.getPk());
-//            transferPacket.setDevId(deviceInfo.getDevId());
-//            transferPacket.setSysMsgId(StringUtil.trimUuid());
-//            transferPacket.setTimestamp(System.currentTimeMillis());
-//            transferPacket.setEncoded(false);
-//            transferPacket.setIp(channelContext.getClientNode().getIp());
-//            transferPacket.setPayload(Base64.encodeBase64String(tcpPacket.getBody()));
-//            redisStreamService.publishToCore(transferPacket);
-//            switch (klinkDev.getAction()){
-//                case "devLogin":
-//                    mqttServer.devLogin(klinkDev.getPk(),klinkDev.getDevId());
-//                    break;
-//            }
+            switch (klinkDev.getAction()){
+                case "addTopo":
+                    mqttServer.addDev(klinkDev.getPk(),klinkDev.getDevId());
+                    break;
+                case "devLogin":
+                    mqttServer.devLogin(klinkDev.getPk(),klinkDev.getDevId());
+                    break;
+                case "devLogout":
+                    mqttServer.devLogout(klinkDev.getPk(),klinkDev.getDevId());
+                    break;
+                case "getTopo":
+                    mqttServer.devTopo();
+                    break;
+                case "delTopo":
+                    mqttServer.delDev(klinkDev.getPk(),klinkDev.getDevId());
+                    break;
+                case "devSend":
+                    mqttServer.devSend(JsonUtil.toJson(klinkDev));
+                    break;
+            }
 //            return;
         }
-//
-//        // 若未进行过登录校验，则进行登录校验
-//        if (klinkDev != null) {
-//            // 登录校验必须为klink格式
-//            if (Action.of(klinkDev.getAction()) == Action.DEV_LOGIN) {
-//                DevLoginReq devLoginReq = new DevLoginReq();
-//                devLoginReq.setFinger(redisStreamService.getStreamFinger());
-//                devLoginReq.setSessionId(channelContext.getId());
-//                devLoginReq.setPk(klinkDev.getPk());
-//                devLoginReq.setDevId(klinkDev.getDevId());
-//                devLoginReq.setIp(channelContext.getClientNode().getIp());
-//                DevLoginResp devLoginResp = deviceClient.devLogin(devLoginReq);
-//                if (devLoginResp.isSuccess()) {
-//                    log.debug(
-//                            "device=> devId:{}, pk:{}, login success",
-//                            devLoginResp.getDevId(),
-//                            devLoginResp.getPk());
-//                    // 登录校验成功后对链接进行绑定，将userId以"{pk}@{devId}"形式命名
-//                    Tio.bindUser(channelContext, klinkDev.getPk() + "@" + klinkDev.getDevId());
-//                } else {
-//                    log.warn(
-//                            "device=> devId:{}, pk:{}, login fail",
-//                            devLoginResp.getDevId(),
-//                            devLoginResp.getPk());
-//                }
-//                TcpPacket respPacket = new TcpPacket();
-//                respPacket.setBody(JsonUtil.toBytes(devLoginResp));
-//                Tio.send(channelContext, respPacket);
-//            }
-//        }
     }
 }
