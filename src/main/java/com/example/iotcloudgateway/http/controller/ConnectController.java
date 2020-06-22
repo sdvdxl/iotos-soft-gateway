@@ -4,6 +4,7 @@ import com.example.iotcloudgateway.SubMqtt.MqttConnect;
 import com.example.iotcloudgateway.SubMqtt.MqttServer;
 import iot.cloud.os.common.utils.JsonUtil;
 import iot.cloud.os.core.api.dto.klink.Klink;
+import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -18,8 +19,7 @@ public class ConnectController {
   @Autowired private MqttServer mqttServer;
 
   @PostMapping("/push")
-  public void push(@RequestBody Klink klink) throws MqttException {
-    String s = klink.toString(); // klink转换成string
-    mqttServer.publish(JsonUtil.toBytes(klink));
+  public void push(@RequestBody KlinkDev klinkDev) throws MqttException {
+    mqttServer.publish(JsonUtil.toBytes(klinkDev));
   }
 }
