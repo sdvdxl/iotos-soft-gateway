@@ -1,11 +1,11 @@
 package com.example.iotcloudgateway.Codec;
 
-import iot.cloud.os.core.api.dto.klink.Klink;
+import iot.cloud.os.core.api.dto.klink.KlinkDev;
 
 /** 原始数据与klink数据转换抽象接口 */
 public interface DataCodec {
 
-  Klink decode(Object data);
+  KlinkDev decode(Object data);
 
-  Object encode(Klink klink);
+  Object encode(KlinkDev klink);
 }

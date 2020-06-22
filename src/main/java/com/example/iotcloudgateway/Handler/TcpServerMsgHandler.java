@@ -1,5 +1,7 @@
 package com.example.iotcloudgateway.Handler;
 
+import com.example.iotcloudgateway.Codec.DataCodec;
+import com.example.iotcloudgateway.Codec.KlinkDataCodec;
 import com.example.iotcloudgateway.Codec.LinePacketCodec;
 import com.example.iotcloudgateway.SubMqtt.MqttServer;
 import com.example.iotcloudgateway.dto.SubKlinkAction;
@@ -7,6 +9,7 @@ import com.example.iotcloudgateway.dto.TcpPacket;
 import iot.cloud.os.common.utils.JsonUtil;
 import iot.cloud.os.core.api.dto.DevLoginReq;
 import iot.cloud.os.core.api.dto.klink.DevLoginResp;
+import iot.cloud.os.core.api.dto.klink.Klink;
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import iot.cloud.os.core.api.enums.Action;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +29,8 @@ import java.nio.ByteBuffer;
 public class TcpServerMsgHandler implements ServerAioHandler {
   @Autowired private LinePacketCodec packetCodec;
   @Autowired private MqttServer mqttServer;
+  @Autowired private KlinkDataCodec klinkDataCodec;
+  @Autowired private DataCodec dataCodec;
 
   /** 拆包部分 */
   @Override
@@ -49,14 +54,8 @@ public class TcpServerMsgHandler implements ServerAioHandler {
       // 解码时因特殊原因丢弃此帧数据，故此处不做处理
       return;
     }
-    String str = new String(tcpPacket.getBody(), TcpPacket.CHARSET);
 
-    KlinkDev klinkDev = null;
-    try {
-      klinkDev = JsonUtil.fromJson(str, KlinkDev.class);
-    } catch (Exception e) {
-      log.warn(e.getMessage());
-    }
+    KlinkDev klinkDev = dataCodec.decode(tcpPacket);
 
     // 若已进行登录校验过，直接将数据传到core
     if (channelContext.userid != null) {
