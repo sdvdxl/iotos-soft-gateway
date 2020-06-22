@@ -2,6 +2,7 @@ package com.example.iotcloudgateway.SubMqtt;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.springframework.stereotype.Service;
 
 /** connect方法用来将数据平台软网关连接至IoTOS */
 public class MqttConnect {
@@ -11,6 +12,11 @@ public class MqttConnect {
    *
    * @throws MqttException
    */
+  static public String UP_TOPIC = "up/dev/" + MqttServer.DEV_PK + "/" + MqttServer.DEV_ID;
+  static public String DOWN_TOPIC = "down" + "/dev/" + MqttServer.DEV_PK + "/" + MqttServer.DEV_ID;
+  // 定义MQTT的ID，可以在MQTT服务配置中指定// 网关的clientid
+  static public String clientid = "dev:" + MqttServer.DEV_PK + ":" + MqttServer.DEV_ID;
+
   public MqttConnect() throws MqttException {
     // MemoryPersistence设置clientid的保存形式，默认为以内存保存
     client = new MqttClient(MqttServer.HOST, clientid, new MemoryPersistence());
@@ -22,11 +28,6 @@ public class MqttConnect {
   public MqttMessage message;
 
   // 定义一个主题
-  String UP_TOPIC = "up/dev/" + MqttServer.DEV_PK + "/" + MqttServer.DEV_ID;
-  String DOWN_TOPIC = "down" + "/dev/" + MqttServer.DEV_PK + "/" + MqttServer.DEV_ID;
-  // 定义MQTT的ID，可以在MQTT服务配置中指定// 网关的clientid
-  String clientid = "dev:" + MqttServer.DEV_PK + ":" + MqttServer.DEV_ID;
-
   public void connect() {
     MqttConnectOptions options = new MqttConnectOptions();
     options.setCleanSession(true);

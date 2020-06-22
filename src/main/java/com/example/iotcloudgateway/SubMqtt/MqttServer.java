@@ -56,6 +56,11 @@ public class MqttServer {
     log.debug(mqttconnect.message.isRetained() + "------ratained状态");
   }
 
+  public void publish(byte[] message) throws MqttException {
+    mqttconnect.message.setPayload(message);
+    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  }
+
   @SneakyThrows
   public void addDev(String subDevPk, String subDevId) {
     this.mqttconnect.message.setPayload(
