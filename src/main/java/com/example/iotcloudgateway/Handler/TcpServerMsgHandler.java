@@ -29,7 +29,6 @@ import java.nio.ByteBuffer;
 public class TcpServerMsgHandler implements ServerAioHandler {
   @Autowired private LinePacketCodec packetCodec;
   @Autowired private MqttServer mqttServer;
-  @Autowired private KlinkDataCodec klinkDataCodec;
   @Autowired private DataCodec dataCodec;
 
   /** 拆包部分 */
@@ -57,35 +56,33 @@ public class TcpServerMsgHandler implements ServerAioHandler {
 
     KlinkDev klinkDev = dataCodec.decode(tcpPacket);
 
-    // 若已进行登录校验过，直接将数据传到core
-    if (channelContext.userid != null) {
-      // klink格式时检测是否为心跳包，如是则不发送到core
-      // 包含{"action":"heartbeat"}则为心跳包
-      if (klinkDev != null && klinkDev.getAction().equals("heartbeat")) {
-        return;
-      }
-      switch (klinkDev.getAction()) {
-        case SubKlinkAction.ADD_TOPO:
-          mqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
-          break;
-        case SubKlinkAction.DEV_LOGIN:
-          mqttServer.devLogin(klinkDev.getPk(), klinkDev.getDevId());
-          break;
-        case SubKlinkAction.DEV_LOGOUT:
-          mqttServer.devLogout(klinkDev.getPk(), klinkDev.getDevId());
-          break;
-        case SubKlinkAction.GET_TOPO:
-          mqttServer.devTopo();
-          break;
-        case SubKlinkAction.DEL_TOPO:
-          mqttServer.delDev(klinkDev.getPk(), klinkDev.getDevId());
-          break;
-        case SubKlinkAction.DEV_SEND:
-          mqttServer.devSend(JsonUtil.toJson(klinkDev));
-          break;
-        default:
-          throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
-      }
+    // klink格式时检测是否为心跳包，如是则不发送到core
+    // 包含{"action":"heartbeat"}则为心跳包
+    if (klinkDev != null && klinkDev.getAction().equals("heartbeat")) {
+      return;
+    }
+    switch (klinkDev.getAction()) {
+      case SubKlinkAction.ADD_TOPO:
+        mqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
+        break;
+      case SubKlinkAction.DEV_LOGIN:
+        mqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
+        mqttServer.devLogin(klinkDev.getPk(), klinkDev.getDevId());
+        break;
+      case SubKlinkAction.DEV_LOGOUT:
+        mqttServer.devLogout(klinkDev.getPk(), klinkDev.getDevId());
+        break;
+      case SubKlinkAction.GET_TOPO:
+        mqttServer.devTopo();
+        break;
+      case SubKlinkAction.DEL_TOPO:
+        mqttServer.delDev(klinkDev.getPk(), klinkDev.getDevId());
+        break;
+      case SubKlinkAction.DEV_SEND:
+        mqttServer.devSend(JsonUtil.toJson(klinkDev));
+        break;
+      default:
+        throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
     }
   }
 }
