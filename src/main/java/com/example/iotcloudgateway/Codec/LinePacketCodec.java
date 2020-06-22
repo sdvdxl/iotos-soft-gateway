@@ -10,10 +10,7 @@ import org.tio.core.intf.Packet;
 
 import java.nio.ByteBuffer;
 
-/**
- * 此类表示拆包方式为以换行符"\n"作为分割标识进行拆包
- *
- */
+/** 此类表示拆包方式为以换行符"\n"作为分割标识进行拆包 */
 @Slf4j
 @Component
 public class LinePacketCodec implements PacketCodec {
@@ -32,7 +29,7 @@ public class LinePacketCodec implements PacketCodec {
    */
   @Override
   public TcpPacket decode(
-          ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext)
+      ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext)
       throws AioDecodeException {
     // 消息不够组包直接返回，等待后续的包
     if (readableLength <= 0) {

@@ -11,7 +11,7 @@ import java.net.SocketException;
 @EnableTioServerServer
 @EnableFeignClients
 public class IoTCloudGatewayApplication {
-    public static void main(String[] args) throws SocketException {
-        SpringApplication.run(IoTCloudGatewayApplication.class, args);
-    }
+  public static void main(String[] args) throws SocketException {
+    SpringApplication.run(IoTCloudGatewayApplication.class, args);
+  }
 }

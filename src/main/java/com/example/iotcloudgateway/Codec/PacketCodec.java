@@ -8,11 +8,12 @@ import org.tio.core.intf.Packet;
 
 import java.nio.ByteBuffer;
 
+/** 拆包组包抽象接口 */
 public interface PacketCodec {
 
   /** 解码 */
   TcpPacket decode(
-          ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext)
+      ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext)
       throws AioDecodeException;
 
   /** 编码 */

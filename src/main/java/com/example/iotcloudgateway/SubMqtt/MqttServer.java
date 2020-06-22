@@ -54,34 +54,40 @@ public class MqttServer {
     mqttconnect.message.setPayload(klink.addSub(DEV_PK, DEV_ID, SUBDEV_PK, SUBDEV_ID).getBytes());
     mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
     log.debug(mqttconnect.message.isRetained() + "------ratained状态");
-
   }
 
   @SneakyThrows
   public void addDev(String subDevPk, String subDevId) {
-    this.mqttconnect.message.setPayload(SubKLink.addSub(DEV_PK, DEV_ID, subDevPk, subDevId).getBytes());
+    this.mqttconnect.message.setPayload(
+        SubKLink.addSub(DEV_PK, DEV_ID, subDevPk, subDevId).getBytes());
     this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
+
   @SneakyThrows
   public void devLogin(String subDevPk, String subDevId) {
     this.mqttconnect.message.setPayload(SubKLink.subLogin(subDevPk, subDevId).getBytes());
     this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
+
   @SneakyThrows
   public void devLogout(String subDevPk, String subDevId) {
     this.mqttconnect.message.setPayload(SubKLink.subLogout(subDevPk, subDevId).getBytes());
     this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
+
   @SneakyThrows
   public void devTopo() {
     this.mqttconnect.message.setPayload(SubKLink.subTopo(DEV_PK, DEV_ID).getBytes());
     this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
+
   @SneakyThrows
   public void delDev(String subDevPk, String subDevId) {
-    this.mqttconnect.message.setPayload(SubKLink.delSub(DEV_PK, DEV_ID, subDevPk, subDevId).getBytes());
+    this.mqttconnect.message.setPayload(
+        SubKLink.delSub(DEV_PK, DEV_ID, subDevPk, subDevId).getBytes());
     this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
+
   @SneakyThrows
   public void devSend(String kLink) {
     this.mqttconnect.message.setPayload(kLink.getBytes());
