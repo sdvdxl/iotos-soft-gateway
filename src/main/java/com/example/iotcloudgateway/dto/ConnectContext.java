@@ -6,10 +6,6 @@ import org.tio.core.Node;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-/**
- * @author ：jiatao
- * @date ：2020/2/11
- */
 @Data
 public class ConnectContext {
   private static final ConcurrentMap<String, ConnectContext> CONTEXT_CONCURRENT_MAP =
