@@ -50,26 +50,22 @@ public class PushCallback implements MqttCallback {
     log.info("接收消息Qos : " + message.getQos());
     log.info("接收消息内容 : " + new String(message.getPayload()));
     log.info("-------------------------------------------------");
-    Map<StreamMessageId, Map<String, String>> messages = null;
-    messages.forEach(
-            (k, v) -> {
-              String payload = v.get("data");
-              TransferPacket packet = JsonUtil.fromJson(payload, TransferPacket.class);
-              String userId = packet.getPk() + "@" + packet.getDevId();
-              SetWithLock<ChannelContext> byUserid =
-                      Tio.getByUserid(bootstrap.getServerTioConfig(), userId);
+    String payload = new String(message.getPayload());
+    TransferPacket packet = JsonUtil.fromJson(payload,TransferPacket.class);
+    String userId = packet.getPk() + "@" + packet.getDevId();
+    SetWithLock<ChannelContext> byUserid =
+            Tio.getByUserid(bootstrap.getServerTioConfig(), userId);
 
-              if (byUserid == null) {
-                log.warn(
-                        "pk:{}, devId:{} context not found, packet: {}",
-                        packet.getPk(),
-                        packet.getDevId(),
-                        payload);
-                return;
-              }
-              TcpPacket resppacket = new TcpPacket();
-              resppacket.setBody(Base64.decodeBase64(packet.getPayload()));
-              Tio.sendToUser(bootstrap.getServerTioConfig(), userId, resppacket);
-            });
+    if (byUserid == null) {
+      log.warn(
+              "pk:{}, devId:{} context not found, packet: {}",
+              packet.getPk(),
+              packet.getDevId(),
+              payload);
+      return;
+    }
+    TcpPacket resppacket = new TcpPacket();
+    resppacket.setBody(Base64.decodeBase64(packet.getPayload()));
+    Tio.sendToUser(bootstrap.getServerTioConfig(), userId, resppacket);
   }
 }
