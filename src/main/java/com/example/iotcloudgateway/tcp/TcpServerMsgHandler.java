@@ -82,5 +82,6 @@ public class TcpServerMsgHandler implements ServerAioHandler {
       default:
         throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
     }
+    Tio.send(channelContext, packet);
   }
 }

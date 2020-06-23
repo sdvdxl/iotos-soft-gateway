@@ -49,17 +49,17 @@ public class PushCallback implements MqttCallback {
     String payload = new String(message.getPayload());
     TransferPacket packet = JsonUtil.fromJson(payload,TransferPacket.class);
     String userId = packet.getPk() + "@" + packet.getDevId();
-    SetWithLock<ChannelContext> byUserid =
-            Tio.getByUserid(IoTCloudGatewayApplication.serverTioConfig, userId);
+//    SetWithLock<ChannelContext> byUserid =
+//            Tio.getByUserid(IoTCloudGatewayApplication.serverTioConfig, userId);
 
-    if (byUserid == null) {
-      log.warn(
-              "pk:{}, devId:{} context not found, packet: {}",
-              packet.getPk(),
-              packet.getDevId(),
-              payload);
-      return;
-    }
+//    if (byUserid == null) {
+//      log.warn(
+//              "pk:{}, devId:{} context not found, packet: {}",
+//              packet.getPk(),
+//              packet.getDevId(),
+//              payload);
+//      return;
+//    }
     TcpPacket resppacket = new TcpPacket();
     resppacket.setBody(Base64.decodeBase64(packet.getPayload()));
     Tio.sendToUser(IoTCloudGatewayApplication.serverTioConfig, userId, resppacket);
