@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.subMqtt;
+package com.example.iotcloudgateway.mqtt;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;

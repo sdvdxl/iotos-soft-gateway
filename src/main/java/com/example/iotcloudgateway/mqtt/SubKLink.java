@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.subMqtt;
+package com.example.iotcloudgateway.mqtt;
 
 /** 定义上报数据的方法 */
 public class SubKLink {

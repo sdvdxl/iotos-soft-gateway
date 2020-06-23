@@ -1,6 +1,6 @@
-package com.example.iotcloudgateway.http.controller;
+package com.example.iotcloudgateway.http;
 
-import com.example.iotcloudgateway.subMqtt.MqttServer;
+import com.example.iotcloudgateway.mqtt.MqttServer;
 import iot.cloud.os.common.utils.JsonUtil;
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController // 相当于@Controller+@RequestBody
 @ResponseBody
 @RequestMapping("/dev")
-public class ConnectController {
+public class HttpController {
   @Autowired private MqttServer mqttServer;
 
   @PostMapping("/push")

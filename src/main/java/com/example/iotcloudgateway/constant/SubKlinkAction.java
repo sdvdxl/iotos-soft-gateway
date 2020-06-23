@@ -1,6 +1,4 @@
-package com.example.iotcloudgateway.dto;
-
-import lombok.Getter;
+package com.example.iotcloudgateway.constant;
 
 public class SubKlinkAction {
   public static final String DEV_LOGIN = "devLogin";

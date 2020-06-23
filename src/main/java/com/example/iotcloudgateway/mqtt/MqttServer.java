@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.subMqtt;
+package com.example.iotcloudgateway.mqtt;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

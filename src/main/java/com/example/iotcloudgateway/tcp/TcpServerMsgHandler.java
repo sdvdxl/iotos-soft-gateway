@@ -1,10 +1,9 @@
-package com.example.iotcloudgateway.handler;
+package com.example.iotcloudgateway.tcp;
 
 import com.example.iotcloudgateway.codec.DataCodec;
 import com.example.iotcloudgateway.codec.LinePacketCodec;
-import com.example.iotcloudgateway.subMqtt.MqttServer;
-import com.example.iotcloudgateway.dto.SubKlinkAction;
-import com.example.iotcloudgateway.dto.TcpPacket;
+import com.example.iotcloudgateway.mqtt.MqttServer;
+import com.example.iotcloudgateway.constant.SubKlinkAction;
 import iot.cloud.os.common.utils.JsonUtil;
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import lombok.extern.slf4j.Slf4j;

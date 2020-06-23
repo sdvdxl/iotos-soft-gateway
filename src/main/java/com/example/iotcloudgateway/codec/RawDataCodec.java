@@ -1,7 +1,7 @@
 package com.example.iotcloudgateway.codec;
 
-import com.example.iotcloudgateway.dto.SubKlinkAction;
-import com.example.iotcloudgateway.dto.TcpPacket;
+import com.example.iotcloudgateway.constant.SubKlinkAction;
+import com.example.iotcloudgateway.tcp.TcpPacket;
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import java.nio.ByteBuffer;
 import lombok.SneakyThrows;

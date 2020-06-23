@@ -1,7 +1,6 @@
-package com.example.iotcloudgateway.listener;
+package com.example.iotcloudgateway.tcp;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.tio.common.starter.annotation.TioServerAioListener;
 import org.tio.core.ChannelContext;
 import org.tio.core.intf.Packet;

@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.dto;
+package com.example.iotcloudgateway.udp;
 
 import lombok.Data;
 import org.tio.core.Node;

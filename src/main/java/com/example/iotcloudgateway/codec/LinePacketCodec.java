@@ -1,6 +1,6 @@
 package com.example.iotcloudgateway.codec;
 
-import com.example.iotcloudgateway.dto.TcpPacket;
+import com.example.iotcloudgateway.tcp.TcpPacket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.tio.core.ChannelContext;

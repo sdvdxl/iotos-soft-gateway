@@ -1,6 +1,6 @@
 package com.example.iotcloudgateway.codec;
 
-import com.example.iotcloudgateway.dto.TcpPacket;
+import com.example.iotcloudgateway.tcp.TcpPacket;
 import iot.cloud.os.common.utils.JsonUtil;
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import lombok.SneakyThrows;
