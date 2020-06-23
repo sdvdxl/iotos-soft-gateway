@@ -50,15 +50,16 @@ public class TcpServerMsgHandler implements ServerAioHandler {
 
     KlinkDev klinkDev = dataCodec.decode(tcpPacket);
 
-    if (channelContext.userid==null){
-      Tio.bindUser(channelContext,klinkDev.getPk()+"@"+klinkDev.getDevId());
-    }
-
-    // klink格式时检测是否为心跳包，如是则不发送到core
-    // 包含{"action":"heartbeat"}则为心跳包
-    if (klinkDev != null && klinkDev.getAction().equals("heartbeat")) {
+    if (klinkDev == null) {
+      log.error("数据解码成klink格式失败：{}", tcpPacket.getBody());
       return;
     }
+
+    if (channelContext.userid == null) {
+      Tio.bindUser(channelContext, klinkDev.getPk() + "@" + klinkDev.getDevId());
+    }
+
+    // 对转码后的数据按照klink的action进行不同业务的操作
     switch (klinkDev.getAction()) {
       case SubKlinkAction.ADD_TOPO:
         mqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
@@ -78,6 +79,8 @@ public class TcpServerMsgHandler implements ServerAioHandler {
         break;
       case SubKlinkAction.DEV_SEND:
         mqttServer.devSend(JsonUtil.toJson(klinkDev));
+        break;
+      case SubKlinkAction.HEARTBEAT:
         break;
       default:
         throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
