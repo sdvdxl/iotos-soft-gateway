@@ -6,7 +6,6 @@ import iot.cloud.os.common.utils.JsonUtil;
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tio.core.Node;
 import org.tio.core.udp.UdpPacket;
 import org.tio.core.udp.intf.UdpHandler;
@@ -16,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 public class ConnectUdpHandler implements UdpHandler {
-  @Autowired private MqttServer mqttServer;
 
   @SneakyThrows
   @Override
@@ -51,22 +49,22 @@ public class ConnectUdpHandler implements UdpHandler {
 
     switch (klinkDev.getAction()) {
       case SubKlinkAction.ADD_TOPO:
-        mqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
+        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
         break;
       case SubKlinkAction.DEV_LOGIN:
-        mqttServer.devLogin(klinkDev.getPk(), klinkDev.getDevId());
+        MqttServer.devLogin(klinkDev.getPk(), klinkDev.getDevId());
         break;
       case SubKlinkAction.DEV_LOGOUT:
-        mqttServer.devLogout(klinkDev.getPk(), klinkDev.getDevId());
+        MqttServer.devLogout(klinkDev.getPk(), klinkDev.getDevId());
         break;
       case SubKlinkAction.GET_TOPO:
-        mqttServer.devTopo();
+        MqttServer.devTopo();
         break;
       case SubKlinkAction.DEL_TOPO:
-        mqttServer.delDev(klinkDev.getPk(), klinkDev.getDevId());
+        MqttServer.delDev(klinkDev.getPk(), klinkDev.getDevId());
         break;
       case SubKlinkAction.DEV_SEND:
-        mqttServer.devSend(JsonUtil.toJson(klinkDev));
+        MqttServer.devSend(JsonUtil.toJson(klinkDev));
         break;
       default:
         throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());

@@ -32,7 +32,7 @@ public class MqttServer {
   public static final String userName = "HmacSHA1:init";
   public static final String passWord = "f8219e353ef0f60d3c0a08aee6351890758d1fbc";
 
-  private MqttConnect mqttconnect;
+  private static MqttConnect mqttconnect;
 
   /**
    * mqtt连接
@@ -40,7 +40,7 @@ public class MqttServer {
    * @throws MqttException
    */
   @PostConstruct
-  public void mqttconnection() throws MqttException {
+  public static void mqttconnection() throws MqttException {
     SubKLink klink = new SubKLink();
     mqttconnect = new MqttConnect();
     mqttconnect.message = new MqttMessage();
@@ -61,40 +61,38 @@ public class MqttServer {
   }
 
   @SneakyThrows
-  public void addDev(String subDevPk, String subDevId) {
-    this.mqttconnect.message.setPayload(
-        SubKLink.addSub(DEV_PK, DEV_ID, subDevPk, subDevId).getBytes());
-    this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  public static void addDev(String subDevPk, String subDevId) {
+    mqttconnect.message.setPayload(SubKLink.addSub(DEV_PK, DEV_ID, subDevPk, subDevId).getBytes());
+    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
 
   @SneakyThrows
-  public void devLogin(String subDevPk, String subDevId) {
-    this.mqttconnect.message.setPayload(SubKLink.subLogin(subDevPk, subDevId).getBytes());
-    this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  public static void devLogin(String subDevPk, String subDevId) {
+    mqttconnect.message.setPayload(SubKLink.subLogin(subDevPk, subDevId).getBytes());
+    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
 
   @SneakyThrows
-  public void devLogout(String subDevPk, String subDevId) {
-    this.mqttconnect.message.setPayload(SubKLink.subLogout(subDevPk, subDevId).getBytes());
-    this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  public static void devLogout(String subDevPk, String subDevId) {
+    mqttconnect.message.setPayload(SubKLink.subLogout(subDevPk, subDevId).getBytes());
+    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
 
   @SneakyThrows
-  public void devTopo() {
-    this.mqttconnect.message.setPayload(SubKLink.subTopo(DEV_PK, DEV_ID).getBytes());
-    this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  public static void devTopo() {
+    mqttconnect.message.setPayload(SubKLink.subTopo(DEV_PK, DEV_ID).getBytes());
+    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
 
   @SneakyThrows
-  public void delDev(String subDevPk, String subDevId) {
-    this.mqttconnect.message.setPayload(
-        SubKLink.delSub(DEV_PK, DEV_ID, subDevPk, subDevId).getBytes());
-    this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  public static void delDev(String subDevPk, String subDevId) {
+    mqttconnect.message.setPayload(SubKLink.delSub(DEV_PK, DEV_ID, subDevPk, subDevId).getBytes());
+    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
 
   @SneakyThrows
-  public void devSend(String kLink) {
-    this.mqttconnect.message.setPayload(kLink.getBytes());
-    this.mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  public static void devSend(String kLink) {
+    mqttconnect.message.setPayload(kLink.getBytes());
+    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
 }

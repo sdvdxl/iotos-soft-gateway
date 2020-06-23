@@ -1,7 +1,6 @@
 package com.example.iotcloudgateway.tcp;
 
 import lombok.extern.slf4j.Slf4j;
-import org.tio.common.starter.annotation.TioServerAioListener;
 import org.tio.core.ChannelContext;
 import org.tio.core.intf.Packet;
 import org.tio.server.intf.ServerAioListener;
@@ -10,7 +9,6 @@ import org.tio.server.intf.ServerAioListener;
  * @author ：jiatao
  * @date ：2020/1/15
  */
-@TioServerAioListener
 @Slf4j
 public class TcpServerListener implements ServerAioListener {
 

@@ -1,5 +1,6 @@
 package com.example.iotcloudgateway.mqtt;
 
+import com.example.iotcloudgateway.IoTCloudGatewayApplication;
 import com.example.iotcloudgateway.tcp.TcpPacket;
 import iot.cloud.os.common.utils.JsonUtil;
 import iot.cloud.os.core.api.dto.TransferPacket;
@@ -11,7 +12,6 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
-import org.tio.core.starter.TioServerBootstrap;
 import org.tio.utils.lock.SetWithLock;
 
 /**
@@ -30,7 +30,6 @@ import org.tio.utils.lock.SetWithLock;
 @Slf4j
 public class PushCallback implements MqttCallback {
 
-  @Autowired private TioServerBootstrap bootstrap;
 
   public void connectionLost(Throwable cause) {
     // 连接丢失后，一般在这里面进行重连
@@ -51,7 +50,7 @@ public class PushCallback implements MqttCallback {
     TransferPacket packet = JsonUtil.fromJson(payload,TransferPacket.class);
     String userId = packet.getPk() + "@" + packet.getDevId();
     SetWithLock<ChannelContext> byUserid =
-            Tio.getByUserid(bootstrap.getServerTioConfig(), userId);
+            Tio.getByUserid(IoTCloudGatewayApplication.serverTioConfig, userId);
 
     if (byUserid == null) {
       log.warn(
@@ -63,6 +62,6 @@ public class PushCallback implements MqttCallback {
     }
     TcpPacket resppacket = new TcpPacket();
     resppacket.setBody(Base64.decodeBase64(packet.getPayload()));
-    Tio.sendToUser(bootstrap.getServerTioConfig(), userId, resppacket);
+    Tio.sendToUser(IoTCloudGatewayApplication.serverTioConfig, userId, resppacket);
   }
 }

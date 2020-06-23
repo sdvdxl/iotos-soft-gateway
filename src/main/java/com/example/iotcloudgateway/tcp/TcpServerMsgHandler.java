@@ -2,13 +2,12 @@ package com.example.iotcloudgateway.tcp;
 
 import com.example.iotcloudgateway.codec.DataCodec;
 import com.example.iotcloudgateway.codec.LinePacketCodec;
+import com.example.iotcloudgateway.codec.RawDataCodec;
 import com.example.iotcloudgateway.mqtt.MqttServer;
 import com.example.iotcloudgateway.constant.SubKlinkAction;
 import iot.cloud.os.common.utils.JsonUtil;
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.tio.common.starter.annotation.TioServerMsgHandler;
 import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
 import org.tio.core.TioConfig;
@@ -18,12 +17,10 @@ import org.tio.server.intf.ServerAioHandler;
 
 import java.nio.ByteBuffer;
 
-@TioServerMsgHandler
 @Slf4j
 public class TcpServerMsgHandler implements ServerAioHandler {
-  @Autowired private LinePacketCodec packetCodec;
-  @Autowired private MqttServer mqttServer;
-  @Autowired private DataCodec dataCodec;
+  private LinePacketCodec packetCodec = new LinePacketCodec();
+  private DataCodec dataCodec = new RawDataCodec();
 
   /** 拆包部分 */
   @Override
@@ -62,23 +59,23 @@ public class TcpServerMsgHandler implements ServerAioHandler {
     // 对转码后的数据按照klink的action进行不同业务的操作
     switch (klinkDev.getAction()) {
       case SubKlinkAction.ADD_TOPO:
-        mqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
+        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
         break;
       case SubKlinkAction.DEV_LOGIN:
-        mqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
-        mqttServer.devLogin(klinkDev.getPk(), klinkDev.getDevId());
+        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
+        MqttServer.devLogin(klinkDev.getPk(), klinkDev.getDevId());
         break;
       case SubKlinkAction.DEV_LOGOUT:
-        mqttServer.devLogout(klinkDev.getPk(), klinkDev.getDevId());
+        MqttServer.devLogout(klinkDev.getPk(), klinkDev.getDevId());
         break;
       case SubKlinkAction.GET_TOPO:
-        mqttServer.devTopo();
+        MqttServer.devTopo();
         break;
       case SubKlinkAction.DEL_TOPO:
-        mqttServer.delDev(klinkDev.getPk(), klinkDev.getDevId());
+        MqttServer.delDev(klinkDev.getPk(), klinkDev.getDevId());
         break;
       case SubKlinkAction.DEV_SEND:
-        mqttServer.devSend(JsonUtil.toJson(klinkDev));
+        MqttServer.devSend(JsonUtil.toJson(klinkDev));
         break;
       case SubKlinkAction.HEARTBEAT:
         break;
