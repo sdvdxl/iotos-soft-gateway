@@ -8,11 +8,14 @@ import com.example.iotcloudgateway.dto.SubKlinkAction;
 import com.example.iotcloudgateway.dto.TcpPacket;
 import iot.cloud.os.common.utils.JsonUtil;
 import iot.cloud.os.core.api.dto.DevLoginReq;
+import iot.cloud.os.core.api.dto.TransferPacket;
 import iot.cloud.os.core.api.dto.klink.DevLoginResp;
 import iot.cloud.os.core.api.dto.klink.Klink;
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import iot.cloud.os.core.api.enums.Action;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
+import org.redisson.api.StreamMessageId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tio.common.starter.annotation.TioServerMsgHandler;
 import org.tio.core.ChannelContext;
@@ -21,6 +24,7 @@ import org.tio.core.TioConfig;
 import org.tio.core.exception.AioDecodeException;
 import org.tio.core.intf.Packet;
 import org.tio.server.intf.ServerAioHandler;
+import org.tio.utils.lock.SetWithLock;
 
 import java.nio.ByteBuffer;
 
@@ -55,6 +59,10 @@ public class TcpServerMsgHandler implements ServerAioHandler {
     }
 
     KlinkDev klinkDev = dataCodec.decode(tcpPacket);
+
+    if (channelContext.userid==null){
+      Tio.bindUser(channelContext,klinkDev.getPk()+"@"+klinkDev.getDevId());
+    }
 
     // klink格式时检测是否为心跳包，如是则不发送到core
     // 包含{"action":"heartbeat"}则为心跳包

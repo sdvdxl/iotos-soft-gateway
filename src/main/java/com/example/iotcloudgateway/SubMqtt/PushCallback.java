@@ -1,9 +1,21 @@
 package com.example.iotcloudgateway.SubMqtt;
 
+import com.example.iotcloudgateway.dto.TcpPacket;
+import iot.cloud.os.common.utils.JsonUtil;
+import iot.cloud.os.core.api.dto.TransferPacket;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.redisson.api.StreamMessageId;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.tio.core.ChannelContext;
+import org.tio.core.Tio;
+import org.tio.core.starter.TioServerBootstrap;
+import org.tio.utils.lock.SetWithLock;
+
+import java.util.Map;
 
 /**
  * 发布消息的回调类
@@ -21,6 +33,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 @Slf4j
 public class PushCallback implements MqttCallback {
 
+  @Autowired private TioServerBootstrap bootstrap;
+
   public void connectionLost(Throwable cause) {
     // 连接丢失后，一般在这里面进行重连
     System.out.println("连接断开，可以做重连");
@@ -31,17 +45,31 @@ public class PushCallback implements MqttCallback {
   }
 
   public void messageArrived(String topic, MqttMessage message) throws Exception {
-    // subscribe后得到的消息会执行到这里面
-    //    System.out.println("\n\n\n"+"-------------------------------------------------"+"\n\n\n");
-    //    System.out.println("接收消息主题 : " + topic);
-    //    System.out.println("接收消息Qos : " + message.getQos());
-    //    System.out.println("接收消息内容 : " + new String(message.getPayload()));
-    //    System.out.println("-------------------------------------------------");
-
     log.info("-------------------------------------------------");
     log.info("接收消息主题 : " + topic);
     log.info("接收消息Qos : " + message.getQos());
     log.info("接收消息内容 : " + new String(message.getPayload()));
     log.info("-------------------------------------------------");
+    Map<StreamMessageId, Map<String, String>> messages = null;
+    messages.forEach(
+            (k, v) -> {
+              String payload = v.get("data");
+              TransferPacket packet = JsonUtil.fromJson(payload, TransferPacket.class);
+              String userId = packet.getPk() + "@" + packet.getDevId();
+              SetWithLock<ChannelContext> byUserid =
+                      Tio.getByUserid(bootstrap.getServerTioConfig(), userId);
+
+              if (byUserid == null) {
+                log.warn(
+                        "pk:{}, devId:{} context not found, packet: {}",
+                        packet.getPk(),
+                        packet.getDevId(),
+                        payload);
+                return;
+              }
+              TcpPacket resppacket = new TcpPacket();
+              resppacket.setBody(Base64.decodeBase64(packet.getPayload()));
+              Tio.sendToUser(bootstrap.getServerTioConfig(), userId, resppacket);
+            });
   }
 }
