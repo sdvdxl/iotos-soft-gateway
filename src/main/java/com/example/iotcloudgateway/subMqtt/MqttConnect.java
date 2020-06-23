@@ -1,8 +1,7 @@
-package com.example.iotcloudgateway.SubMqtt;
+package com.example.iotcloudgateway.subMqtt;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.springframework.stereotype.Service;
 
 /** connect方法用来将数据平台软网关连接至IoTOS */
 public class MqttConnect {

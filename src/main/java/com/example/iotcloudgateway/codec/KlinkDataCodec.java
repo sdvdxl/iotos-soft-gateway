@@ -1,12 +1,10 @@
-package com.example.iotcloudgateway.Codec;
+package com.example.iotcloudgateway.codec;
 
 import com.example.iotcloudgateway.dto.TcpPacket;
 import iot.cloud.os.common.utils.JsonUtil;
-import iot.cloud.os.core.api.dto.klink.Klink;
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 
 /** 字符串转换为klink格式 */
 @Slf4j

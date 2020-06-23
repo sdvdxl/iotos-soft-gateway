@@ -1,7 +1,5 @@
-package com.example.iotcloudgateway.SubMqtt;
+package com.example.iotcloudgateway.subMqtt;
 
-import com.example.iotcloudgateway.SubMqtt.MqttConnect;
-import com.example.iotcloudgateway.SubMqtt.SubKLink;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttException;

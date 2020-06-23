@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.SubMqtt;
+package com.example.iotcloudgateway.subMqtt;
 
 import com.example.iotcloudgateway.dto.TcpPacket;
 import iot.cloud.os.common.utils.JsonUtil;
@@ -8,14 +8,11 @@ import org.apache.commons.codec.binary.Base64;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.redisson.api.StreamMessageId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
 import org.tio.core.starter.TioServerBootstrap;
 import org.tio.utils.lock.SetWithLock;
-
-import java.util.Map;
 
 /**
  * 发布消息的回调类

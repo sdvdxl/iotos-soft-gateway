@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.Codec;
+package com.example.iotcloudgateway.codec;
 
 import com.example.iotcloudgateway.dto.SubKlinkAction;
 import com.example.iotcloudgateway.dto.TcpPacket;
