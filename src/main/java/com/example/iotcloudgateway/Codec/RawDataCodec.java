@@ -45,6 +45,9 @@ public class RawDataCodec implements DataCodec {
         return klinkDev;
       case 2:
         break;
+      case 3:
+        KlinkDev heartBreak = new KlinkDev();
+        heartBreak.setAction(SubKlinkAction.HEARTBEAT);
       default:
         break;
     }

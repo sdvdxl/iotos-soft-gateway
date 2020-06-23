@@ -9,4 +9,5 @@ public class SubKlinkAction {
   public static final String DEV_SEND = "devSend";
   public static final String GET_TOPO = "getTopo";
   public static final String DEL_TOPO = "delTopo";
+  public static final String HEARTBEAT = "heartbeat";
 }
