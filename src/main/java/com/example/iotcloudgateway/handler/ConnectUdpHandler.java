@@ -1,9 +1,8 @@
-package com.example.iotcloudgateway.Handler;
+package com.example.iotcloudgateway.handler;
 
-import com.example.iotcloudgateway.SubMqtt.MqttServer;
+import com.example.iotcloudgateway.subMqtt.MqttServer;
 import com.example.iotcloudgateway.dto.SubKlinkAction;
 import iot.cloud.os.common.utils.JsonUtil;
-import iot.cloud.os.core.api.client.DeviceClient;
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

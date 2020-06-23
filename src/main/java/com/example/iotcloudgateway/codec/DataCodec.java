@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.Codec;
+package com.example.iotcloudgateway.codec;
 
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 
