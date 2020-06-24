@@ -1,18 +1,18 @@
 package com.example.iotcloudgateway.mqtt;
 
-import com.example.iotcloudgateway.IoTCloudGatewayApplication;
+import com.example.iotcloudgateway.constant.SubKlinkAction;
 import com.example.iotcloudgateway.tcp.TcpPacket;
+import com.example.iotcloudgateway.tcp.TcpServerStarter;
 import iot.cloud.os.common.utils.JsonUtil;
-import iot.cloud.os.core.api.dto.TransferPacket;
+import iot.cloud.os.core.api.dto.klink.AddTopoResp;
+import iot.cloud.os.core.api.dto.klink.DevLoginResp;
+import iot.cloud.os.core.api.dto.klink.GetTopoResp;
+import iot.cloud.os.core.api.dto.klink.KlinkResp;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.binary.Base64;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
-import org.tio.utils.lock.SetWithLock;
 
 /**
  * 发布消息的回调类
@@ -30,7 +30,6 @@ import org.tio.utils.lock.SetWithLock;
 @Slf4j
 public class PushCallback implements MqttCallback {
 
-
   public void connectionLost(Throwable cause) {
     // 连接丢失后，一般在这里面进行重连
     System.out.println("连接断开，可以做重连");
@@ -47,21 +46,39 @@ public class PushCallback implements MqttCallback {
     log.info("接收消息内容 : " + new String(message.getPayload()));
     log.info("-------------------------------------------------");
     String payload = new String(message.getPayload());
-    TransferPacket packet = JsonUtil.fromJson(payload,TransferPacket.class);
-    String userId = packet.getPk() + "@" + packet.getDevId();
-//    SetWithLock<ChannelContext> byUserid =
-//            Tio.getByUserid(IoTCloudGatewayApplication.serverTioConfig, userId);
-
-//    if (byUserid == null) {
-//      log.warn(
-//              "pk:{}, devId:{} context not found, packet: {}",
-//              packet.getPk(),
-//              packet.getDevId(),
-//              payload);
-//      return;
-//    }
     TcpPacket resppacket = new TcpPacket();
-    resppacket.setBody(Base64.decodeBase64(packet.getPayload()));
-    Tio.sendToUser(IoTCloudGatewayApplication.serverTioConfig, userId, resppacket);
+    KlinkResp klinkResp = JsonUtil.fromJson(payload, KlinkResp.class);
+    switch (klinkResp.getAction()) {
+      case SubKlinkAction.GET_TOPO_RESP:
+        GetTopoResp getTopoResp = JsonUtil.fromJson(payload, GetTopoResp.class);
+        getTopoResp
+            .getSubs()
+            .forEach(
+                dev -> {
+                  resppacket.setBody(message.getPayload());
+                  Tio.sendToUser(
+                      TcpServerStarter.tioServer.getServerTioConfig(),
+                      dev.getPk() + "@" + dev.getDevId(),
+                      resppacket);
+                });
+        return;
+      case SubKlinkAction.DEV_LOGIN_RESP:
+        DevLoginResp devLoginResp = JsonUtil.fromJson(payload, DevLoginResp.class);
+        resppacket.setBody(message.getPayload());
+        Tio.sendToUser(
+            TcpServerStarter.tioServer.getServerTioConfig(),
+            devLoginResp.getPk() + "@" + devLoginResp.getDevId(),
+            resppacket);
+        return;
+      case SubKlinkAction.ADD_TOPO_RESP:
+        AddTopoResp addTopoResp = JsonUtil.fromJson(payload, AddTopoResp.class);
+        resppacket.setBody(message.getPayload());
+        Tio.sendToUser(
+            TcpServerStarter.tioServer.getServerTioConfig(),
+            addTopoResp.getSub().getPk() + "@" + addTopoResp.getSub().getDevId(),
+            resppacket);
+        return;
+      default:
+    }
   }
 }

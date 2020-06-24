@@ -39,18 +39,12 @@ public class MqttServer {
    *
    * @throws MqttException
    */
-  @PostConstruct
   public static void mqttconnection() throws MqttException {
-    SubKLink klink = new SubKLink();
     mqttconnect = new MqttConnect();
     mqttconnect.message = new MqttMessage();
 
     mqttconnect.message.setQos(0); // 保证消息能到达一次
-    mqttconnect.message.setRetained(false);
-    /** 以此开始调用方法，修改kilnk.xxx即可向平台上报不同数据 */
-    //
-    mqttconnect.message.setPayload(klink.addSub(DEV_PK, DEV_ID, SUBDEV_PK, SUBDEV_ID).getBytes());
-    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+    mqttconnect.message.setRetained(true);
     log.debug(mqttconnect.message.isRetained() + "------ratained状态");
   }
 

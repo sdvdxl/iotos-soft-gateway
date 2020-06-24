@@ -6,17 +6,18 @@ import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import java.nio.ByteBuffer;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Component;
+import org.tio.core.ChannelContext;
+import org.tio.core.Tio;
 
 /**
  * @author jiatao
  * @date 2020/6/22
  */
-@Component
 public class RawDataCodec implements DataCodec {
 
   @SneakyThrows
   @Override
-  public KlinkDev decode(Object data) {
+  public KlinkDev decode(Object data, ChannelContext channelContext) {
     TcpPacket tcpPacket = (TcpPacket) data;
     // 获取原始数据
     ByteBuffer wrap = ByteBuffer.wrap(tcpPacket.getBody());
@@ -35,7 +36,9 @@ public class RawDataCodec implements DataCodec {
         byte[] dstDevId = new byte[devIdLength];
         wrap.get(dstDevId);
         String devId = new String(dstDevId, TcpPacket.CHARSET);
-
+        if (channelContext.userid == null) {
+          Tio.bindUser(channelContext, pk + "@" + devId);
+        }
         // 构造上线指令
         KlinkDev klinkDev = new KlinkDev();
         klinkDev.setDevId(devId);
@@ -49,6 +52,10 @@ public class RawDataCodec implements DataCodec {
         KlinkDev heartBreak = new KlinkDev();
         heartBreak.setAction(SubKlinkAction.HEARTBEAT);
         return heartBreak;
+      case 4:
+        KlinkDev getTopo = new KlinkDev();
+        getTopo.setAction(SubKlinkAction.GET_TOPO);
+        return getTopo;
       default:
         break;
     }
@@ -56,7 +63,7 @@ public class RawDataCodec implements DataCodec {
   }
 
   @Override
-  public Object encode(KlinkDev klink) {
+  public Object encode(KlinkDev klink, ChannelContext channelContext) {
     return null;
   }
 }

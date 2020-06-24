@@ -9,7 +9,6 @@ import iot.cloud.os.common.utils.JsonUtil;
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import lombok.extern.slf4j.Slf4j;
 import org.tio.core.ChannelContext;
-import org.tio.core.Tio;
 import org.tio.core.TioConfig;
 import org.tio.core.exception.AioDecodeException;
 import org.tio.core.intf.Packet;
@@ -45,16 +44,13 @@ public class TcpServerMsgHandler implements ServerAioHandler {
       return;
     }
 
-    KlinkDev klinkDev = dataCodec.decode(tcpPacket);
+    KlinkDev klinkDev = dataCodec.decode(tcpPacket,channelContext);
 
     if (klinkDev == null) {
       log.error("数据解码成klink格式失败：{}", tcpPacket.getBody());
       return;
     }
 
-    if (channelContext.userid == null) {
-      Tio.bindUser(channelContext, klinkDev.getPk() + "@" + klinkDev.getDevId());
-    }
 
     // 对转码后的数据按照klink的action进行不同业务的操作
     switch (klinkDev.getAction()) {
@@ -82,6 +78,5 @@ public class TcpServerMsgHandler implements ServerAioHandler {
       default:
         throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
     }
-    Tio.send(channelContext, packet);
   }
 }
