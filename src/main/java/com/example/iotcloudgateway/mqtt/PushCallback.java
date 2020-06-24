@@ -1,8 +1,8 @@
 package com.example.iotcloudgateway.mqtt;
 
 import com.example.iotcloudgateway.constant.SubKlinkAction;
-import com.example.iotcloudgateway.tcp.TcpPacket;
-import com.example.iotcloudgateway.tcp.TcpServerStarter;
+import com.example.iotcloudgateway.server.tcp.TcpPacket;
+import com.example.iotcloudgateway.server.tcp.TcpServerStarter;
 import iot.cloud.os.common.utils.JsonUtil;
 import iot.cloud.os.core.api.dto.klink.AddTopoResp;
 import iot.cloud.os.core.api.dto.klink.DevLoginResp;

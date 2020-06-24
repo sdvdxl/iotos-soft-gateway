@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.http;
+package com.example.iotcloudgateway.server.http;
 
 import com.example.iotcloudgateway.mqtt.MqttServer;
 import iot.cloud.os.common.utils.JsonUtil;

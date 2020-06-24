@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.tcp;
+package com.example.iotcloudgateway.server.tcp;
 
 import com.example.iotcloudgateway.codec.DataCodec;
 import com.example.iotcloudgateway.codec.LinePacketCodec;

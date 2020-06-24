@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.tcp;
+package com.example.iotcloudgateway.server.tcp;
 
 import lombok.extern.slf4j.Slf4j;
 import org.tio.core.ChannelContext;

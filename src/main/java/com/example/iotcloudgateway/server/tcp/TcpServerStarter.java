@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.tcp;
+package com.example.iotcloudgateway.server.tcp;
 
 import lombok.SneakyThrows;
 import org.tio.server.ServerTioConfig;

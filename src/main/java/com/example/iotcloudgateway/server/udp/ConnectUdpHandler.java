@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.udp;
+package com.example.iotcloudgateway.server.udp;
 
 import com.example.iotcloudgateway.mqtt.MqttServer;
 import com.example.iotcloudgateway.constant.SubKlinkAction;

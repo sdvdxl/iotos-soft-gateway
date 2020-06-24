@@ -1,4 +1,4 @@
-package com.example.iotcloudgateway.tcp;
+package com.example.iotcloudgateway.server.tcp;
 
 import org.tio.core.intf.Packet;
 

@@ -1,6 +1,6 @@
 package com.example.iotcloudgateway.codec;
 
-import com.example.iotcloudgateway.tcp.TcpPacket;
+import com.example.iotcloudgateway.server.tcp.TcpPacket;
 import org.tio.core.ChannelContext;
 import org.tio.core.TioConfig;
 import org.tio.core.exception.AioDecodeException;
