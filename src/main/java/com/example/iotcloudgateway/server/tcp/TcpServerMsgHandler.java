@@ -51,7 +51,6 @@ public class TcpServerMsgHandler implements ServerAioHandler {
       return;
     }
 
-
     // 对转码后的数据按照klink的action进行不同业务的操作
     switch (klinkDev.getAction()) {
       case SubKlinkAction.ADD_TOPO:
