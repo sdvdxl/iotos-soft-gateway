@@ -14,7 +14,7 @@ public class TcpServerListener implements ServerAioListener {
 
   @Override
   public boolean onHeartbeatTimeout(
-          ChannelContext channelContext, Long interval, int heartbeatTimeoutCount) {
+      ChannelContext channelContext, Long interval, int heartbeatTimeoutCount) {
     log.debug(
         "{}:{} heartbeat timeout :{}",
         channelContext.getClientNode().getIp(),
@@ -25,7 +25,7 @@ public class TcpServerListener implements ServerAioListener {
 
   @Override
   public void onAfterConnected(
-          ChannelContext channelContext, boolean isConnected, boolean isReconnect) throws Exception {}
+      ChannelContext channelContext, boolean isConnected, boolean isReconnect) throws Exception {}
 
   @Override
   public void onAfterDecoded(ChannelContext channelContext, Packet packet, int packetSize)
@@ -45,15 +45,13 @@ public class TcpServerListener implements ServerAioListener {
 
   @Override
   public void onBeforeClose(
-          ChannelContext channelContext, Throwable throwable, String remark, boolean isRemove)
+      ChannelContext channelContext, Throwable throwable, String remark, boolean isRemove)
       throws Exception {
     log.debug(
         "{}:{} 断开连接",
         channelContext.getClientNode().getIp(),
         channelContext.getClientNode().getPort());
     // 断连时对已完成登录校验的设备进行登出操作
-    if (channelContext.userid != null) {
-
-    }
+    if (channelContext.userid != null) {}
   }
 }

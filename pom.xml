@@ -35,6 +35,11 @@
     <!--             &ndash;&gt;-->
     <!--        </dependency>-->
 
+    <dependency>
+      <groupId>org.t-io</groupId>
+      <artifactId>tio-http-server</artifactId>
+      <version>3.6.0.v20200315-RELEASE</version>
+    </dependency>
 
     <dependency>
       <groupId>org.t-io</groupId>

@@ -11,6 +11,10 @@ public class TcpPacket extends Packet {
   public static final byte[] GET_MSG = {01};
 
 
+  public static final byte[] HTTP_RESP = {111};
+
+
+
   private byte[] body;
 
   /** @return the body */
