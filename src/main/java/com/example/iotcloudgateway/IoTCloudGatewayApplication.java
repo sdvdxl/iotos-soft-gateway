@@ -1,6 +1,7 @@
 package com.example.iotcloudgateway;
 
 import com.example.iotcloudgateway.client.tcp.TcpClientStarter;
+import com.example.iotcloudgateway.client.udp.UdpClientStarter;
 import com.example.iotcloudgateway.mqtt.MqttServer;
 import com.example.iotcloudgateway.server.http.HttpServerInit;
 import com.example.iotcloudgateway.server.tcp.TcpServerStarter;
@@ -18,6 +19,9 @@ public class IoTCloudGatewayApplication {
     //    TcpServerStarter.start();
 
     //    TcpClientStarter.start();
+//    TcpServerStarter.start();
+//    TcpClientStarter.start();
+    UdpClientStarter.start();
   }
 
   public IoTCloudGatewayApplication() {}
