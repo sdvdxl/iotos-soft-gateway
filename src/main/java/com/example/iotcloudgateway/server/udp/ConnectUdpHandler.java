@@ -1,9 +1,9 @@
 package com.example.iotcloudgateway.server.udp;
 
+import com.example.iotcloudgateway.klink.KlinkDev;
 import com.example.iotcloudgateway.mqtt.MqttServer;
 import com.example.iotcloudgateway.constant.SubKlinkAction;
-import iot.cloud.os.common.utils.JsonUtil;
-import iot.cloud.os.core.api.dto.klink.KlinkDev;
+import com.example.iotcloudgateway.utils.JsonUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.tio.core.Node;

@@ -1,13 +1,13 @@
 package com.example.iotcloudgateway.mqtt;
 
 import com.example.iotcloudgateway.constant.SubKlinkAction;
+import com.example.iotcloudgateway.klink.AddTopoResp;
+import com.example.iotcloudgateway.klink.DevLoginResp;
+import com.example.iotcloudgateway.klink.GetTopoResp;
+import com.example.iotcloudgateway.klink.KlinkResp;
 import com.example.iotcloudgateway.server.tcp.TcpPacket;
 import com.example.iotcloudgateway.server.tcp.TcpServerStarter;
-import iot.cloud.os.common.utils.JsonUtil;
-import iot.cloud.os.core.api.dto.klink.AddTopoResp;
-import iot.cloud.os.core.api.dto.klink.DevLoginResp;
-import iot.cloud.os.core.api.dto.klink.GetTopoResp;
-import iot.cloud.os.core.api.dto.klink.KlinkResp;
+import com.example.iotcloudgateway.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;

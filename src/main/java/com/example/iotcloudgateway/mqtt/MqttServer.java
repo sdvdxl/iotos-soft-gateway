@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
@@ -13,7 +12,6 @@ import javax.annotation.PostConstruct;
  * 服务器向多个客户端推送主题，即不同客户端可向服务器订阅相同主题 此为模拟烟雾传感器连接至智慧消防平台，并且其与IoTOS平台进行交互的代码
  * 添加设备和配置流程详情请见《设备连接软网关数据上报说明书》
  */
-@Service
 @Slf4j
 public class MqttServer {
   /** 以此开始配置设备信息，以及连接参数 */

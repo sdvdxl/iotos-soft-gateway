@@ -1,6 +1,6 @@
 package com.example.iotcloudgateway.codec;
 
-import iot.cloud.os.core.api.dto.klink.KlinkDev;
+import com.example.iotcloudgateway.klink.KlinkDev;
 import org.tio.core.ChannelContext;
 
 /** 原始数据与klink数据转换抽象接口 */

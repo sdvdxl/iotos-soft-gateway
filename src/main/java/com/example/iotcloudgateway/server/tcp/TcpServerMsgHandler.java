@@ -3,10 +3,10 @@ package com.example.iotcloudgateway.server.tcp;
 import com.example.iotcloudgateway.codec.DataCodec;
 import com.example.iotcloudgateway.codec.LinePacketCodec;
 import com.example.iotcloudgateway.codec.RawDataCodec;
+import com.example.iotcloudgateway.klink.KlinkDev;
 import com.example.iotcloudgateway.mqtt.MqttServer;
 import com.example.iotcloudgateway.constant.SubKlinkAction;
-import iot.cloud.os.common.utils.JsonUtil;
-import iot.cloud.os.core.api.dto.klink.KlinkDev;
+import com.example.iotcloudgateway.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.tio.core.ChannelContext;
 import org.tio.core.TioConfig;
@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 
 /**
  * tcp 服务端信息处理部分，在此处调用拆包、组包的方法，以及编解码部分。
- * 具体拆包和解码的方法用户可以自行继承com.example.iotcloudgateway.codec中的DataCodec和PacketCodec进行二次开发。
+ * 具体拆包和解码的方法用户可以自行实现com.example.iotcloudgateway.codec中的DataCodec和PacketCodec接口进行二次开发。
  */
 @Slf4j
 public class TcpServerMsgHandler implements ServerAioHandler {

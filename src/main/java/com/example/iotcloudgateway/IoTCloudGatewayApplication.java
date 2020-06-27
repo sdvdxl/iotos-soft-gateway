@@ -18,7 +18,7 @@ public class IoTCloudGatewayApplication {
     // 若要启用TCP client则将下行注释打开
     //    TcpClientStarter.start();
     // 若要启用TCP server则将下行注释打开
-    //    TcpServerStarter.start();
+        TcpServerStarter.start();
     // 若要启用UDP client则将下行注释打开
     //    UdpClientStarter.start();
     // 若要启用UDP server则将下行注释打开

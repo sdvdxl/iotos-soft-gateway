@@ -1,5 +1,7 @@
 package com.example.iotcloudgateway.client.tcp;
 
+import com.example.iotcloudgateway.klink.KlinkDev;
+import com.example.iotcloudgateway.utils.JsonUtil;
 import java.nio.ByteBuffer;
 
 import com.example.iotcloudgateway.codec.DataCodec;
@@ -8,8 +10,6 @@ import com.example.iotcloudgateway.codec.RawDataCodec;
 import com.example.iotcloudgateway.constant.SubKlinkAction;
 import com.example.iotcloudgateway.mqtt.MqttServer;
 import com.example.iotcloudgateway.server.tcp.TcpPacket;
-import iot.cloud.os.common.utils.JsonUtil;
-import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import lombok.extern.slf4j.Slf4j;
 import org.tio.client.intf.ClientAioHandler;
 import org.tio.core.ChannelContext;

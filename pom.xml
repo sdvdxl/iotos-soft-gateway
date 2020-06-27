@@ -42,6 +42,13 @@
     </dependency>
 
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.25</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.t-io</groupId>
       <artifactId>tio-core</artifactId>
       <version>3.6.0.v20200315-RELEASE</version>
@@ -67,6 +74,19 @@
     <!--            <groupId>org.springframework.boot</groupId>-->
     <!--            <artifactId>spring-boot-starter-actuator</artifactId>-->
     <!--        </dependency>-->
+
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.9</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>2.9.9</version>
+    </dependency>
 
     <dependency>
       <groupId>org.eclipse.paho</groupId>
@@ -101,26 +121,26 @@
     <!--            <artifactId>spring-cloud-starter-consul-discovery</artifactId>-->
     <!--            <version>2.1.5.RELEASE</version>-->
     <!--        </dependency>-->
-    <dependency>
-      <groupId>iot.cloud.os</groupId>
-      <artifactId>cloud-os-core-api</artifactId>
-      <version>0.0.3.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>iot.cloud.os.ext</groupId>
-      <artifactId>cloud-os-console-api</artifactId>
-      <version>0.0.1.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>iot.cloud.os</groupId>
-      <artifactId>cloud-os-common-data</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>iot.cloud.os</groupId>
-      <artifactId>cloud-os-common-utils</artifactId>
-      <version>0.0.8-SNAPSHOT</version>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>iot.cloud.os</groupId>-->
+<!--      <artifactId>cloud-os-core-api</artifactId>-->
+<!--      <version>0.0.3.1-SNAPSHOT</version>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>iot.cloud.os.ext</groupId>-->
+<!--      <artifactId>cloud-os-console-api</artifactId>-->
+<!--      <version>0.0.1.1-SNAPSHOT</version>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>iot.cloud.os</groupId>-->
+<!--      <artifactId>cloud-os-common-data</artifactId>-->
+<!--      <version>0.0.1-SNAPSHOT</version>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>iot.cloud.os</groupId>-->
+<!--      <artifactId>cloud-os-common-utils</artifactId>-->
+<!--      <version>0.0.8-SNAPSHOT</version>-->
+<!--    </dependency>-->
   </dependencies>
 
 

@@ -2,7 +2,6 @@ package com.example.iotcloudgateway.codec;
 
 import com.example.iotcloudgateway.server.tcp.TcpPacket;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.tio.core.ChannelContext;
 import org.tio.core.TioConfig;
 import org.tio.core.exception.AioDecodeException;
@@ -12,7 +11,6 @@ import java.nio.ByteBuffer;
 
 /** 此类表示拆包方式为以换行符"\n"作为分割标识进行拆包 */
 @Slf4j
-@Component
 public class LinePacketCodec implements PacketCodec {
   public static final byte SPLIT = '\n';
 

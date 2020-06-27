@@ -1,9 +1,8 @@
 package com.example.iotcloudgateway.codec;
 
 import com.example.iotcloudgateway.constant.SubKlinkAction;
+import com.example.iotcloudgateway.klink.KlinkDev;
 import com.example.iotcloudgateway.server.tcp.TcpPacket;
-import iot.cloud.os.core.api.dto.klink.DevSend;
-import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import java.nio.ByteBuffer;
 import lombok.SneakyThrows;
 import org.tio.core.ChannelContext;
@@ -12,7 +11,7 @@ import org.tio.core.Tio;
 /**
  * 此处为业务数据处理转换成klink标准协议格式的示例
  *
- * <p>用户可以参考此示例代码逻辑，继承DataCodec后自行处理
+ * <p>用户可以参考此示例代码逻辑，实现DataCodec后自行处理
  */
 public class RawDataCodec implements DataCodec {
 
