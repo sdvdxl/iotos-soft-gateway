@@ -21,16 +21,17 @@ public class MqttServer {
   // 进入产品中心-产品开发-智慧消防平台软网关，"MQTT接入方式"栏目即可查询
   public static final String HOST = "tcp://106.75.50.110:1883";
   // 软网关的产品pk，进入产品中心-设备管理-智慧消防平台软网关，"产品pk"栏目即可查询
-  public static final String DEV_PK = "341c38ea609a4dbbbb8042e0fc436433";
+  public static final String DEV_PK = "fc5dbdd26fee4688a6ab35b63a294cc1";
   // 软网关的设备id，进入产品中心-设备管理-智慧消防平台软网关，"产品id"栏目即可查询
-  public static final String DEV_ID = "gateway001";
+  public static final String DEV_ID = "gatewaydemo";
+  // 接入至IoTOS的账号密码，生成方式详情请见《设备连接软网关数据上报说明书》
+  public static final String userName = "HmacSHA1:init";
+  public static final String passWord = "18c78b6dfa4fde73c1a03c888842bf4b5bbefbea";
+
   // 子设备的产品pk，进入产品中心-设备管理-烟雾传感器，"产品pk"栏目即可查询
   public static final String SUBDEV_PK = "c3d0597b499a4e689fb9051b242ed66a";
   // 子设备的设备id，进入产品中心-设备管理-烟雾传感器，"产品id"栏目即可查询
   public static final String SUBDEV_ID = "smokedetector001";
-  // 接入至IoTOS的账号密码，生成方式详情请见《设备连接软网关数据上报说明书》
-  public static final String userName = "HmacSHA1:init";
-  public static final String passWord = "f8219e353ef0f60d3c0a08aee6351890758d1fbc";
 
   private static MqttConnect mqttconnect;
 
