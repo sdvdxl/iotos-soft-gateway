@@ -12,16 +12,17 @@ public class IoTCloudGatewayApplication {
 
   public static void main(String[] args) throws Exception {
     MqttServer.mqttconnection();
-    //    TcpServerStarter.start();
     P.use("app.properties");
-    HttpServerInit.init();
+    // 若要启用http则将下行注释打开
+    //    HttpServerInit.init();
+    // 若要启用TCP client则将下行注释打开
+    //    TcpClientStarter.start();
     // 若要启用TCP server则将下行注释打开
     //    TcpServerStarter.start();
-
-    //    TcpClientStarter.start();
-    //    TcpServerStarter.start();
-    //    TcpClientStarter.start();
+    // 若要启用UDP client则将下行注释打开
     //    UdpClientStarter.start();
+    // 若要启用UDP server则将下行注释打开
+    //    UdpServerStarter.start();
   }
 
   public IoTCloudGatewayApplication() {}
