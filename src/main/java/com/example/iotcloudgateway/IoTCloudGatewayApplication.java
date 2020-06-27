@@ -19,9 +19,9 @@ public class IoTCloudGatewayApplication {
     //    TcpServerStarter.start();
 
     //    TcpClientStarter.start();
-//    TcpServerStarter.start();
-//    TcpClientStarter.start();
-    UdpClientStarter.start();
+    //    TcpServerStarter.start();
+    //    TcpClientStarter.start();
+    //    UdpClientStarter.start();
   }
 
   public IoTCloudGatewayApplication() {}
