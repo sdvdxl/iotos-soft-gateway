@@ -3,7 +3,7 @@ package com.example.iotcloudgateway.server.tcp;
 import com.example.iotcloudgateway.codec.DataCodec;
 import com.example.iotcloudgateway.codec.LinePacketCodec;
 import com.example.iotcloudgateway.codec.RawDataCodec;
-import com.example.iotcloudgateway.klink.KlinkDev;
+import com.example.iotcloudgateway.klink.DevSend;
 import com.example.iotcloudgateway.mqtt.MqttServer;
 import com.example.iotcloudgateway.constant.SubKlinkAction;
 import com.example.iotcloudgateway.utils.JsonUtil;
@@ -56,7 +56,7 @@ public class TcpServerMsgHandler implements ServerAioHandler {
     }
 
     // 此处调用业务数据处理的方法对透传数据进行处理，处理后的结果为klink格式
-    KlinkDev klinkDev = dataCodec.decode(tcpPacket, channelContext);
+    DevSend klinkDev = dataCodec.decode(tcpPacket, channelContext);
 
     if (klinkDev == null) {
       log.error("数据解码成klink格式失败：{}", tcpPacket.getBody());

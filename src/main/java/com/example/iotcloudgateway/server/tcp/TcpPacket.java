@@ -8,7 +8,7 @@ public class TcpPacket extends Packet {
   public static final String CHARSET = "utf-8";
   public static final byte[] SPLIT = {10};
   public static final byte[] HEARTBEAT = {3,10};
-  public static final byte[] GET_MSG = {01};
+  public static final byte[] GET_MSG = {1};
 
 
   public static final byte[] HTTP_RESP = {111};

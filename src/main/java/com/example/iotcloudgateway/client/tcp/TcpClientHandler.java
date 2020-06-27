@@ -1,5 +1,6 @@
 package com.example.iotcloudgateway.client.tcp;
 
+import com.example.iotcloudgateway.klink.DevSend;
 import com.example.iotcloudgateway.klink.KlinkDev;
 import com.example.iotcloudgateway.utils.JsonUtil;
 import java.nio.ByteBuffer;
@@ -25,9 +26,9 @@ public class TcpClientHandler implements ClientAioHandler {
   /** 此处由于发送心跳包，可在此处自定义心跳包格式 */
   @Override
   public Packet heartbeatPacket(ChannelContext channelContext) {
-      TcpPacket tcpPacket = new TcpPacket();
-      tcpPacket.setBody(TcpPacket.HEARTBEAT);
-      return tcpPacket;
+    TcpPacket tcpPacket = new TcpPacket();
+    tcpPacket.setBody(TcpPacket.HEARTBEAT);
+    return tcpPacket;
   }
 
   /** 拆包部分 */
@@ -46,44 +47,44 @@ public class TcpClientHandler implements ClientAioHandler {
 
   @Override
   public void handler(Packet packet, ChannelContext channelContext) throws Exception {
-      TcpPacket tcpPacket = (TcpPacket) packet;
-      if (((TcpPacket) packet).getBody() == null) {
-          // 解码时因特殊原因丢弃此帧数据，故此处不做处理
-          return;
-      }
+    TcpPacket tcpPacket = (TcpPacket) packet;
+    if (((TcpPacket) packet).getBody() == null) {
+      // 解码时因特殊原因丢弃此帧数据，故此处不做处理
+      return;
+    }
 
-      KlinkDev klinkDev = dataCodec.decode(tcpPacket,channelContext);
+    DevSend klinkDev = dataCodec.decode(tcpPacket, channelContext);
 
-      if (klinkDev == null) {
-          log.error("数据解码成klink格式失败：{}", tcpPacket.getBody());
-          return;
-      }
+    if (klinkDev == null) {
+      log.error("数据解码成klink格式失败：{}", tcpPacket.getBody());
+      return;
+    }
 
-      // 对转码后的数据按照klink的action进行不同业务的操作
-      switch (klinkDev.getAction()) {
-          case SubKlinkAction.ADD_TOPO:
-              MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
-              break;
-          case SubKlinkAction.DEV_LOGIN:
-              MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
-              MqttServer.devLogin(klinkDev.getPk(), klinkDev.getDevId());
-              break;
-          case SubKlinkAction.DEV_LOGOUT:
-              MqttServer.devLogout(klinkDev.getPk(), klinkDev.getDevId());
-              break;
-          case SubKlinkAction.GET_TOPO:
-              MqttServer.devTopo();
-              break;
-          case SubKlinkAction.DEL_TOPO:
-              MqttServer.delDev(klinkDev.getPk(), klinkDev.getDevId());
-              break;
-          case SubKlinkAction.DEV_SEND:
-              MqttServer.devSend(JsonUtil.toJson(klinkDev));
-              break;
-          case SubKlinkAction.HEARTBEAT:
-              break;
-          default:
-              throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
-      }
+    // 对转码后的数据按照klink的action进行不同业务的操作
+    switch (klinkDev.getAction()) {
+      case SubKlinkAction.ADD_TOPO:
+        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
+        break;
+      case SubKlinkAction.DEV_LOGIN:
+        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
+        MqttServer.devLogin(klinkDev.getPk(), klinkDev.getDevId());
+        break;
+      case SubKlinkAction.DEV_LOGOUT:
+        MqttServer.devLogout(klinkDev.getPk(), klinkDev.getDevId());
+        break;
+      case SubKlinkAction.GET_TOPO:
+        MqttServer.devTopo();
+        break;
+      case SubKlinkAction.DEL_TOPO:
+        MqttServer.delDev(klinkDev.getPk(), klinkDev.getDevId());
+        break;
+      case SubKlinkAction.DEV_SEND:
+        MqttServer.devSend(JsonUtil.toJson(klinkDev));
+        break;
+      case SubKlinkAction.HEARTBEAT:
+        break;
+      default:
+        throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
+    }
   }
 }

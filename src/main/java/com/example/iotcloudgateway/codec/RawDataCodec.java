@@ -1,7 +1,7 @@
 package com.example.iotcloudgateway.codec;
 
 import com.example.iotcloudgateway.constant.SubKlinkAction;
-import com.example.iotcloudgateway.klink.KlinkDev;
+import com.example.iotcloudgateway.klink.DevSend;
 import com.example.iotcloudgateway.server.tcp.TcpPacket;
 import java.nio.ByteBuffer;
 import lombok.SneakyThrows;
@@ -17,7 +17,7 @@ public class RawDataCodec implements DataCodec {
 
   @SneakyThrows
   @Override
-  public KlinkDev decode(Object data, ChannelContext channelContext) {
+  public DevSend decode(Object data, ChannelContext channelContext) {
     TcpPacket tcpPacket = (TcpPacket) data;
     // 获取原始数据
     ByteBuffer wrap = ByteBuffer.wrap(tcpPacket.getBody());
@@ -36,11 +36,14 @@ public class RawDataCodec implements DataCodec {
         byte[] dstDevId = new byte[devIdLength];
         wrap.get(dstDevId);
         String devId = new String(dstDevId, TcpPacket.CHARSET);
-        if (channelContext.userid == null) {
+
+        // 注意：此处为tcp区分通道的建议方式，以pk@devId的形式标记不同通道的id，以方便tcp传送数据给制定的设备
+        if (channelContext != null && channelContext.userid == null) {
           Tio.bindUser(channelContext, pk + "@" + devId);
         }
+
         // 构造上线指令
-        KlinkDev klinkDev = new KlinkDev();
+        DevSend klinkDev = new DevSend();
         klinkDev.setDevId(devId);
         klinkDev.setPk(pk);
         klinkDev.setMsgId(1);
@@ -66,7 +69,7 @@ public class RawDataCodec implements DataCodec {
         wrap.get(byteFirstFld);
         String thirdFld = new String(byteThirdFld, TcpPacket.CHARSET);
         // 发送指令
-        KlinkDev sendMsg = new KlinkDev();
+        DevSend sendMsg = new DevSend();
         sendMsg.setDevId(secondFld);
         sendMsg.setPk(firstFld);
         sendMsg.setMsgId(1);
@@ -74,11 +77,11 @@ public class RawDataCodec implements DataCodec {
         sendMsg.setAction(SubKlinkAction.DEV_SEND);
         return sendMsg;
       case 3:
-        KlinkDev heartBeat = new KlinkDev();
+        DevSend heartBeat = new DevSend();
         heartBeat.setAction(SubKlinkAction.HEARTBEAT);
         return heartBeat;
       case 4:
-        KlinkDev getTopo = new KlinkDev();
+        DevSend getTopo = new DevSend();
         getTopo.setAction(SubKlinkAction.GET_TOPO);
         return getTopo;
       default:
@@ -88,7 +91,7 @@ public class RawDataCodec implements DataCodec {
   }
 
   @Override
-  public Object encode(KlinkDev klink, ChannelContext channelContext) {
+  public Object encode(DevSend klink, ChannelContext channelContext) {
     return null;
   }
 }
