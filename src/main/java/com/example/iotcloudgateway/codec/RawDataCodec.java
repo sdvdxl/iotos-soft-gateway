@@ -2,6 +2,7 @@ package com.example.iotcloudgateway.codec;
 
 import com.example.iotcloudgateway.constant.SubKlinkAction;
 import com.example.iotcloudgateway.server.tcp.TcpPacket;
+import iot.cloud.os.core.api.dto.klink.DevSend;
 import iot.cloud.os.core.api.dto.klink.KlinkDev;
 import java.nio.ByteBuffer;
 import lombok.SneakyThrows;
@@ -46,11 +47,36 @@ public class RawDataCodec implements DataCodec {
         klinkDev.setAction(SubKlinkAction.DEV_LOGIN);
         return klinkDev;
       case 2:
-        break;
+        // 获取pk长度
+        int firstFldLen = wrap.getShort();
+        byte[] byteFirstFld = new byte[firstFldLen];
+        // 获取pk值
+        wrap.get(byteFirstFld);
+        String firstFld = new String(byteFirstFld, TcpPacket.CHARSET);
+        // 获取devId长度
+        short secondFldLen = wrap.getShort();
+        // 获取devId
+        byte[] byteSecondFld = new byte[secondFldLen];
+        wrap.get(byteFirstFld);
+        String secondFld = new String(byteSecondFld, TcpPacket.CHARSET);
+        // 获取data长度
+        short thirdFldLen = wrap.getShort();
+        // 获取data
+        byte[] byteThirdFld = new byte[thirdFldLen];
+        wrap.get(byteFirstFld);
+        String thirdFld = new String(byteThirdFld, TcpPacket.CHARSET);
+        //发送指令
+        KlinkDev sendMsg = new KlinkDev();
+        sendMsg.setDevId(secondFld);
+        sendMsg.setPk(firstFld);
+        sendMsg.setMsgId(1);
+        sendMsg.setSysCustomRaw(thirdFld);
+        sendMsg.setAction(SubKlinkAction.DEV_SEND);
+        return sendMsg;
       case 3:
-        KlinkDev heartBreak = new KlinkDev();
-        heartBreak.setAction(SubKlinkAction.HEARTBEAT);
-        return heartBreak;
+        KlinkDev heartBeat = new KlinkDev();
+        heartBeat.setAction(SubKlinkAction.HEARTBEAT);
+        return heartBeat;
       case 4:
         KlinkDev getTopo = new KlinkDev();
         getTopo.setAction(SubKlinkAction.GET_TOPO);
