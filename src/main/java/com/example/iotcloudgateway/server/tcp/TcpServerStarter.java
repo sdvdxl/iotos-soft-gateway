@@ -6,10 +6,7 @@ import org.tio.server.TioServer;
 import org.tio.server.intf.ServerAioHandler;
 import org.tio.server.intf.ServerAioListener;
 
-/**
- * @author jiatao
- * @date 2020/6/24
- */
+/** tcp server starter 用于配置tcp服务端相关配置，并可被调用以启动服务端程序 */
 public class TcpServerStarter {
   static ServerAioHandler aioHandler = new TcpServerMsgHandler();
   static ServerAioListener aioListener = new TcpServerListener();

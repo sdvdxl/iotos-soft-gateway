@@ -16,9 +16,20 @@ import org.tio.server.intf.ServerAioHandler;
 
 import java.nio.ByteBuffer;
 
+/**
+ * tcp 服务端信息处理部分，在此处调用拆包、组包的方法，以及编解码部分。
+ * 具体拆包和解码的方法用户可以自行继承com.example.iotcloudgateway.codec中的DataCodec和PacketCodec进行二次开发。
+ */
 @Slf4j
 public class TcpServerMsgHandler implements ServerAioHandler {
+  /**
+   * 本示例代码分别列举了一种拆包方式和一种业务数据处理方式
+   *
+   * <p>此处为以换行符'\n'作为拆包标志的方式进行拆包
+   */
   private LinePacketCodec packetCodec = new LinePacketCodec();
+
+  /** 此处以透传方式处理业务数据，详情可参看使用手册和源码 */
   private DataCodec dataCodec = new RawDataCodec();
 
   /** 拆包部分 */
@@ -44,7 +55,8 @@ public class TcpServerMsgHandler implements ServerAioHandler {
       return;
     }
 
-    KlinkDev klinkDev = dataCodec.decode(tcpPacket,channelContext);
+    // 此处调用业务数据处理的方法对透传数据进行处理，处理后的结果为klink格式
+    KlinkDev klinkDev = dataCodec.decode(tcpPacket, channelContext);
 
     if (klinkDev == null) {
       log.error("数据解码成klink格式失败：{}", tcpPacket.getBody());

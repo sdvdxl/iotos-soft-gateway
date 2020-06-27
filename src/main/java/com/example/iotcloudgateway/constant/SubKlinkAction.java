@@ -3,11 +3,15 @@ package com.example.iotcloudgateway.constant;
 public class SubKlinkAction {
   /** 设备上报-登录 */
   public static final String DEV_LOGIN = "devLogin";
-
+  /** 设备上报-注册 */
   public static final String DEV_LOGOUT = "devLogout";
+  /** 设备上报-添加topo */
   public static final String ADD_TOPO = "addTopo";
+  /** 设备上报-上报数据 */
   public static final String DEV_SEND = "devSend";
+  /** 设备上报-获取topo关系 */
   public static final String GET_TOPO = "getTopo";
+  /** 设备上报-解除topo关系 */
   public static final String DEL_TOPO = "delTopo";
 
   /** 心跳 */

@@ -10,8 +10,9 @@ import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
 
 /**
- * @author jiatao
- * @date 2020/6/22
+ * 此处为业务数据处理转换成klink标准协议格式的示例
+ *
+ * <p>用户可以参考此示例代码逻辑，继承DataCodec后自行处理
  */
 public class RawDataCodec implements DataCodec {
 
@@ -65,7 +66,7 @@ public class RawDataCodec implements DataCodec {
         byte[] byteThirdFld = new byte[thirdFldLen];
         wrap.get(byteFirstFld);
         String thirdFld = new String(byteThirdFld, TcpPacket.CHARSET);
-        //发送指令
+        // 发送指令
         KlinkDev sendMsg = new KlinkDev();
         sendMsg.setDevId(secondFld);
         sendMsg.setPk(firstFld);
