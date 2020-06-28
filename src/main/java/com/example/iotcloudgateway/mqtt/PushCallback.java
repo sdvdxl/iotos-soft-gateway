@@ -3,6 +3,7 @@ package com.example.iotcloudgateway.mqtt;
 import com.example.iotcloudgateway.constant.SubKlinkAction;
 import com.example.iotcloudgateway.klink.AddTopoResp;
 import com.example.iotcloudgateway.klink.DevLoginResp;
+import com.example.iotcloudgateway.klink.DevSend;
 import com.example.iotcloudgateway.klink.GetTopoResp;
 import com.example.iotcloudgateway.klink.KlinkResp;
 import com.example.iotcloudgateway.server.tcp.TcpPacket;
@@ -76,6 +77,13 @@ public class PushCallback implements MqttCallback {
         Tio.sendToUser(
             TcpServerStarter.tioServer.getServerTioConfig(),
             addTopoResp.getSub().getPk() + "@" + addTopoResp.getSub().getDevId(),
+            resppacket);
+        return;
+      case SubKlinkAction.DEV_SEND_RESP:
+        resppacket.setBody(message.getPayload());
+        Tio.sendToUser(
+            TcpServerStarter.tioServer.getServerTioConfig(),
+            klinkResp.getPk() + "@" + klinkResp.getDevId(),
             resppacket);
         return;
       default:
