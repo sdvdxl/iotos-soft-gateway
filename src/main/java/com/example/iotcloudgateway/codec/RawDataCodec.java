@@ -2,7 +2,9 @@ package com.example.iotcloudgateway.codec;
 
 import com.example.iotcloudgateway.constant.SubKlinkAction;
 import com.example.iotcloudgateway.klink.DevSend;
+import com.example.iotcloudgateway.klink.ModelData;
 import com.example.iotcloudgateway.server.tcp.TcpPacket;
+import com.example.iotcloudgateway.utils.JsonUtil;
 import java.nio.ByteBuffer;
 import lombok.SneakyThrows;
 import org.tio.core.ChannelContext;
@@ -79,7 +81,7 @@ public class RawDataCodec implements DataCodec {
         sendMsg.setDevId(secondFld);
         sendMsg.setPk(firstFld);
         sendMsg.setMsgId(1);
-        sendMsg.setSysCustomRaw(thirdFld);
+        sendMsg.setData(JsonUtil.fromJson(thirdFld, ModelData.class));
         sendMsg.setAction(SubKlinkAction.DEV_SEND);
         return sendMsg;
       case 3:
