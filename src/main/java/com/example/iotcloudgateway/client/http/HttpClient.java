@@ -36,10 +36,10 @@ public class HttpClient {
     // 对转码后的数据按照klink的action进行不同业务的操作
     switch (klinkDev.getAction()) {
       case SubKlinkAction.ADD_TOPO:
-        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId(), "");
+        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getDevSecret());
         break;
       case SubKlinkAction.DEV_LOGIN:
-        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId(), "");
+        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getDevSecret());
         MqttServer.devLogin(klinkDev.getPk(), klinkDev.getDevId());
         break;
       case SubKlinkAction.DEV_LOGOUT:

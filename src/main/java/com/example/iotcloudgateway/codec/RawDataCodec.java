@@ -1,7 +1,9 @@
 package com.example.iotcloudgateway.codec;
 
 import com.example.iotcloudgateway.constant.SubKlinkAction;
+import com.example.iotcloudgateway.klink.AddTopo;
 import com.example.iotcloudgateway.klink.DevSend;
+import com.example.iotcloudgateway.klink.Register;
 import com.example.iotcloudgateway.server.tcp.TcpPacket;
 import java.nio.ByteBuffer;
 import lombok.SneakyThrows;
@@ -37,6 +39,11 @@ public class RawDataCodec implements DataCodec {
         wrap.get(dstDevId);
         String devId = new String(dstDevId, TcpPacket.CHARSET);
 
+        short devSecretLength = wrap.getShort();
+        byte[] dstDevSecret = new byte[devSecretLength];
+        wrap.get(dstDevSecret);
+        String devSecret = new String(dstDevSecret, TcpPacket.CHARSET);
+
         // 注意：此处为tcp区分通道的建议方式，以pk@devId的形式标记不同通道的id，以方便tcp传送数据给制定的设备
         if (channelContext != null && channelContext.userid == null) {
           Tio.bindUser(channelContext, pk + "@" + devId);
@@ -47,6 +54,7 @@ public class RawDataCodec implements DataCodec {
         klinkDev.setDevId(devId);
         klinkDev.setPk(pk);
         klinkDev.setMsgId(1);
+        klinkDev.setDevSecret(devSecret);
         klinkDev.setAction(SubKlinkAction.DEV_LOGIN);
         return klinkDev;
       case 2:

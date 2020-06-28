@@ -12,4 +12,6 @@ public class KlinkDev extends Klink {
   private static final long serialVersionUID = 78156295896577172L;
   protected String pk;
   protected String devId;
+  protected String devSecret;
+  protected String productSecret;
 }
