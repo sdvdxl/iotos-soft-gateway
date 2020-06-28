@@ -7,7 +7,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/** @author du */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ToString(callSuper = true)

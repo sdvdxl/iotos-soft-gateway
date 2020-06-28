@@ -18,8 +18,8 @@ public class HttpServerInit {
 
   public static void init() throws Exception {
 
-    int port = P.getInt("http.port");//启动端口
-    String pageRoot = P.get("http.page");//html/css/js等的根目录，支持classpath:，也支持绝对路径
+    int port = P.getInt("http.port"); // 启动端口
+    String pageRoot = P.get("http.page"); // html/css/js等的根目录，支持classpath:，也支持绝对路径
     httpConfig = new HttpConfig(port, null, null, null);
     httpConfig.setPageRoot(pageRoot);
     httpConfig.setMaxLiveTimeOfStaticRes(P.getInt("http.maxLiveTimeOfStaticRes"));
@@ -28,7 +28,8 @@ public class HttpServerInit {
     httpConfig.setUseSession(false);
     httpConfig.setCheckHost(false);
 
-    requestHandler = new DefaultHttpRequestHandler(httpConfig, IoTCloudGatewayApplication.class); // 第二个参数也可以是数组
+    requestHandler =
+        new DefaultHttpRequestHandler(httpConfig, IoTCloudGatewayApplication.class); // 第二个参数也可以是数组
 
     httpServerStarter = new HttpServerStarter(httpConfig, requestHandler);
     httpServerStarter.start(); // 启动http服务器

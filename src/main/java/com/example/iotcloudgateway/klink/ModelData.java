@@ -7,10 +7,6 @@ import java.util.Collections;
 import java.util.Map;
 import lombok.Data;
 
-/**
- * @author du
- *     <p>物模型数据
- */
 @Data
 public class ModelData implements Serializable {
 

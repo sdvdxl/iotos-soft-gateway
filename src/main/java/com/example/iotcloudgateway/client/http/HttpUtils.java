@@ -20,8 +20,7 @@ import okhttp3.Response;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 
 /**
- * @author ：jiatao
- * @date ：2020/3/9
+ *
  */
 @Slf4j
 public class HttpUtils {

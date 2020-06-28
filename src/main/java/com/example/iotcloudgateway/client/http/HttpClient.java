@@ -12,8 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.Response;
 
 /**
- * @author jiatao
- * @date 2020/6/27
+ *
  */
 @Slf4j
 public class HttpClient {

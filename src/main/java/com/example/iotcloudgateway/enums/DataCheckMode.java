@@ -1,6 +1,5 @@
 package com.example.iotcloudgateway.enums;
 
-/** @author du klink 数据校验模式 */
 public enum DataCheckMode {
   /** 严格模式，协议参数完全按照协议规定上报或者下发，不能多也不能少 */
   STRICT,

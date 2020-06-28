@@ -2,7 +2,6 @@ package com.example.iotcloudgateway.enums;
 
 import lombok.Getter;
 
-/** @author du */
 public enum DataFormat {
   /** 标准格式klink */
   KLINK("KLink(标准格式)"),

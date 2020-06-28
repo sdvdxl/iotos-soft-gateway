@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-/** @author du */
 @Getter
 @Setter
 @ToString(callSuper = true)

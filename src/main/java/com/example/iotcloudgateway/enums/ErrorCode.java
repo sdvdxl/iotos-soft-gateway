@@ -7,10 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import lombok.Getter;
 
-/**
- * @author du
- *     <p>错误码
- */
+/** 错误码 */
 @Getter
 public enum ErrorCode {
   /** 成功 */
@@ -138,8 +135,7 @@ public enum ErrorCode {
 
   static {
     ERROR_CODE_MAP =
-        Arrays.stream(ErrorCode.values()).collect(toMap(
-            ErrorCode::getCode, Function.identity()));
+        Arrays.stream(ErrorCode.values()).collect(toMap(ErrorCode::getCode, Function.identity()));
   }
 
   /** 错误码 */

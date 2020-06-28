@@ -4,7 +4,6 @@ import com.example.iotcloudgateway.enums.Action;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/** @author du */
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class DevLogout extends KlinkDev {

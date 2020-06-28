@@ -2,7 +2,6 @@ package com.example.iotcloudgateway.enums;
 
 import lombok.Getter;
 
-/** @author du */
 @Getter
 public enum CheckType {
   /** 范围校验 */

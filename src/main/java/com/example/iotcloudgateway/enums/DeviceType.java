@@ -1,6 +1,5 @@
 package com.example.iotcloudgateway.enums;
 
-/** @author du */
 public enum DeviceType {
   /**
    * 普通独立设备

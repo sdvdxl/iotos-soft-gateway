@@ -19,10 +19,6 @@ import java.util.Map;
 import java.util.function.Function;
 import lombok.Getter;
 
-/**
- * @author du
- * @date 2017/4/12
- */
 public enum Action {
 
   /** 不支持 */

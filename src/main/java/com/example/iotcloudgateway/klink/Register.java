@@ -5,7 +5,6 @@ import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-/** @author du */
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Register extends KlinkDev {
