@@ -48,7 +48,7 @@ public class UdpClientHandler implements UdpHandler {
 
     switch (klinkDev.getAction()) {
       case SubKlinkAction.ADD_TOPO:
-        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId());
+        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId(), "");
         break;
       case SubKlinkAction.DEV_LOGIN:
         MqttServer.devLogin(klinkDev.getPk(), klinkDev.getDevId());

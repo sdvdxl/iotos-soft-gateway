@@ -1,6 +1,8 @@
 package com.example.iotcloudgateway.constant;
 
 public class SubKlinkAction {
+  /** 设备上报-注册 */
+  public static final String DEV_REGISTER = "register";
   /** 设备上报-登录 */
   public static final String DEV_LOGIN = "devLogin";
   /** 设备上报-注册 */

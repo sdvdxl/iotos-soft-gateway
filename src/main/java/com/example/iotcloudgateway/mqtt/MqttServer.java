@@ -54,8 +54,9 @@ public class MqttServer {
   }
 
   @SneakyThrows
-  public static void addDev(String subDevPk, String subDevId) {
-    mqttconnect.message.setPayload(SubKLink.addSub(DEV_PK, DEV_ID, subDevPk, subDevId).getBytes());
+  public static void addDev(String subDevPk, String subDevId, String subDevSecret) {
+    mqttconnect.message.setPayload(
+        SubKLink.addSub(DEV_PK, DEV_ID, subDevPk, subDevId, subDevSecret).getBytes());
     mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
 
