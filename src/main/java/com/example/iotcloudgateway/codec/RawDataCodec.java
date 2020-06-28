@@ -1,9 +1,7 @@
 package com.example.iotcloudgateway.codec;
 
 import com.example.iotcloudgateway.constant.SubKlinkAction;
-import com.example.iotcloudgateway.klink.AddTopo;
 import com.example.iotcloudgateway.klink.DevSend;
-import com.example.iotcloudgateway.klink.Register;
 import com.example.iotcloudgateway.server.tcp.TcpPacket;
 import java.nio.ByteBuffer;
 import lombok.SneakyThrows;
@@ -68,13 +66,13 @@ public class RawDataCodec implements DataCodec {
         short secondFldLen = wrap.getShort();
         // 获取devId
         byte[] byteSecondFld = new byte[secondFldLen];
-        wrap.get(byteFirstFld);
+        wrap.get(byteSecondFld);
         String secondFld = new String(byteSecondFld, TcpPacket.CHARSET);
         // 获取data长度
         short thirdFldLen = wrap.getShort();
         // 获取data
         byte[] byteThirdFld = new byte[thirdFldLen];
-        wrap.get(byteFirstFld);
+        wrap.get(byteThirdFld);
         String thirdFld = new String(byteThirdFld, TcpPacket.CHARSET);
         // 发送指令
         DevSend sendMsg = new DevSend();
