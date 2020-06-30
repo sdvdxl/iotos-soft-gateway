@@ -1,6 +1,5 @@
 package com.example.iotcloudgateway.client.udp;
 
-import com.example.iotcloudgateway.constant.SubKlinkAction;
 import com.example.iotcloudgateway.klink.KlinkDev;
 import com.example.iotcloudgateway.mqtt.MqttServer;
 import com.example.iotcloudgateway.utils.JsonUtil;
@@ -46,27 +45,6 @@ public class UdpClientHandler implements UdpHandler {
       return;
     }
 
-    switch (klinkDev.getAction()) {
-      case SubKlinkAction.ADD_TOPO:
-        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId(), "");
-        break;
-      case SubKlinkAction.DEV_LOGIN:
-        MqttServer.devLogin(klinkDev.getPk(), klinkDev.getDevId());
-        break;
-      case SubKlinkAction.DEV_LOGOUT:
-        MqttServer.devLogout(klinkDev.getPk(), klinkDev.getDevId());
-        break;
-      case SubKlinkAction.GET_TOPO:
-        MqttServer.devTopo();
-        break;
-      case SubKlinkAction.DEL_TOPO:
-        MqttServer.delDev(klinkDev.getPk(), klinkDev.getDevId());
-        break;
-      case SubKlinkAction.DEV_SEND:
-        MqttServer.devSend(JsonUtil.toJson(klinkDev));
-        break;
-      default:
-        throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
-    }
+    MqttServer.sendKlink(klinkDev);
   }
 }

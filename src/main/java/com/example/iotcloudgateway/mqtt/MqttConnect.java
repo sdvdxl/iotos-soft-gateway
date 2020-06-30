@@ -11,10 +11,11 @@ public class MqttConnect {
    *
    * @throws MqttException
    */
-  static public String UP_TOPIC = "up/dev/" + MqttServer.DEV_PK + "/" + MqttServer.DEV_ID;
-  static public String DOWN_TOPIC = "down" + "/dev/" + MqttServer.DEV_PK + "/" + MqttServer.DEV_ID;
+  public static String UP_TOPIC = "up/dev/" + MqttServer.DEV_PK + "/" + MqttServer.DEV_ID;
+
+  public static String DOWN_TOPIC = "down" + "/dev/" + MqttServer.DEV_PK + "/" + MqttServer.DEV_ID;
   // 定义MQTT的ID，可以在MQTT服务配置中指定// 网关的clientid
-  static public String clientid = "dev:" + MqttServer.DEV_PK + ":" + MqttServer.DEV_ID;
+  public static String clientid = "dev:" + MqttServer.DEV_PK + ":" + MqttServer.DEV_ID;
 
   public MqttConnect() throws MqttException {
     // MemoryPersistence设置clientid的保存形式，默认为以内存保存

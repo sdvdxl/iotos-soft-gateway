@@ -34,30 +34,6 @@ public class HttpClient {
     }
 
     // 对转码后的数据按照klink的action进行不同业务的操作
-    switch (klinkDev.getAction()) {
-      case SubKlinkAction.ADD_TOPO:
-        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getDevSecret());
-        break;
-      case SubKlinkAction.DEV_LOGIN:
-        MqttServer.addDev(klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getDevSecret());
-        MqttServer.devLogin(klinkDev.getPk(), klinkDev.getDevId());
-        break;
-      case SubKlinkAction.DEV_LOGOUT:
-        MqttServer.devLogout(klinkDev.getPk(), klinkDev.getDevId());
-        break;
-      case SubKlinkAction.GET_TOPO:
-        MqttServer.devTopo();
-        break;
-      case SubKlinkAction.DEL_TOPO:
-        MqttServer.delDev(klinkDev.getPk(), klinkDev.getDevId());
-        break;
-      case SubKlinkAction.DEV_SEND:
-        MqttServer.devSend(JsonUtil.toJson(klinkDev));
-        break;
-      case SubKlinkAction.HEARTBEAT:
-        break;
-      default:
-        throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
-    }
+    MqttServer.sendKlink(klinkDev);
   }
 }

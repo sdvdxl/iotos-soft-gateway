@@ -5,4 +5,5 @@ public class Constants {
   public static final String NEXT_LINE = lineSeparator;
 
   public static final String HASH_METHOD = "HmacSHA1";
+  public static final String RANDOM = "random";
 }

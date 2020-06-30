@@ -9,7 +9,7 @@
   <!--        <version>2.1.6.RELEASE</version>-->
   <!--        <relativePath/> &lt;!&ndash; lookup parent from repository &ndash;&gt;-->
   <!--    </parent>-->
-  <groupId>com.example</groupId>
+  <groupId>hekr.me</groupId>
   <artifactId>mqtt</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>mqtt</name>

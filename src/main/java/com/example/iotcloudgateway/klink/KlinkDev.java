@@ -14,4 +14,5 @@ public class KlinkDev extends Klink {
   protected String devId;
   protected String devSecret;
   protected String productSecret;
+  protected String name;
 }

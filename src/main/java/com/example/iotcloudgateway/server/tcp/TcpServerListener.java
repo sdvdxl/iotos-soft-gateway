@@ -5,10 +5,7 @@ import org.tio.core.ChannelContext;
 import org.tio.core.intf.Packet;
 import org.tio.server.intf.ServerAioListener;
 
-/**
- * @author ：jiatao
- * @date ：2020/1/15
- */
+/** tcp server的监听模块， */
 @Slf4j
 public class TcpServerListener implements ServerAioListener {
 

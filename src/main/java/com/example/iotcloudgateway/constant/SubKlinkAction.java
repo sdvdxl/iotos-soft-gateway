@@ -2,7 +2,7 @@ package com.example.iotcloudgateway.constant;
 
 public class SubKlinkAction {
   /** 设备上报-注册 */
-  public static final String DEV_REGISTER = "register";
+  public static final String REGISTER = "register";
   /** 设备上报-登录 */
   public static final String DEV_LOGIN = "devLogin";
   /** 设备上报-注册 */
@@ -21,6 +21,8 @@ public class SubKlinkAction {
 
   /** 平台下发-登录回复 */
   public static final String DEV_LOGIN_RESP = "devLoginResp";
+
+  public static final String REGISTER_RESP = "registerResp";
 
   public static final String DEV_LOGOUT_RESP = "devLogoutResp";
   public static final String ADD_TOPO_RESP = "addTopoResp";
