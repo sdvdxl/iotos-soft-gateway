@@ -11,7 +11,7 @@ import org.tio.core.Node;
 import org.tio.core.Tio;
 
 public class TcpClientStarter {
-  static String serverIp = "192.168.1.130";
+  static String serverIp = "192.168.2.139";
   static int serverPort = 7000;
 
   private static Node serverNode = new Node(serverIp, serverPort);
