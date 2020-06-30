@@ -19,9 +19,7 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 
-/**
- *
- */
+/** */
 @Slf4j
 public class HttpUtils {
   public OkHttpClient HttpClient;

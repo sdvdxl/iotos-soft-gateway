@@ -4,6 +4,7 @@ import com.example.iotcloudgateway.constant.Constants;
 import com.example.iotcloudgateway.utils.ParseUtil;
 import lombok.SneakyThrows;
 
+// 需改动
 /** 定义上报数据的方法 */
 public class SubKLink {
   // 向指定软网关绑定子设备
