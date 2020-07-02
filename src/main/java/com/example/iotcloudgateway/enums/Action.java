@@ -48,6 +48,9 @@ public enum Action {
   /** 控制结果返回 注意：这个是从设备端返回的 */
   CLOUD_SEND_RESP("cloudSendResp", FrameType.DEV_UP, KlinkResp.class),
 
+  /** 心跳 */
+  HEARTBEAT("heartbeat", FrameType.DEV_UP, DevSend.class),
+
   /** 设备发送 */
   DEV_SEND("devSend", FrameType.DEV_UP, DevSend.class),
   /** 设备发送结果回复 */

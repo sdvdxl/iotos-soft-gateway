@@ -2,6 +2,7 @@ package com.example.iotcloudgateway.mqtt;
 
 import com.example.iotcloudgateway.constant.Constants;
 import com.example.iotcloudgateway.constant.SubKlinkAction;
+import com.example.iotcloudgateway.enums.Action;
 import com.example.iotcloudgateway.klink.AddTopo;
 import com.example.iotcloudgateway.klink.DelTopo;
 import com.example.iotcloudgateway.klink.DevLogin;
@@ -58,31 +59,31 @@ public class MqttServer {
   }
 
   public static void sendKlink(KlinkDev klinkDev) {
-    switch (klinkDev.getAction()) {
-      case SubKlinkAction.REGISTER:
+    switch (Action.of(klinkDev.getAction())) {
+      case REGISTER:
         register(
             klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getProductSecret(), klinkDev.getName());
         break;
-      case SubKlinkAction.ADD_TOPO:
+      case ADD_TOPO:
         addDev(klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getDevSecret());
         break;
-      case SubKlinkAction.DEV_LOGIN:
+      case DEV_LOGIN:
         addDev(klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getDevSecret());
         devLogin(klinkDev.getPk(), klinkDev.getDevId());
         break;
-      case SubKlinkAction.DEV_LOGOUT:
+      case DEV_LOGOUT:
         devLogout(klinkDev.getPk(), klinkDev.getDevId());
         break;
-      case SubKlinkAction.GET_TOPO:
+      case GET_TOPO:
         getTopo();
         break;
-      case SubKlinkAction.DEL_TOPO:
+      case DEL_TOPO:
         delDev(klinkDev.getPk(), klinkDev.getDevId());
         break;
-      case SubKlinkAction.DEV_SEND:
+      case DEV_SEND:
         devSend(JsonUtil.toJson(klinkDev));
         break;
-      case SubKlinkAction.HEARTBEAT:
+      case HEARTBEAT:
         break;
       default:
         throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
