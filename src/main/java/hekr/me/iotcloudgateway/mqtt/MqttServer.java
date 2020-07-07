@@ -1,17 +1,18 @@
-package hekr.me.iotcloudgateway.mqtt;
+package com.example.iotcloudgateway.mqtt;
 
-import hekr.me.iotcloudgateway.constant.Constants;
-import hekr.me.iotcloudgateway.constant.SubKlinkAction;
-import hekr.me.iotcloudgateway.klink.AddTopo;
-import hekr.me.iotcloudgateway.klink.DelTopo;
-import hekr.me.iotcloudgateway.klink.DevLogin;
-import hekr.me.iotcloudgateway.klink.DevLogout;
-import hekr.me.iotcloudgateway.klink.GetTopo;
-import hekr.me.iotcloudgateway.klink.KlinkDev;
-import hekr.me.iotcloudgateway.klink.Register;
-import hekr.me.iotcloudgateway.klink.TopoSub;
-import hekr.me.iotcloudgateway.utils.JsonUtil;
-import hekr.me.iotcloudgateway.utils.ParseUtil;
+import com.example.iotcloudgateway.constant.Constants;
+import com.example.iotcloudgateway.constant.SubKlinkAction;
+import com.example.iotcloudgateway.enums.Action;
+import com.example.iotcloudgateway.klink.AddTopo;
+import com.example.iotcloudgateway.klink.DelTopo;
+import com.example.iotcloudgateway.klink.DevLogin;
+import com.example.iotcloudgateway.klink.DevLogout;
+import com.example.iotcloudgateway.klink.GetTopo;
+import com.example.iotcloudgateway.klink.KlinkDev;
+import com.example.iotcloudgateway.klink.Register;
+import com.example.iotcloudgateway.klink.TopoSub;
+import com.example.iotcloudgateway.utils.JsonUtil;
+import com.example.iotcloudgateway.utils.ParseUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -58,31 +59,31 @@ public class MqttServer {
   }
 
   public static void sendKlink(KlinkDev klinkDev) {
-    switch (klinkDev.getAction()) {
-      case SubKlinkAction.REGISTER:
+    switch (Action.of(klinkDev.getAction())) {
+      case REGISTER:
         register(
             klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getProductSecret(), klinkDev.getName());
         break;
-      case SubKlinkAction.ADD_TOPO:
+      case ADD_TOPO:
         addDev(klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getDevSecret());
         break;
-      case SubKlinkAction.DEV_LOGIN:
+      case DEV_LOGIN:
         addDev(klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getDevSecret());
         devLogin(klinkDev.getPk(), klinkDev.getDevId());
         break;
-      case SubKlinkAction.DEV_LOGOUT:
+      case DEV_LOGOUT:
         devLogout(klinkDev.getPk(), klinkDev.getDevId());
         break;
-      case SubKlinkAction.GET_TOPO:
+      case GET_TOPO:
         getTopo();
         break;
-      case SubKlinkAction.DEL_TOPO:
+      case DEL_TOPO:
         delDev(klinkDev.getPk(), klinkDev.getDevId());
         break;
-      case SubKlinkAction.DEV_SEND:
+      case DEV_SEND:
         devSend(JsonUtil.toJson(klinkDev));
         break;
-      case SubKlinkAction.HEARTBEAT:
+      case HEARTBEAT:
         break;
       default:
         throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
