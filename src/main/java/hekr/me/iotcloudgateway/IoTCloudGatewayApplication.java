@@ -7,16 +7,17 @@ import org.tio.utils.jfinal.P;
 public class IoTCloudGatewayApplication {
 
   public static void main(String[] args) throws Exception {
-    MqttServer.mqttconnection();
-    P.use("app.properties");
+    P.use("config.properties");
+    MqttServer.init();
+
     // 若要启用http则将下行注释打开
     //    HttpServerInit.init();
     // 若要启用TCP client则将下行注释打开
-     //   TcpClientStarter.start();
+    //   TcpClientStarter.start();
     // 若要启用TCP server则将下行注释打开
-    TcpServerStarter.start();
+//    TcpServerStarter.start();
     // 若要启用UDP client则将下行注释打开
-     //   UdpClientStarter.start();
+    //   UdpClientStarter.start();
     // 若要启用UDP server则将下行注释打开
     //    UdpServerStarter.start();
   }

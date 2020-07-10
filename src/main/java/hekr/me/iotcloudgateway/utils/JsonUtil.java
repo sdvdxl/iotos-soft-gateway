@@ -1,12 +1,12 @@
 package hekr.me.iotcloudgateway.utils;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
 
-/** @author du */
 public class JsonUtil {
   private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -42,6 +42,11 @@ public class JsonUtil {
   }
 
   @SneakyThrows
+  public static <T> T fromJson(String payload, TypeReference<T> tTypeReference) {
+    return objectMapper.readValue(payload, tTypeReference);
+  }
+
+  @SneakyThrows
   public static <T> T fromBase64(String payload, Class<T> tClass) {
     return objectMapper.readValue(Base64.decodeBase64(payload), tClass);
   }
@@ -51,7 +56,16 @@ public class JsonUtil {
     return objectMapper.readValue(payload, tClass);
   }
 
+  @SneakyThrows
+  public static <T> T fromBase64(String payload, TypeReference<T> tTypeReference) {
+    return objectMapper.readValue(Base64.decodeBase64(payload), tTypeReference);
+  }
+
   public static <T> T convert(Object obj, Class<T> clazz) {
     return objectMapper.convertValue(obj, clazz);
+  }
+
+  public static <T> T convert(Object obj, TypeReference<T> tTypeReference) {
+    return objectMapper.convertValue(obj, tTypeReference);
   }
 }

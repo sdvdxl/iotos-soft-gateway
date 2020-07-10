@@ -1,10 +1,15 @@
 package hekr.me.iotcloudgateway.mqtt;
 
+import hekr.me.iotcloudgateway.utils.JsonUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 /** connect方法用来将数据平台软网关连接至IoTOS */
-public class MqttConnect {
+@Slf4j
+public class MqttConnectService {
+
+  public MqttClient client;
 
   /**
    * 构造函数
@@ -17,31 +22,25 @@ public class MqttConnect {
   // 定义MQTT的ID，可以在MQTT服务配置中指定// 网关的clientid
   public static String clientid = "dev:" + MqttServer.DEV_PK + ":" + MqttServer.DEV_ID;
 
-  public MqttConnect() throws MqttException {
+  public MqttConnectService() throws MqttException {
     // MemoryPersistence设置clientid的保存形式，默认为以内存保存
     client = new MqttClient(MqttServer.HOST, clientid, new MemoryPersistence());
     connect();
   }
-
-  public MqttClient client;
-  public MqttTopic topic11;
-  public MqttMessage message;
 
   // 定义一个主题
   public void connect() {
     MqttConnectOptions options = new MqttConnectOptions();
     options.setCleanSession(true);
     options.setUserName(MqttServer.userName);
-    options.setPassword(MqttServer.passWord.toCharArray());
+    options.setPassword(MqttServer.getPassword().toCharArray());
     // 设置超时时间
     options.setConnectionTimeout(10);
     // 设置会话心跳时间
     options.setKeepAliveInterval(20);
     try {
-      client.setCallback(new PushCallback());
+      client.setCallback(new MqttCallbackService());
       client.connect(options);
-      //            client.subscribe();
-      topic11 = client.getTopic(UP_TOPIC);
       // 订阅
       client.subscribe(DOWN_TOPIC, 0);
     } catch (Exception e) {
@@ -50,15 +49,18 @@ public class MqttConnect {
   }
 
   /**
-   * @param topic
    * @param message
    * @throws MqttPersistenceException
    * @throws MqttException
    */
-  public void publish(MqttTopic topic, MqttMessage message)
-      throws MqttPersistenceException, MqttException {
-    MqttDeliveryToken token = topic.publish(message);
-    token.waitForCompletion();
-    System.out.println("message is published completely! " + token.isComplete());
+  public void publish(Object message) throws MqttPersistenceException, MqttException {
+    client.publish(UP_TOPIC, new MqttMessage(JsonUtil.toBytes(message)));
+    if (log.isInfoEnabled()) {
+      log.info("发送消息成功：{}", JsonUtil.toJson(message));
+    }
+  }
+
+  public boolean isConnected() {
+    return client.isConnected();
   }
 }

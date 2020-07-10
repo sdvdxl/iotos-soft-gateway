@@ -1,7 +1,6 @@
 package hekr.me.iotcloudgateway.mqtt;
 
 import hekr.me.iotcloudgateway.constant.Constants;
-import hekr.me.iotcloudgateway.constant.SubKlinkAction;
 import hekr.me.iotcloudgateway.enums.Action;
 import hekr.me.iotcloudgateway.klink.AddTopo;
 import hekr.me.iotcloudgateway.klink.DelTopo;
@@ -11,12 +10,11 @@ import hekr.me.iotcloudgateway.klink.GetTopo;
 import hekr.me.iotcloudgateway.klink.KlinkDev;
 import hekr.me.iotcloudgateway.klink.Register;
 import hekr.me.iotcloudgateway.klink.TopoSub;
-import hekr.me.iotcloudgateway.utils.JsonUtil;
 import hekr.me.iotcloudgateway.utils.ParseUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.tio.utils.jfinal.P;
 
 /**
  * Title:Server 这是发送消息的服务端 配置数据平台相关参数，可执行设备上报数据至平台以及平台下发数据至设备 Description:
@@ -28,34 +26,28 @@ public class MqttServer {
   /** 以此开始配置设备信息，以及连接参数 */
   // tcp://MQTT安装的服务器地址:MQTT定义的端口号
   // 进入产品中心-产品开发-智慧消防平台软网关，"MQTT接入方式"栏目即可查询
-  public static final String HOST = "tcp://106.75.50.110:1883";
+  public static final String HOST = "tcp://" + P.get("mqtt.host");
   // 软网关的产品pk，进入产品中心-设备管理-智慧消防平台软网关，"产品pk"栏目即可查询
-  public static final String DEV_PK = "fc5dbdd26fee4688a6ab35b63a294cc1";
+  public static final String DEV_PK = P.get("mqtt.gateway.DEV_PK");
   // 软网关的设备id，进入产品中心-设备管理-智慧消防平台软网关，"产品id"栏目即可查询
-  public static final String DEV_ID = "gatewaydemo";
+  public static final String DEV_ID = P.get("mqtt.gateway.DEV_ID");
+
+  public static final String DEV_SECRET = P.get("mqtt.gateway.devSecret");
+
   // 接入至IoTOS的账号密码，生成方式详情请见《设备连接软网关数据上报说明书》
-  public static final String userName = "HmacSHA1:init";
+  public static final String userName = Constants.HASH_METHOD + ":" + Constants.RANDOM;
   public static final String passWord = "18c78b6dfa4fde73c1a03c888842bf4b5bbefbea";
 
-  // 子设备的产品pk，进入产品中心-设备管理-烟雾传感器，"产品pk"栏目即可查询
-  public static final String SUBDEV_PK = "c3d0597b499a4e689fb9051b242ed66a";
-  // 子设备的设备id，进入产品中心-设备管理-烟雾传感器，"产品id"栏目即可查询
-  public static final String SUBDEV_ID = "smokedetector001";
+  private static MqttConnectService mqttConnect;
 
-  private static MqttConnect mqttconnect;
+  public static void init() throws MqttException {
+    mqttConnect = new MqttConnectService();
+  }
 
-  /**
-   * mqtt连接
-   *
-   * @throws MqttException
-   */
-  public static void mqttconnection() throws MqttException {
-    mqttconnect = new MqttConnect();
-    mqttconnect.message = new MqttMessage();
-
-    mqttconnect.message.setQos(0); // 保证消息能到达一次
-    mqttconnect.message.setRetained(true);
-    log.debug(mqttconnect.message.isRetained() + "------ratained状态");
+  @SneakyThrows
+  public static String getPassword() {
+    return ParseUtil.parseByte2HexStr(
+        (ParseUtil.HmacSHA1Encrypt(DEV_PK + DEV_ID + DEV_SECRET + Constants.RANDOM, DEV_SECRET)));
   }
 
   public static void sendKlink(KlinkDev klinkDev) {
@@ -81,19 +73,13 @@ public class MqttServer {
         delDev(klinkDev.getPk(), klinkDev.getDevId());
         break;
       case DEV_SEND:
-        devSend(JsonUtil.toJson(klinkDev));
+        devSend(klinkDev);
         break;
       case HEARTBEAT:
         break;
       default:
         throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
     }
-  }
-
-  @SneakyThrows
-  public void publish(byte[] message) {
-    mqttconnect.message.setPayload(message);
-    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
   }
 
   /** 动态注册设备 */
@@ -109,8 +95,7 @@ public class MqttServer {
     register.setSign(
         ParseUtil.parseByte2HexStr(
             ParseUtil.HmacSHA1Encrypt(subDevPk + productSecret + Constants.RANDOM, productSecret)));
-    mqttconnect.message.setPayload(JsonUtil.toBytes(register));
-    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+    mqttConnect.publish(register);
   }
 
   /** 设备拓扑 */
@@ -129,8 +114,7 @@ public class MqttServer {
     addTopo.setSub(topoSub);
     addTopo.setPk(DEV_PK);
     addTopo.setDevId(DEV_ID);
-    mqttconnect.message.setPayload(JsonUtil.toBytes(addTopo));
-    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+    mqttConnect.publish(addTopo);
   }
 
   /** 设备上线 */
@@ -139,8 +123,7 @@ public class MqttServer {
     DevLogin devLogin = new DevLogin();
     devLogin.setDevId(subDevId);
     devLogin.setPk(subDevPk);
-    mqttconnect.message.setPayload(JsonUtil.toBytes(devLogin));
-    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+    mqttConnect.publish(devLogin);
   }
 
   /** 设备离线 */
@@ -149,8 +132,7 @@ public class MqttServer {
     DevLogout devLogout = new DevLogout();
     devLogout.setDevId(subDevId);
     devLogout.setPk(subDevPk);
-    mqttconnect.message.setPayload(JsonUtil.toBytes(devLogout));
-    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+    mqttConnect.publish(devLogout);
   }
 
   /** 获取拓扑关系 */
@@ -159,8 +141,7 @@ public class MqttServer {
     GetTopo getTopo = new GetTopo();
     getTopo.setPk(DEV_PK);
     getTopo.setDevId(DEV_ID);
-    mqttconnect.message.setPayload(JsonUtil.toBytes(getTopo));
-    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+    mqttConnect.publish(getTopo);
   }
 
   /** 删除子设备拓扑关系 */
@@ -173,14 +154,12 @@ public class MqttServer {
     delTopo.setSub(topoSub);
     delTopo.setPk(DEV_PK);
     delTopo.setDevId(DEV_ID);
-    mqttconnect.message.setPayload(JsonUtil.toBytes(delTopo));
-    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+    mqttConnect.publish(delTopo);
   }
 
   /** 设备发送数据 */
   @SneakyThrows
-  public static void devSend(String kLink) {
-    mqttconnect.message.setPayload(kLink.getBytes());
-    mqttconnect.publish(mqttconnect.topic11, mqttconnect.message);
+  public static void devSend(Object kLink) {
+    mqttConnect.publish(kLink);
   }
 }

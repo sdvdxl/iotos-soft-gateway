@@ -20,10 +20,9 @@ public class HttpClient {
     // 此处填写访问的路径
     String url = "/model/protocol/";
     HttpUtils httpUtils = new HttpUtils();
-    Response response = httpUtils.get(url, null, null);
+    byte[] response = httpUtils.get(url, null, null);
     TcpPacket tcpPacket = new TcpPacket();
-    assert response.body() != null;
-    tcpPacket.setBody(response.body().bytes());
+    tcpPacket.setBody(response);
     DevSend klinkDev = dataCodec.decode(tcpPacket, null);
 
     if (klinkDev == null) {

@@ -1,6 +1,8 @@
 package hekr.me.iotcloudgateway.client.http;
 
+import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
@@ -10,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.MultipartBody.Builder;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -43,7 +47,7 @@ public class HttpUtils {
    * @return
    * @throws RuntimeException
    */
-  public Response post(String url, Map<String, String> headerParams, Map<String, Object> bodyParams)
+  public byte[] post(String url, Map<String, String> headerParams, Map<String, Object> bodyParams)
       throws RuntimeException {
 
     HttpUrl.Builder httpBuider = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder();
@@ -59,7 +63,42 @@ public class HttpUtils {
     Response response = null;
     try {
       response = this.HttpClient.newCall(requestBuider.build()).execute();
-      return response;
+      return response.body().bytes();
+    } catch (IOException e) {
+      log.warn(e.getMessage());
+    } finally {
+      IOUtils.closeQuietly(response);
+    }
+    throw new RuntimeException();
+  }
+
+  /** form-data 形式的post请求 */
+  public byte[] postFormData(
+      String url, Map<String, String> headerParams, Map<String, Object> bodyParams)
+      throws RuntimeException {
+
+    HttpUrl.Builder httpBuider = Objects.requireNonNull(HttpUrl.parse(url)).newBuilder();
+
+    Request.Builder requestBuider =
+        new Request.Builder().url(httpBuider.build()).headers(Headers.of(headerParams));
+
+    // 此处为body为json格式的post请求
+    MediaType mediaType = MultipartBody.FORM;
+    Builder builder = new Builder().setType(mediaType);
+    bodyParams.forEach(
+        (s, o) -> {
+          if (o instanceof String) {
+            builder.addFormDataPart(s, o.toString());
+          } else {
+            builder.addFormDataPart("file", s, RequestBody.create(mediaType, (byte[]) o));
+          }
+        });
+
+    requestBuider.post(builder.build());
+    Response response = null;
+    try {
+      response = this.HttpClient.newCall(requestBuider.build()).execute();
+      return response.body().bytes();
     } catch (IOException e) {
       log.warn(e.getMessage());
     } finally {
@@ -76,7 +115,7 @@ public class HttpUtils {
    * @param params
    * @return
    */
-  public Response get(String url, Map<String, String> headerParams, Map<String, Object> params) {
+  public byte[] get(String url, Map<String, String> headerParams, Map<String, Object> params) {
     // 设置HTTP请求参数
     url += getParams(params);
     Headers setHeaders = SetHeaders(headerParams);
@@ -84,7 +123,7 @@ public class HttpUtils {
     Response response = null;
     try {
       response = this.HttpClient.newCall(request).execute();
-      return response;
+      return response.body().bytes();
     } catch (Exception e) {
       log.warn(e.getMessage());
     } finally {
@@ -94,7 +133,7 @@ public class HttpUtils {
   }
 
   /*编辑参数列表*/
-  public String getParams(Map<String, Object> params) {
+  public static String getParams(Map<String, Object> params) {
     StringBuilder sb = new StringBuilder("?");
     if (params != null && !params.isEmpty()) {
       for (Map.Entry<String, Object> item : params.entrySet()) {
@@ -113,7 +152,7 @@ public class HttpUtils {
   }
 
   /*编辑header*/
-  public Headers SetHeaders(Map<String, String> headersParams) {
+  public static Headers SetHeaders(Map<String, String> headersParams) {
     Headers headers;
     Headers.Builder headersbuilder = new Headers.Builder();
     if (headersParams != null && !headersParams.isEmpty()) {
@@ -126,5 +165,19 @@ public class HttpUtils {
     }
     headers = headersbuilder.build();
     return headers;
+  }
+
+  /** 下载工具 */
+  public static byte[] downloadFile(String url) throws IOException {
+    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    try {
+      HttpUtil.download(url, outputStream, false);
+      return outputStream.toByteArray();
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      IOUtils.closeQuietly(outputStream);
+    }
+    throw new RuntimeException();
   }
 }

@@ -8,6 +8,9 @@ import hekr.me.iotcloudgateway.klink.DelTopo;
 import hekr.me.iotcloudgateway.klink.DevLogin;
 import hekr.me.iotcloudgateway.klink.DevLogout;
 import hekr.me.iotcloudgateway.klink.DevSend;
+import hekr.me.iotcloudgateway.klink.DevUpgrade;
+import hekr.me.iotcloudgateway.klink.GetConfig;
+import hekr.me.iotcloudgateway.klink.GetConfigResp;
 import hekr.me.iotcloudgateway.klink.GetTopo;
 import hekr.me.iotcloudgateway.klink.Klink;
 import hekr.me.iotcloudgateway.klink.KlinkResp;
@@ -85,6 +88,15 @@ public enum Action {
   REGISTER("register", FrameType.DEV_UP, Register.class),
   /** 注册设备回复 */
   REGISTER_RESP("registerResp", FrameType.DEV_DOWN, RegisterResp.class),
+
+  /** 控制设备固件升级 */
+  DEV_UPGRADE("devUpgrade", FrameType.DEV_DOWN, DevUpgrade.class),
+
+  /** 获取远程配置信息 */
+  GET_CONFIG("getConfig", FrameType.DEV_UP, GetConfig.class),
+
+  /** 获取远程配置信息回复 */
+  GET_CONFIG_RESP("getConfigResp", FrameType.DEV_DOWN, GetConfigResp.class);
   ;
 
   public static final String ACTION_NAME = "action";

@@ -9,6 +9,7 @@ import hekr.me.iotcloudgateway.klink.DevLoginResp;
 import hekr.me.iotcloudgateway.klink.GetTopoResp;
 import hekr.me.iotcloudgateway.klink.KlinkResp;
 import hekr.me.iotcloudgateway.klink.RegisterResp;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -29,15 +30,17 @@ import org.tio.core.Tio;
  * MqttClient.connect 激活此回调。
  */
 @Slf4j
-public class PushCallback implements MqttCallback {
+public class MqttCallbackService implements MqttCallback {
 
+  @SneakyThrows
   public void connectionLost(Throwable cause) {
     // 连接丢失后，一般在这里面进行重连
-    System.out.println("连接断开，可以做重连");
+    log.warn("软网关已经连接断开,准备开始重连");
+    MqttServer.init();
   }
 
   public void deliveryComplete(IMqttDeliveryToken token) {
-    System.out.println("deliveryComplete---------" + token.isComplete());
+    log.info("delivery Complete:" + token.isComplete());
   }
 
   public void messageArrived(String topic, MqttMessage message) throws Exception {
