@@ -1,5 +1,8 @@
 package hekr.me.iotcloudgateway.mqtt;
 
+import hekr.me.iotcloudgateway.enums.Action;
+import hekr.me.iotcloudgateway.klink.KlinkDev;
+import hekr.me.iotcloudgateway.mqtt.processor.ProcessorManager;
 import hekr.me.iotcloudgateway.server.tcp.TcpPacket;
 import hekr.me.iotcloudgateway.server.tcp.TcpServerStarter;
 import hekr.me.iotcloudgateway.utils.JsonUtil;
@@ -32,6 +35,8 @@ import org.tio.core.Tio;
 @Slf4j
 public class MqttCallbackService implements MqttCallback {
 
+  public static ProcessorManager processorManager = new ProcessorManager();
+
   @SneakyThrows
   public void connectionLost(Throwable cause) {
     // 连接丢失后，一般在这里面进行重连
@@ -50,6 +55,11 @@ public class MqttCallbackService implements MqttCallback {
     log.info("接收消息内容 : " + new String(message.getPayload()));
     log.info("-------------------------------------------------");
     String payload = new String(message.getPayload());
+
+    KlinkDev klinkDev = JsonUtil.fromJson(payload, KlinkDev.class);
+    Action action = Action.of(klinkDev.getAction());
+    processorManager.handle(topic, message, action);
+
     TcpPacket resppacket = new TcpPacket();
     KlinkResp klinkResp = JsonUtil.fromJson(payload, KlinkResp.class);
     switch (klinkResp.getAction()) {
