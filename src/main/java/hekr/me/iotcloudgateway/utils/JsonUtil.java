@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
 
+/** json工具类，用于完成对象与json之间的转换 */
 public class JsonUtil {
   private static ObjectMapper objectMapper = new ObjectMapper();
 

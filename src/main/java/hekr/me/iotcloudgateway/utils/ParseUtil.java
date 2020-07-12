@@ -6,6 +6,7 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+/** 用于格式转换以及hash加密算法 */
 public class ParseUtil {
   /** sign值计算 */
   public static byte[] HmacSHA1Encrypt(String encryptText, String encryptKey) throws Exception {
