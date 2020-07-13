@@ -1,13 +1,8 @@
 package hekr.me.iotcloudgateway;
 
-import hekr.me.iotcloudgateway.client.tcp.TcpClientStarter;
-import hekr.me.iotcloudgateway.client.udp.UdpClientStarter;
-import hekr.me.iotcloudgateway.mqtt.MqttCallbackService;
-import hekr.me.iotcloudgateway.mqtt.MqttServer;
-import hekr.me.iotcloudgateway.mqtt.processor.CloudSendProcessor;
-import hekr.me.iotcloudgateway.server.http.HttpServerInit;
-import hekr.me.iotcloudgateway.server.tcp.TcpServerStarter;
-import hekr.me.iotcloudgateway.server.udp.UdpService;
+import hekr.me.iotcloudgateway.gateway.MqttCallbackService;
+import hekr.me.iotcloudgateway.gateway.MqttServer;
+import hekr.me.iotcloudgateway.gateway.processor.CloudSendProcessor;
 import org.tio.utils.jfinal.P;
 
 public class IoTCloudGatewayApplication {

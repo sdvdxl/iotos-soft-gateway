@@ -1,10 +1,10 @@
 package hekr.me.iotcloudgateway.client.tcp;
 
-import hekr.me.iotcloudgateway.codec.DataCodec;
-import hekr.me.iotcloudgateway.codec.LinePacketCodec;
-import hekr.me.iotcloudgateway.codec.RawDataCodec;
-import hekr.me.iotcloudgateway.klink.DevSend;
-import hekr.me.iotcloudgateway.mqtt.MqttServer;
+import hekr.me.iotcloudgateway.server.tcp.codec.DataCodec;
+import hekr.me.iotcloudgateway.server.tcp.codec.LinePacketCodec;
+import hekr.me.iotcloudgateway.server.tcp.codec.RawDataCodec;
+import hekr.me.iotcloudgateway.common.klink.DevSend;
+import hekr.me.iotcloudgateway.gateway.MqttServer;
 import hekr.me.iotcloudgateway.server.tcp.TcpPacket;
 
 import java.nio.ByteBuffer;

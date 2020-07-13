@@ -1,7 +1,7 @@
 package hekr.me.iotcloudgateway.server.udp;
 
-import hekr.me.iotcloudgateway.klink.KlinkDev;
-import hekr.me.iotcloudgateway.mqtt.MqttServer;
+import hekr.me.iotcloudgateway.common.klink.KlinkDev;
+import hekr.me.iotcloudgateway.gateway.MqttServer;
 import hekr.me.iotcloudgateway.utils.JsonUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

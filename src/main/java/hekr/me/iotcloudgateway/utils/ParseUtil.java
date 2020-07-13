@@ -1,6 +1,6 @@
 package hekr.me.iotcloudgateway.utils;
 
-import hekr.me.iotcloudgateway.constant.Constants;
+import hekr.me.iotcloudgateway.common.constant.Constants;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
