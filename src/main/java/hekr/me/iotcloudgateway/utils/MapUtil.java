@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapUtils {
+public class MapUtil {
   /**
    * @Title: objectToMap @Description: 将object转换为map，默认不保留空值
    *
