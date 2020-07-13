@@ -6,6 +6,7 @@ import hekr.me.iotcloudgateway.klink.AddTopo;
 import hekr.me.iotcloudgateway.klink.DelTopo;
 import hekr.me.iotcloudgateway.klink.DevLogin;
 import hekr.me.iotcloudgateway.klink.DevLogout;
+import hekr.me.iotcloudgateway.klink.GetConfig;
 import hekr.me.iotcloudgateway.klink.GetTopo;
 import hekr.me.iotcloudgateway.klink.KlinkDev;
 import hekr.me.iotcloudgateway.klink.Register;
@@ -36,7 +37,6 @@ public class MqttServer {
 
   // 接入至IoTOS的账号密码，生成方式详情请见《设备连接软网关数据上报说明书》
   public static final String userName = Constants.HASH_METHOD + ":" + Constants.RANDOM;
-  public static final String passWord = "18c78b6dfa4fde73c1a03c888842bf4b5bbefbea";
 
   private static MqttConnectService mqttConnect;
 
@@ -161,5 +161,14 @@ public class MqttServer {
   @SneakyThrows
   public static void devSend(Object kLink) {
     mqttConnect.publish(kLink);
+  }
+
+  /** 获取远程配置文件 */
+  @SneakyThrows
+  public void getConfig() {
+    GetConfig getConfig = new GetConfig();
+    getConfig.setPk(DEV_PK);
+    getConfig.setDevId(DEV_ID);
+    mqttConnect.publish(getConfig);
   }
 }
