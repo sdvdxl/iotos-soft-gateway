@@ -3,7 +3,6 @@ package hekr.me.iotcloudgateway;
 import hekr.me.iotcloudgateway.mqtt.MqttCallbackService;
 import hekr.me.iotcloudgateway.mqtt.MqttServer;
 import hekr.me.iotcloudgateway.mqtt.processor.CloudSendProcessor;
-import hekr.me.iotcloudgateway.server.tcp.TcpServerStarter;
 import org.tio.utils.jfinal.P;
 
 public class IoTCloudGatewayApplication {

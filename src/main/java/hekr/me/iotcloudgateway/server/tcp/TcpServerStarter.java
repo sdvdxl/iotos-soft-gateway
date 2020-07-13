@@ -5,6 +5,7 @@ import org.tio.server.ServerTioConfig;
 import org.tio.server.TioServer;
 import org.tio.server.intf.ServerAioHandler;
 import org.tio.server.intf.ServerAioListener;
+import org.tio.utils.jfinal.P;
 
 /** tcp server starter 用于配置tcp服务端相关配置，并可被调用以启动服务端程序 */
 public class TcpServerStarter {
@@ -14,7 +15,7 @@ public class TcpServerStarter {
   public static TioServer tioServer = new TioServer(serverTioConfig); // 可以为空
 
   static String serverIp = null;
-  static int serverPort = 7000;
+  static int serverPort = P.getInt("tcp.server.port");
 
   @SneakyThrows
   public static void start() {

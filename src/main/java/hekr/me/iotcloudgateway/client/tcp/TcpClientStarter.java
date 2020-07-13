@@ -9,10 +9,11 @@ import org.tio.client.intf.ClientAioHandler;
 import org.tio.client.intf.ClientAioListener;
 import org.tio.core.Node;
 import org.tio.core.Tio;
+import org.tio.utils.jfinal.P;
 
 public class TcpClientStarter {
-  static String serverIp = "192.168.2.139";
-  static int serverPort = 7000;
+  static String serverIp = P.get("tcp.client.ip");
+  static int serverPort = P.getInt("tcp.client.port");
 
   private static Node serverNode = new Node(serverIp, serverPort);
 
