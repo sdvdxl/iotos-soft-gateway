@@ -5,6 +5,7 @@ import hekr.me.iot.softgateway.server.tcp.codec.RawDataCodec;
 import hekr.me.iot.softgateway.common.klink.DevSend;
 import hekr.me.iot.softgateway.gateway.MqttServer;
 import hekr.me.iot.softgateway.server.tcp.TcpPacket;
+import hekr.me.iot.softgateway.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.tio.http.common.HttpRequest;
 import org.tio.http.common.HttpResponse;
@@ -32,6 +33,12 @@ public class HttpController {
     MqttServer.sendKlink(klinkDev);
 
     HttpResponse ret = Resps.bytes(request, TcpPacket.HTTP_RESP, "ok");
+    return ret;
+  }
+
+  @RequestPath(value = "/test")
+  public HttpResponse sendCommand(HttpRequest request) throws Exception {
+    HttpResponse ret = Resps.bytes(request, JsonUtil.toBytes("test ok"), "ok");
     return ret;
   }
 }

@@ -1,9 +1,12 @@
 package hekr.me.iot.softgateway;
 
+import hekr.me.iot.softgateway.client.http.HttpClient;
 import hekr.me.iot.softgateway.client.tcp.TcpClientStarter;
+import hekr.me.iot.softgateway.client.udp.UdpClientStarter;
 import hekr.me.iot.softgateway.gateway.MqttCallbackService;
 import hekr.me.iot.softgateway.gateway.MqttServer;
 import hekr.me.iot.softgateway.gateway.processor.CloudSendProcessor;
+import hekr.me.iot.softgateway.server.http.HttpServerInit;
 import org.tio.utils.jfinal.P;
 
 public class IoTCloudGatewayApplication {
@@ -18,13 +21,19 @@ public class IoTCloudGatewayApplication {
     MqttCallbackService.processorManager.register(new CloudSendProcessor());
 
     // 若要启用http则将下行注释打开
-    //        HttpServerInit.init();
+    //    HttpServerInit.init();
+
+    // 使用http client示例
+    //    Thread.sleep(5000);
+    //    HttpClient httpClient = new HttpClient();
+    //    httpClient.getAndSend();
+
     // 若要启用TCP client则将下行注释打开
-    TcpClientStarter.start();
+    //    TcpClientStarter.start();
     // 若要启用TCP server则将下行注释打开
     //    TcpServerStarter.start();
     // 若要启用UDP client则将下行注释打开
-    //       UdpClientStarter.start();
+    //           UdpClientStarter.start();
     // 若要启用UDP server则将下行注释打开
     //       UdpService.init();
   }
