@@ -20,7 +20,11 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 
-/** */
+/**
+ * 此类实现了Http常用的几种请求方式，包括get、post以及data-form格式的post请求
+ *
+ * <p>同时此类还提供downloadFile(String url)方法可以下载指定url的文件
+ */
 @Slf4j
 public class HttpUtils {
   public OkHttpClient HttpClient;

@@ -22,11 +22,16 @@ public class SubKlinkAction {
   /** 平台下发-登录回复 */
   public static final String DEV_LOGIN_RESP = "devLoginResp";
 
+  /** 平台下发-注册回复 */
   public static final String REGISTER_RESP = "registerResp";
-
+  /** 平台下发-登出回复 */
   public static final String DEV_LOGOUT_RESP = "devLogoutResp";
+  /** 平台下发-增加拓扑关系回复 */
   public static final String ADD_TOPO_RESP = "addTopoResp";
+  /** 平台下发-设备上报回复 */
   public static final String DEV_SEND_RESP = "devSendResp";
+  /** 平台下发-获取拓扑关系回复 */
   public static final String GET_TOPO_RESP = "getTopoResp";
+  /** 平台下发-删除拓扑回复 */
   public static final String DEL_TOPO_RESP = "delTopoResp";
 }

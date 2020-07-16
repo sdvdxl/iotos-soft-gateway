@@ -1,4 +1,4 @@
-package hekr.me.iotos.softgateway.pluginAsServer.tcp.codec;
+package hekr.me.iotos.softgateway.common.codec;
 
 import hekr.me.iotos.softgateway.common.constant.SubKlinkAction;
 import hekr.me.iotos.softgateway.common.klink.DevSend;
