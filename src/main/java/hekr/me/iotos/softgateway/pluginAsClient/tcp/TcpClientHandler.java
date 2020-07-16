@@ -51,7 +51,7 @@ public class TcpClientHandler implements ClientAioHandler {
       return;
     }
 
-    DevSend klinkDev = dataCodec.decode(tcpPacket, channelContext);
+    DevSend klinkDev = dataCodec.decode(tcpPacket);
 
     if (klinkDev == null) {
       log.error("数据解码成klink格式失败：{}", tcpPacket.getBody());

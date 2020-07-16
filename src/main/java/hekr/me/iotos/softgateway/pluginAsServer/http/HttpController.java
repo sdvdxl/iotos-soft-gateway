@@ -12,6 +12,11 @@ import org.tio.http.common.HttpResponse;
 import org.tio.http.server.annotation.RequestPath;
 import org.tio.http.server.util.Resps;
 
+/**
+ * http 接口类
+ *
+ * <p>开发者可以在此处编写符合对接设备的接口，下面为两个接口示例
+ */
 @Slf4j
 @RequestPath(value = "/gateway")
 public class HttpController {
@@ -19,11 +24,18 @@ public class HttpController {
 
   public HttpController() {}
 
+  /**
+   * 测试示例接口
+   *
+   * <p>http设备访问此接口
+   *
+   * <p>此接口将获取到的数据经过DataCodec转换成klink格式后使用ProxyService向IoT OS上报数据
+   */
   @RequestPath(value = "/push")
   public HttpResponse push(HttpRequest request) throws Exception {
     TcpPacket tcpPacket = new TcpPacket();
     tcpPacket.setBody(request.getBody());
-    DevSend klinkDev = dataCodec.decode(tcpPacket, null);
+    DevSend klinkDev = dataCodec.decode(tcpPacket);
     if (klinkDev == null) {
       log.error("数据解码成klink格式失败：{}", tcpPacket.getBody());
       throw new RuntimeException();

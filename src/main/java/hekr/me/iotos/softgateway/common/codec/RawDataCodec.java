@@ -19,7 +19,7 @@ public class RawDataCodec implements DataCodec {
 
   @SneakyThrows
   @Override
-  public DevSend decode(Object data, ChannelContext channelContext) {
+  public DevSend decode(Object data) {
     TcpPacket tcpPacket = (TcpPacket) data;
     // 获取原始数据
     ByteBuffer wrap = ByteBuffer.wrap(tcpPacket.getBody());
@@ -49,11 +49,6 @@ public class RawDataCodec implements DataCodec {
         wrap.get(dstName);
         String name = new String(dstName, TcpPacket.CHARSET);
 
-        // 注意：此处为tcp区分通道的建议方式，以pk@devId的形式标记不同通道的id，以方便tcp传送数据给制定的设备
-        if (channelContext != null && channelContext.userid == null) {
-          Tio.bindUser(channelContext, pk0 + "@" + devId0);
-        }
-
         // 构造上线指令
         DevSend klinkRegister = new DevSend();
         klinkRegister.setDevId(devId0);
@@ -81,11 +76,6 @@ public class RawDataCodec implements DataCodec {
         byte[] dstDevSecret = new byte[devSecretLength];
         wrap.get(dstDevSecret);
         String devSecret = new String(dstDevSecret, TcpPacket.CHARSET);
-
-        // 注意：此处为tcp区分通道的建议方式，以pk@devId的形式标记不同通道的id，以方便tcp传送数据给制定的设备
-        if (channelContext != null && channelContext.userid == null) {
-          Tio.bindUser(channelContext, pk + "@" + devId);
-        }
 
         // 构造上线指令
         DevSend klinkDev = new DevSend();
@@ -137,7 +127,7 @@ public class RawDataCodec implements DataCodec {
   }
 
   @Override
-  public Object encode(DevSend klink, ChannelContext channelContext) {
+  public Object encode(DevSend klink) {
     return null;
   }
 }

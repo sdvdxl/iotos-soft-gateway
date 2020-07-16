@@ -6,7 +6,7 @@ import org.tio.core.ChannelContext;
 /** 原始数据与klink数据转换抽象接口 */
 public interface DataCodec {
 
-  DevSend decode(Object data, ChannelContext channelContext);
+  DevSend decode(Object data);
 
-  Object encode(DevSend klink, ChannelContext channelContext);
+  Object encode(DevSend klink);
 }

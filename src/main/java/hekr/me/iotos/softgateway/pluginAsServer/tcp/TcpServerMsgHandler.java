@@ -1,5 +1,7 @@
 package hekr.me.iotos.softgateway.pluginAsServer.tcp;
 
+import hekr.me.iotos.softgateway.common.constant.Constants;
+import hekr.me.iotos.softgateway.common.constant.SubKlinkAction;
 import hekr.me.iotos.softgateway.common.klink.DevSend;
 import hekr.me.iotos.softgateway.northProxy.ProxyService;
 import hekr.me.iotos.softgateway.common.codec.LinePacketCodec;
@@ -7,6 +9,7 @@ import hekr.me.iotos.softgateway.common.codec.DataCodec;
 import hekr.me.iotos.softgateway.common.codec.RawDataCodec;
 import lombok.extern.slf4j.Slf4j;
 import org.tio.core.ChannelContext;
+import org.tio.core.Tio;
 import org.tio.core.TioConfig;
 import org.tio.core.exception.AioDecodeException;
 import org.tio.core.intf.Packet;
@@ -54,11 +57,18 @@ public class TcpServerMsgHandler implements ServerAioHandler {
     }
 
     // 此处调用业务数据处理的方法对透传数据进行处理，处理后的结果为klink格式
-    DevSend klinkDev = dataCodec.decode(tcpPacket, channelContext);
+    DevSend klinkDev = dataCodec.decode(tcpPacket);
 
     if (klinkDev == null) {
       log.error("数据解码成klink格式失败：{}", tcpPacket.getBody());
       return;
+    }
+
+    if (klinkDev.getAction().equals(SubKlinkAction.DEV_LOGIN)){
+      // 注意：此处为tcp区分通道的建议方式，以pk@devId的形式标记不同通道的id，以方便tcp传送数据给指定的设备
+      if (channelContext != null && channelContext.userid == null) {
+        Tio.bindUser(channelContext, klinkDev.getPk() + "@" + klinkDev.getDevId());
+      }
     }
 
     // 对转码后的数据按照klink的action进行不同业务的操作

@@ -7,10 +7,7 @@ import org.tio.http.server.HttpServerStarter;
 import org.tio.http.server.handler.DefaultHttpRequestHandler;
 import org.tio.utils.jfinal.P;
 
-/**
- * @author jiatao
- * @date 2020/6/24
- */
+/** http server 初始化启动类 */
 public class HttpServerInit {
   public static HttpConfig httpConfig;
   public static HttpRequestHandler requestHandler;
