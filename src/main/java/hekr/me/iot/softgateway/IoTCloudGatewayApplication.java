@@ -4,11 +4,15 @@ import hekr.me.iot.softgateway.northProxy.MqttCallbackService;
 import hekr.me.iot.softgateway.northProxy.MqttServer;
 import hekr.me.iot.softgateway.northProxy.processor.CloudSendProcessor;
 import hekr.me.iot.softgateway.pluginAsServer.http.HttpServerInit;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.tio.utils.jfinal.P;
 
+@SpringBootApplication
 public class IoTCloudGatewayApplication {
 
   public static void main(String[] args) throws Exception {
+    SpringApplication.run(IoTCloudGatewayApplication.class, args);
     // 获取配置文件中的相关参数
     P.use("config.properties");
 
@@ -18,7 +22,7 @@ public class IoTCloudGatewayApplication {
     MqttCallbackService.processorManager.register(new CloudSendProcessor());
 
     // 若要启用http则将下行注释打开
-        HttpServerInit.init();
+    HttpServerInit.init();
 
     // 使用http client示例
     //    Thread.sleep(5000);
