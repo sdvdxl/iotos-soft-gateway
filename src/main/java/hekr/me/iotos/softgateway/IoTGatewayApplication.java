@@ -5,11 +5,16 @@ import hekr.me.iotos.softgateway.northProxy.ProxyService;
 import hekr.me.iotos.softgateway.northProxy.processor.CloudSendProcessor;
 import hekr.me.iotos.softgateway.pluginAsClient.http.HttpClient;
 import hekr.me.iotos.softgateway.pluginAsServer.http.HttpServerInit;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.tio.utils.jfinal.P;
 
+@SpringBootApplication
 public class IoTGatewayApplication {
 
   public static void main(String[] args) throws Exception {
+    SpringApplication.run(IoTGatewayApplication.class, args);
+
     // 获取配置文件中的相关参数
     P.use("config.properties");
 
@@ -19,7 +24,7 @@ public class IoTGatewayApplication {
     ProxyCallbackService.processorManager.register(new CloudSendProcessor());
 
     // 若要启用http则将下行注释打开
-        HttpServerInit.init();
+    HttpServerInit.init();
 
     //     使用http client示例
     Thread.sleep(5000);
