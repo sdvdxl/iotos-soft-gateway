@@ -10,7 +10,7 @@ import hekr.me.iotos.softgateway.common.klink.KlinkResp;
 import hekr.me.iotos.softgateway.common.klink.RegisterResp;
 import hekr.me.iotos.softgateway.northProxy.processor.ProcessorManager;
 import hekr.me.iotos.softgateway.utils.JsonUtil;
-import hekr.me.iotos.softgateway.pluginAsServer.tcp.TcpPacket;
+import hekr.me.iotos.softgateway.pluginAsServer.tcp.packet.TcpPacket;
 import hekr.me.iotos.softgateway.pluginAsServer.tcp.TcpServerStarter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

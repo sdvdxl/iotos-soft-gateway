@@ -3,12 +3,10 @@ package hekr.me.iotos.softgateway.common.codec;
 import hekr.me.iotos.softgateway.common.constant.SubKlinkAction;
 import hekr.me.iotos.softgateway.common.klink.DevSend;
 import hekr.me.iotos.softgateway.common.klink.ModelData;
-import hekr.me.iotos.softgateway.pluginAsServer.tcp.TcpPacket;
+import hekr.me.iotos.softgateway.pluginAsServer.tcp.packet.TcpPacket;
 import hekr.me.iotos.softgateway.utils.JsonUtil;
 import java.nio.ByteBuffer;
 import lombok.SneakyThrows;
-import org.tio.core.ChannelContext;
-import org.tio.core.Tio;
 
 /**
  * 此处为业务数据处理转换成klink标准协议格式的示例

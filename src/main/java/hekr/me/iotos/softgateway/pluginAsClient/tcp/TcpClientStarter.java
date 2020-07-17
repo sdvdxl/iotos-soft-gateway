@@ -1,6 +1,6 @@
 package hekr.me.iotos.softgateway.pluginAsClient.tcp;
 
-import hekr.me.iotos.softgateway.pluginAsServer.tcp.TcpPacket;
+import hekr.me.iotos.softgateway.pluginAsServer.tcp.packet.TcpPacket;
 import org.tio.client.ClientChannelContext;
 import org.tio.client.ClientTioConfig;
 import org.tio.client.ReconnConf;

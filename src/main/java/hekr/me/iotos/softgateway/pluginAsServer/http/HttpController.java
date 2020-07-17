@@ -4,7 +4,7 @@ import hekr.me.iotos.softgateway.common.codec.DataCodec;
 import hekr.me.iotos.softgateway.common.codec.RawDataCodec;
 import hekr.me.iotos.softgateway.common.klink.DevSend;
 import hekr.me.iotos.softgateway.northProxy.ProxyService;
-import hekr.me.iotos.softgateway.pluginAsServer.tcp.TcpPacket;
+import hekr.me.iotos.softgateway.pluginAsServer.tcp.packet.TcpPacket;
 import hekr.me.iotos.softgateway.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.tio.http.common.HttpRequest;

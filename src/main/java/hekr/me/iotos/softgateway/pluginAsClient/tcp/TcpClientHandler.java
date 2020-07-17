@@ -2,10 +2,10 @@ package hekr.me.iotos.softgateway.pluginAsClient.tcp;
 
 import hekr.me.iotos.softgateway.common.klink.DevSend;
 import hekr.me.iotos.softgateway.common.codec.DataCodec;
-import hekr.me.iotos.softgateway.common.codec.LinePacketCodec;
+import hekr.me.iotos.softgateway.pluginAsServer.tcp.packet.LinePacketCodec;
 import hekr.me.iotos.softgateway.common.codec.RawDataCodec;
 import hekr.me.iotos.softgateway.northProxy.ProxyService;
-import hekr.me.iotos.softgateway.pluginAsServer.tcp.TcpPacket;
+import hekr.me.iotos.softgateway.pluginAsServer.tcp.packet.TcpPacket;
 
 import java.nio.ByteBuffer;
 
