@@ -22,6 +22,8 @@ public class SubKlinkAction {
   /** 平台下发-登录回复 */
   public static final String DEV_LOGIN_RESP = "devLoginResp";
 
+  public static final String CLOUD_SEND = "cloudSend";
+
   /** 平台下发-注册回复 */
   public static final String REGISTER_RESP = "registerResp";
   /** 平台下发-登出回复 */

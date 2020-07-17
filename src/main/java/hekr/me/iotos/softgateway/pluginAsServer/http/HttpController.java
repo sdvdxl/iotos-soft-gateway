@@ -2,6 +2,7 @@ package hekr.me.iotos.softgateway.pluginAsServer.http;
 
 import hekr.me.iotos.softgateway.common.codec.DataCodec;
 import hekr.me.iotos.softgateway.common.codec.RawDataCodec;
+import hekr.me.iotos.softgateway.common.constant.SubKlinkAction;
 import hekr.me.iotos.softgateway.common.klink.DevSend;
 import hekr.me.iotos.softgateway.northProxy.ProxyService;
 import hekr.me.iotos.softgateway.pluginAsServer.tcp.packet.TcpPacket;
@@ -48,9 +49,15 @@ public class HttpController {
     return ret;
   }
 
+  /** 此接口用来配合测试HttpClient 此处模拟"http server的设备"将指令进行编码后发送给客户端 */
   @RequestPath(value = "/test")
   public HttpResponse sendCommand(HttpRequest request) throws Exception {
-    HttpResponse ret = Resps.bytes(request, JsonUtil.toBytes("test ok"), "ok");
+    // 此处new DevSend()来模拟云端下发
+    DevSend devSend = new DevSend();
+    devSend.setAction(SubKlinkAction.HEARTBEAT);
+    // 编码后发送
+    Object resp = dataCodec.encode(devSend);
+    HttpResponse ret = Resps.bytes(request, (byte[]) resp, "ok");
     return ret;
   }
 }

@@ -126,6 +126,9 @@ public class RawDataCodec implements DataCodec {
 
   @Override
   public Object encode(DevSend klink) {
+    if (klink.getAction().equals(SubKlinkAction.HEARTBEAT)){
+      return new byte[]{3};
+    }
     return null;
   }
 }

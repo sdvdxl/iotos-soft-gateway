@@ -3,6 +3,7 @@ package hekr.me.iotos.softgateway;
 import hekr.me.iotos.softgateway.northProxy.ProxyCallbackService;
 import hekr.me.iotos.softgateway.northProxy.ProxyService;
 import hekr.me.iotos.softgateway.northProxy.processor.CloudSendProcessor;
+import hekr.me.iotos.softgateway.pluginAsClient.http.HttpClient;
 import hekr.me.iotos.softgateway.pluginAsServer.http.HttpServerInit;
 import org.tio.utils.jfinal.P;
 
@@ -18,12 +19,11 @@ public class IoTGatewayApplication {
     ProxyCallbackService.processorManager.register(new CloudSendProcessor());
 
     // 若要启用http则将下行注释打开
-        HttpServerInit.init();
+    HttpServerInit.init();
 
-    // 使用http client示例
-    //    Thread.sleep(5000);
-    //    HttpClient httpClient = new HttpClient();
-    //    httpClient.getAndSend();
+    //     使用http client示例
+    Thread.sleep(5000);
+    HttpClient.example();
 
     // 若要启用TCP client则将下行注释打开
     //    TcpClientStarter.start();
