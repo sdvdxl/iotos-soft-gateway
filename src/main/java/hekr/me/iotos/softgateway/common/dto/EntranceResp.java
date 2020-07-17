@@ -1,4 +1,4 @@
-package hekr.me.iot.softgateway.common.dto;
+package hekr.me.iotos.softgateway.common.dto;
 
 import lombok.Data;
 
