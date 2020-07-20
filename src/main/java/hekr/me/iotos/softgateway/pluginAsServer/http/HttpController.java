@@ -14,9 +14,6 @@ import org.tio.http.server.annotation.RequestPath;
 import org.tio.http.server.util.Resps;
 
 /**
- * http 接口类
- *
- * <p>开发者可以在此处编写符合对接设备的接口，下面为两个接口示例
  */
 @Slf4j
 @RequestPath(value = "/gateway")
@@ -49,15 +46,5 @@ public class HttpController {
     return ret;
   }
 
-  /** 此接口用来配合测试HttpClient 此处模拟"http server的设备"将指令进行编码后发送给客户端 */
-  @RequestPath(value = "/test")
-  public HttpResponse sendCommand(HttpRequest request) throws Exception {
-    // 此处new DevSend()来模拟云端下发
-    DevSend devSend = new DevSend();
-    devSend.setAction(SubKlinkAction.HEARTBEAT);
-    // 编码后发送
-    Object resp = dataCodec.encode(devSend);
-    HttpResponse ret = Resps.bytes(request, (byte[]) resp, "ok");
-    return ret;
-  }
+
 }

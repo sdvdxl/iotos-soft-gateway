@@ -2,12 +2,14 @@ package hekr.me.iotos.softgateway.pluginAsClient.http;
 
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
+import hekr.me.iotos.softgateway.utils.AESUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -51,6 +53,7 @@ public class HttpUtils {
    * @return
    * @throws RuntimeException
    */
+  @SneakyThrows
   public byte[] post(String url, Map<String, String> headerParams, Map<String, Object> bodyParams)
       throws RuntimeException {
 
@@ -61,7 +64,9 @@ public class HttpUtils {
 
     // 此处为body为json格式的post请求
     MediaType mediaType = MediaType.parse("application/json;charset=UTF-8");
-    RequestBody requestBody = RequestBody.create(mediaType, JSON.toJSONString(bodyParams));
+    // 做加密处理
+    RequestBody requestBody =
+        RequestBody.create(mediaType, AESUtils.encodeBody(JSON.toJSONString(bodyParams)));
     requestBuider.post(requestBody);
 
     Response response = null;

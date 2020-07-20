@@ -16,12 +16,7 @@ public class HttpServerInit {
   public static void init() throws Exception {
 
     int port = P.getInt("http.server.port"); // 启动端口
-    String pageRoot = P.get("http.server.page"); // html/css/js等的根目录，支持classpath:，也支持绝对路径
     httpConfig = new HttpConfig(port, null, null, null);
-    httpConfig.setPageRoot(pageRoot);
-    httpConfig.setMaxLiveTimeOfStaticRes(P.getInt("http.server.maxLiveTimeOfStaticRes"));
-    httpConfig.setPage404(P.get("http.server.404"));
-    httpConfig.setPage500(P.get("http.server.500"));
     httpConfig.setUseSession(false);
     httpConfig.setCheckHost(false);
 

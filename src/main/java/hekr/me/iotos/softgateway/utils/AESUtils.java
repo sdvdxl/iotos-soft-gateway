@@ -1,5 +1,6 @@
-package hekr.me.iot.softgateway.utils;
+package hekr.me.iotos.softgateway.utils;
 
+import com.alibaba.fastjson.JSON;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 
@@ -7,7 +8,9 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
+import org.tio.utils.jfinal.P;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -17,6 +20,8 @@ public class AESUtils {
   private static final String KEY_ALGORITHM = "AES";
 
   private static final String DEFAULT_CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
+
+  private static final String KEY = P.get("AES.key");
 
   /**
    * 初始化密钥
@@ -236,6 +241,17 @@ public class AESUtils {
     byte[] bytes = new BASE64Decoder().decodeBuffer(str);
     bytes = cipher.doFinal(bytes);
     return new String(bytes, "utf-8");
+  }
+
+  public static Key getKey(){
+    return toKey(Base64.decodeBase64(KEY));
+  }
+
+  @SneakyThrows
+  public static String encodeBody(String body){
+    String bodyJsonString = JSON.toJSONString(body);
+    byte[] encrypt = encrypt(bodyJsonString.getBytes("utf-8"), getKey());
+    return parseByte2HexStr(encrypt);
   }
 
   public static void main(String[] args) throws Exception {

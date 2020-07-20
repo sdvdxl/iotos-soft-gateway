@@ -27,8 +27,8 @@ public class IoTGatewayApplication {
     HttpServerInit.init();
 
     //     使用http client示例
-    Thread.sleep(5000);
-    HttpClient.example();
+//    Thread.sleep(5000);
+//    HttpClient.example();
 
     // 若要启用TCP client则将下行注释打开
     //    TcpClientStarter.start();
