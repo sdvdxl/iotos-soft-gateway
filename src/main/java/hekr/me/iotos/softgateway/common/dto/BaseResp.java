@@ -8,4 +8,11 @@ public class BaseResp {
   private int resCode;
   /** 返回信息 */
   private String resMsg;
+
+  public BaseResp() {};
+
+  public BaseResp(int resCode, String resMsg) {
+    this.resCode = resCode;
+    this.resMsg = resMsg;
+  }
 }

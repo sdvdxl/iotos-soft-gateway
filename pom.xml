@@ -137,6 +137,11 @@
       <artifactId>commons-codec</artifactId>
       <version>1.10</version>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
     <!--        <dependency>-->
     <!--            <groupId>iot.cloud.os</groupId>-->
     <!--            <artifactId>cloud-os-common-redis</artifactId>-->

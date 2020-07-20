@@ -2,13 +2,13 @@ package hekr.me.iotos.softgateway.northProxy.device;
 
 import lombok.Data;
 
-/**
- * 两种设备
- */
+/** 设备 */
 @Data
 public class Device {
-  /** 终端设备id */
-  private String terminalID;
+  /** 通道id */
+  private String channelID;
+  /** 通道名称 */
+  private String channelName;
   /** iot设备id */
   private String devId;
   /** iot设备产品pk */

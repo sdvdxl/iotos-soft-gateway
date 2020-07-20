@@ -243,15 +243,20 @@ public class AESUtils {
     return new String(bytes, "utf-8");
   }
 
-  public static Key getKey(){
+  public static Key getKey() {
     return toKey(Base64.decodeBase64(KEY));
   }
 
   @SneakyThrows
-  public static String encodeBody(String body){
+  public static String encodeBody(String body) {
     String bodyJsonString = JSON.toJSONString(body);
     byte[] encrypt = encrypt(bodyJsonString.getBytes("utf-8"), getKey());
     return parseByte2HexStr(encrypt);
+  }
+
+  @SneakyThrows
+  public static byte[] decodeRequestData(byte[] data) {
+    return decrypt(data, getKey());
   }
 
   public static void main(String[] args) throws Exception {

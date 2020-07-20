@@ -1,5 +1,10 @@
 package hekr.me.iotos.softgateway.common.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import hekr.me.iotos.softgateway.common.enums.ChargeSource;
+import hekr.me.iotos.softgateway.common.enums.ChargeType;
+import hekr.me.iotos.softgateway.common.enums.converter.ChargeSourceConverter;
+import hekr.me.iotos.softgateway.common.enums.converter.ChargeTypeConverter;
 import lombok.Data;
 
 @Data
@@ -24,10 +29,10 @@ public class ChargeReq {
   private int paidMoney;
   /** 必选，减免金额（单位：分） */
   private int JMMoney;
-  /** 必选，详见”附录2 收费方式（chargeType）字典” */
+  /** 必选，详见”收费方式（chargeType）枚举” */
   private int chargeType;
-  /** 必选，详见”附录2 收费来源（chargeSource）字典” */
-  private String chargeSource;
+  /** 必选，详见”收费来源（chargeSource）枚举” */
+  private int chargeSource;
   /** 必选，费用类型（停车费：0，续费：1，消费：3，充值：4） */
   private int amountType;
 }
