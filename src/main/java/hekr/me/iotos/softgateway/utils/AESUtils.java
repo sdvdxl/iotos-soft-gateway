@@ -10,6 +10,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.beans.factory.annotation.Value;
 import org.tio.utils.jfinal.P;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -21,7 +22,8 @@ public class AESUtils {
 
   private static final String DEFAULT_CIPHER_ALGORITHM = "AES/ECB/PKCS5Padding";
 
-  private static final String KEY = P.get("AES.key");
+  @Value("${AES.key}")
+  private static String KEY;
 
   /**
    * 初始化密钥
