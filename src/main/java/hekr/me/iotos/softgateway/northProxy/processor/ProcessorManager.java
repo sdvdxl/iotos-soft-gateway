@@ -4,7 +4,10 @@ import hekr.me.iotos.softgateway.common.enums.Action;
 import hekr.me.iotos.softgateway.common.klink.Klink;
 import hekr.me.iotos.softgateway.utils.JsonUtil;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.stereotype.Service;
@@ -15,7 +18,9 @@ public class ProcessorManager {
 
   private Map<Action, Processor> processorMap = new HashMap<>();
 
-  public ProcessorManager() {
+  public ProcessorManager(List<Processor> processorList) {
+    processorMap =
+        processorList.stream().collect(Collectors.toMap(Processor::getAction, Function.identity()));
   }
 
   public void register(Processor processor) {

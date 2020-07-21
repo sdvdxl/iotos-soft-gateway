@@ -8,7 +8,7 @@ import lombok.Data;
  */
 @Data
 public class GateControlReq {
-  private int channelID;
+  private String channelID;
   private int controlType;
   private String reason;
   private String userID;

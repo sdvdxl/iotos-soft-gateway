@@ -17,4 +17,6 @@ public class Device {
   private String devName;
   /** iot设备所属产品密钥 */
   private String productSecret;
+  /** 设备类型 */
+  private DeviceType deviceType;
 }

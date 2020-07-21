@@ -72,6 +72,6 @@ public class TcpServerMsgHandler implements ServerAioHandler {
     }
 
     // 对转码后的数据按照klink的action进行不同业务的操作
-    ProxyService.sendKlink(klinkDev);
+//    ProxyService.sendKlink(klinkDev);
   }
 }

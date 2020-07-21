@@ -46,6 +46,6 @@ public class ConnectUdpHandler implements UdpHandler {
       return;
     }
 
-    ProxyService.sendKlink(klinkDev);
+//    ProxyService.sendKlink(klinkDev);
   }
 }

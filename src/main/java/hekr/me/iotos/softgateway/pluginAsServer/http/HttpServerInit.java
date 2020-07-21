@@ -1,6 +1,10 @@
 package hekr.me.iotos.softgateway.pluginAsServer.http;
 
 import hekr.me.iotos.softgateway.IoTGatewayApplication;
+import hekr.me.iotos.softgateway.common.config.ProxyConfig;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.tio.http.common.HttpConfig;
 import org.tio.http.common.handler.HttpRequestHandler;
 import org.tio.http.server.HttpServerStarter;
@@ -8,14 +12,20 @@ import org.tio.http.server.handler.DefaultHttpRequestHandler;
 import org.tio.utils.jfinal.P;
 
 /** http server 初始化启动类 */
+@Service
 public class HttpServerInit {
-  public static HttpConfig httpConfig;
-  public static HttpRequestHandler requestHandler;
-  public static HttpServerStarter httpServerStarter;
+  //  @Autowired ProxyConfig proxyConfig;
 
-  public static void init() throws Exception {
+  @Value("${http.server.port}")
+  private int HTTP_PORT;
 
-    int port = P.getInt("http.server.port"); // 启动端口
+  public HttpConfig httpConfig;
+  public HttpRequestHandler requestHandler;
+  public HttpServerStarter httpServerStarter;
+
+  public HttpServerInit() throws Exception {
+
+    int port = HTTP_PORT; // 启动端口
     httpConfig = new HttpConfig(port, null, null, null);
     httpConfig.setUseSession(false);
     httpConfig.setCheckHost(false);

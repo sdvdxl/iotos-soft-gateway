@@ -1,5 +1,6 @@
 package hekr.me.iotos.softgateway.northProxy;
 
+import hekr.me.iotos.softgateway.common.config.ProxyConfig;
 import hekr.me.iotos.softgateway.common.enums.Action;
 import hekr.me.iotos.softgateway.common.klink.AddTopo;
 import hekr.me.iotos.softgateway.common.klink.DelTopo;
@@ -15,6 +16,8 @@ import hekr.me.iotos.softgateway.utils.ParseUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.tio.utils.jfinal.P;
 
 /**
@@ -23,34 +26,12 @@ import org.tio.utils.jfinal.P;
  * 添加设备和配置流程详情请见《设备连接软网关数据上报说明书》
  */
 @Slf4j
+@Service
 public class ProxyService {
-  /** 以此开始配置设备信息，以及连接参数 */
-  // tcp://MQTT安装的服务器地址:MQTT定义的端口号
-  // 进入产品中心-产品开发-智慧消防平台软网关，"MQTT接入方式"栏目即可查询
-  public static final String HOST = "tcp://" + P.get("iotos.host");
-  // 软网关的产品pk，进入产品中心-设备管理-智慧消防平台软网关，"产品pk"栏目即可查询
-  public static final String DEV_PK = P.get("gateway.DEV_PK");
-  // 软网关的设备id，进入产品中心-设备管理-智慧消防平台软网关，"产品id"栏目即可查询
-  public static final String DEV_ID = P.get("gateway.DEV_ID");
+  @Autowired private ProxyConfig proxyConfig;
+  @Autowired private ProxyConnectService proxyConnectService;
 
-  public static final String DEV_SECRET = P.get("gateway.devSecret");
-
-  // 接入至IoTOS的账号密码，生成方式详情请见《设备连接软网关数据上报说明书》
-  public static final String userName = Constants.HASH_METHOD + ":" + Constants.RANDOM;
-
-  private static ProxyConnectService mqttConnect;
-
-  public static void init() throws MqttException {
-    mqttConnect = new ProxyConnectService();
-  }
-
-  @SneakyThrows
-  public static String getPassword() {
-    return ParseUtil.parseByte2HexStr(
-        (ParseUtil.HmacSHA1Encrypt(DEV_PK + DEV_ID + DEV_SECRET + Constants.RANDOM, DEV_SECRET)));
-  }
-
-  public static void sendKlink(KlinkDev klinkDev) {
+  public void sendKlink(KlinkDev klinkDev) {
     switch (Action.of(klinkDev.getAction())) {
       case REGISTER:
         register(
@@ -84,8 +65,7 @@ public class ProxyService {
 
   /** 动态注册设备 */
   @SneakyThrows
-  private static void register(
-      String subDevPk, String subDevId, String productSecret, String devName) {
+  public void register(String subDevPk, String subDevId, String productSecret, String devName) {
     Register register = new Register();
     register.setDevId(subDevId);
     register.setPk(subDevPk);
@@ -95,12 +75,12 @@ public class ProxyService {
     register.setSign(
         ParseUtil.parseByte2HexStr(
             ParseUtil.HmacSHA1Encrypt(subDevPk + productSecret + Constants.RANDOM, productSecret)));
-    mqttConnect.publish(register);
+    proxyConnectService.publish(register);
   }
 
   /** 设备拓扑 */
   @SneakyThrows
-  public static void addDev(String subDevPk, String subDevId, String subDevSecret) {
+  public void addDev(String subDevPk, String subDevId, String subDevSecret) {
     AddTopo addTopo = new AddTopo();
     TopoSub topoSub = new TopoSub();
     topoSub.setPk(subDevPk);
@@ -112,63 +92,63 @@ public class ProxyService {
             ParseUtil.HmacSHA1Encrypt(
                 subDevPk + subDevId + subDevSecret + Constants.RANDOM, subDevSecret)));
     addTopo.setSub(topoSub);
-    addTopo.setPk(DEV_PK);
-    addTopo.setDevId(DEV_ID);
-    mqttConnect.publish(addTopo);
+    addTopo.setPk(proxyConfig.getDEV_PK());
+    addTopo.setDevId(proxyConfig.getDEV_ID());
+    proxyConnectService.publish(addTopo);
   }
 
   /** 设备上线 */
   @SneakyThrows
-  public static void devLogin(String subDevPk, String subDevId) {
+  public void devLogin(String subDevPk, String subDevId) {
     DevLogin devLogin = new DevLogin();
     devLogin.setDevId(subDevId);
     devLogin.setPk(subDevPk);
-    mqttConnect.publish(devLogin);
+    proxyConnectService.publish(devLogin);
   }
 
   /** 设备离线 */
   @SneakyThrows
-  public static void devLogout(String subDevPk, String subDevId) {
+  public void devLogout(String subDevPk, String subDevId) {
     DevLogout devLogout = new DevLogout();
     devLogout.setDevId(subDevId);
     devLogout.setPk(subDevPk);
-    mqttConnect.publish(devLogout);
+    proxyConnectService.publish(devLogout);
   }
 
   /** 获取拓扑关系 */
   @SneakyThrows
-  public static void getTopo() {
+  public void getTopo() {
     GetTopo getTopo = new GetTopo();
-    getTopo.setPk(DEV_PK);
-    getTopo.setDevId(DEV_ID);
-    mqttConnect.publish(getTopo);
+    getTopo.setPk(proxyConfig.getDEV_PK());
+    getTopo.setDevId(proxyConfig.getDEV_ID());
+    proxyConnectService.publish(getTopo);
   }
 
   /** 删除子设备拓扑关系 */
   @SneakyThrows
-  public static void delDev(String subDevPk, String subDevId) {
+  public void delDev(String subDevPk, String subDevId) {
     DelTopo delTopo = new DelTopo();
     TopoSub topoSub = new TopoSub();
     topoSub.setPk(subDevPk);
     topoSub.setDevId(subDevId);
     delTopo.setSub(topoSub);
-    delTopo.setPk(DEV_PK);
-    delTopo.setDevId(DEV_ID);
-    mqttConnect.publish(delTopo);
+    delTopo.setPk(proxyConfig.getDEV_PK());
+    delTopo.setDevId(proxyConfig.getDEV_ID());
+    proxyConnectService.publish(delTopo);
   }
 
   /** 设备发送数据 */
   @SneakyThrows
-  public static void devSend(Object kLink) {
-    mqttConnect.publish(kLink);
+  public void devSend(Object kLink) {
+    proxyConnectService.publish(kLink);
   }
 
   /** 获取远程配置文件 */
   @SneakyThrows
   public void getConfig() {
     GetConfig getConfig = new GetConfig();
-    getConfig.setPk(DEV_PK);
-    getConfig.setDevId(DEV_ID);
-    mqttConnect.publish(getConfig);
+    getConfig.setPk(proxyConfig.getDEV_PK());
+    getConfig.setDevId(proxyConfig.getDEV_ID());
+    proxyConnectService.publish(getConfig);
   }
 }

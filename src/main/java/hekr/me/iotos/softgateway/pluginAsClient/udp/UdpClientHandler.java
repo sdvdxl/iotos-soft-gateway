@@ -45,6 +45,6 @@ public class UdpClientHandler implements UdpHandler {
       return;
     }
 
-    ProxyService.sendKlink(klinkDev);
+    //    ProxyService.sendKlink(klinkDev);
   }
 }

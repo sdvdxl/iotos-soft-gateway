@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.tio.core.Tio;
 
 /**
@@ -33,15 +35,17 @@ import org.tio.core.Tio;
  * MqttClient.connect 激活此回调。
  */
 @Slf4j
+@Service
 public class ProxyCallbackService implements MqttCallback {
 
-  public static ProcessorManager processorManager = new ProcessorManager();
+  @Autowired private ProcessorManager processorManager;
+  @Autowired private ProxyConnectService proxyConnectService;
 
   @SneakyThrows
   public void connectionLost(Throwable cause) {
     // 连接丢失后，一般在这里面进行重连
     log.warn("软网关已经连接断开,准备开始重连");
-    ProxyService.init();
+    proxyConnectService.connect();
   }
 
   public void deliveryComplete(IMqttDeliveryToken token) {
@@ -59,56 +63,5 @@ public class ProxyCallbackService implements MqttCallback {
     KlinkDev klinkDev = JsonUtil.fromJson(payload, KlinkDev.class);
     Action action = Action.of(klinkDev.getAction());
     processorManager.handle(topic, message, action);
-
-    TcpPacket resppacket = new TcpPacket();
-    KlinkResp klinkResp = JsonUtil.fromJson(payload, KlinkResp.class);
-    switch (klinkResp.getAction()) {
-      case SubKlinkAction.GET_TOPO_RESP:
-        GetTopoResp getTopoResp = JsonUtil.fromJson(payload, GetTopoResp.class);
-        getTopoResp
-            .getSubs()
-            .forEach(
-                dev -> {
-                  resppacket.setBody(message.getPayload());
-                  Tio.sendToUser(
-                      TcpServerStarter.tioServer.getServerTioConfig(),
-                      dev.getPk() + "@" + dev.getDevId(),
-                      resppacket);
-                });
-        return;
-      case SubKlinkAction.DEV_LOGIN_RESP:
-        DevLoginResp devLoginResp = JsonUtil.fromJson(payload, DevLoginResp.class);
-        resppacket.setBody(message.getPayload());
-        Tio.sendToUser(
-            TcpServerStarter.tioServer.getServerTioConfig(),
-            devLoginResp.getPk() + "@" + devLoginResp.getDevId(),
-            resppacket);
-        return;
-      case SubKlinkAction.ADD_TOPO_RESP:
-        AddTopoResp addTopoResp = JsonUtil.fromJson(payload, AddTopoResp.class);
-        resppacket.setBody(message.getPayload());
-        Tio.sendToUser(
-            TcpServerStarter.tioServer.getServerTioConfig(),
-            addTopoResp.getSub().getPk() + "@" + addTopoResp.getSub().getDevId(),
-            resppacket);
-        return;
-      case SubKlinkAction.DEV_SEND_RESP:
-        resppacket.setBody(message.getPayload());
-        Tio.sendToUser(
-            TcpServerStarter.tioServer.getServerTioConfig(),
-            klinkResp.getPk() + "@" + klinkResp.getDevId(),
-            resppacket);
-        return;
-      case SubKlinkAction.REGISTER_RESP:
-        RegisterResp registerResp = JsonUtil.fromJson(payload, RegisterResp.class);
-        resppacket.setBody(message.getPayload());
-        Tio.sendToUser(
-            TcpServerStarter.tioServer.getServerTioConfig(),
-            registerResp.getPk() + "@" + registerResp.getDevId(),
-            resppacket);
-        return;
-
-      default:
-    }
   }
 }

@@ -25,3 +25,26 @@ tio:
         key-store:
         password:
         trust-store:
+
+iotos:
+  host: '106.75.50.110:1883'
+
+gateway:
+  DEV_PK: 'ecd49c91bdd4430d93f121f2e53b5bb8'
+  DEV_ID: 'gateway_parking'
+  devSecret: '5d85ff6089794d69a38244c093bb6953'
+
+subdev:
+  barrier:
+    pk: 'e35181badec84ae29041d1b36dd16257'
+    productSecret: '5a1d5a0ba6ca4464a4dc03f31eecb67d'
+
+AES:
+  key: 'cmVmb3JtZXJyZWZvcm1lcg=='
+
+http:
+  server:
+    port: 8070
+  client:
+    connect:
+      host: "http://localhost:8070"
