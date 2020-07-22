@@ -85,12 +85,14 @@ public class ProxyService {
     TopoSub topoSub = new TopoSub();
     topoSub.setPk(subDevPk);
     topoSub.setDevId(subDevId);
-    topoSub.setHashMethod(Constants.HASH_METHOD);
-    topoSub.setRandom(Constants.RANDOM);
-    topoSub.setSign(
-        ParseUtil.parseByte2HexStr(
-            ParseUtil.HmacSHA1Encrypt(
-                subDevPk + subDevId + subDevSecret + Constants.RANDOM, subDevSecret)));
+    if (subDevSecret != null) {
+      topoSub.setHashMethod(Constants.HASH_METHOD);
+      topoSub.setRandom(Constants.RANDOM);
+      topoSub.setSign(
+          ParseUtil.parseByte2HexStr(
+              ParseUtil.HmacSHA1Encrypt(
+                  subDevPk + subDevId + subDevSecret + Constants.RANDOM, subDevSecret)));
+    }
     addTopo.setSub(topoSub);
     addTopo.setPk(proxyConfig.getDEV_PK());
     addTopo.setDevId(proxyConfig.getDEV_ID());

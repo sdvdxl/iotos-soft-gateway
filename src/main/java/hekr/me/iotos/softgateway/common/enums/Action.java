@@ -12,6 +12,7 @@ import hekr.me.iotos.softgateway.common.klink.DevLogin;
 import hekr.me.iotos.softgateway.common.klink.DevLogout;
 import hekr.me.iotos.softgateway.common.klink.DevSend;
 import hekr.me.iotos.softgateway.common.klink.GetTopo;
+import hekr.me.iotos.softgateway.common.klink.GetTopoResp;
 import hekr.me.iotos.softgateway.common.klink.Klink;
 import hekr.me.iotos.softgateway.common.klink.KlinkResp;
 import hekr.me.iotos.softgateway.common.klink.NotSupport;
@@ -77,7 +78,7 @@ public enum Action {
   /** 获取拓扑关系 */
   GET_TOPO("getTopo", FrameType.DEV_UP, GetTopo.class),
   /** 获取拓扑关系回复 */
-  GET_TOPO_RESP("getTopoResp", FrameType.DEV_DOWN),
+  GET_TOPO_RESP("getTopoResp", FrameType.DEV_DOWN, GetTopoResp.class),
 
   /** 添加拓扑关系 */
   DEL_TOPO("delTopo", FrameType.DEV_UP, DelTopo.class),
