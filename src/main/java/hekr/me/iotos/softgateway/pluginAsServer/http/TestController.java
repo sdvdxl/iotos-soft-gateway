@@ -43,6 +43,32 @@ public class TestController {
     baseResp.setResMsg(JsonUtil.toJson(info));
     return Resps.bytes(request, JsonUtil.toBytes(baseResp), "ok");
   }
+
+  @RequestPath(value = "/postChargeRecord")
+  public HttpResponse chargeRecord(HttpRequest request) throws Exception {
+    BaseResp baseResp = new BaseResp();
+    List<ChargeReq> info = new ArrayList<>();
+    ChargeReq charge = new ChargeReq();
+
+    int chargeMoney = random.nextInt(50);
+    charge.setRecordID(Integer.toString(random.nextInt(10000)));
+    charge.setCarCode(generateCarID());
+    charge.setInTime(generateTime()[0]);
+    charge.setPayTime(generateTime()[1]);
+    charge.setParkID(Integer.toString(random.nextInt(10000)));
+    charge.setChargeMoney(chargeMoney);
+    charge.setGUID(Integer.toString(random.nextInt(1000000)));
+    charge.setPaidMoney(chargeMoney);
+    charge.setJMMoney(0);
+    charge.setChargeType(random.nextInt(4));
+    charge.setChargeSource(random.nextInt(15));
+    charge.setAmountType(random.nextInt(4));
+
+    info.add(charge);
+
+    baseResp.setResMsg(JsonUtil.toJson(info));
+    return Resps.bytes(request, JsonUtil.toBytes(baseResp), "ok");
+  }
 //
 //  @RequestPath(value = "/GetCarInfo")
 //  public HttpResponse getCarInfo(HttpRequest request) throws Exception {
