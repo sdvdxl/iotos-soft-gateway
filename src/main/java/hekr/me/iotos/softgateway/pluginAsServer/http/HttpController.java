@@ -5,9 +5,21 @@ import hekr.me.iotos.softgateway.common.codec.RawDataCodec;
 import hekr.me.iotos.softgateway.common.dto.BaseResp;
 import hekr.me.iotos.softgateway.common.dto.ChargeReq;
 import hekr.me.iotos.softgateway.common.dto.EntranceReq;
+import hekr.me.iotos.softgateway.common.enums.Action;
+import hekr.me.iotos.softgateway.common.klink.DevSend;
+import hekr.me.iotos.softgateway.common.klink.ModelData;
+import hekr.me.iotos.softgateway.northProxy.ProxyService;
+import hekr.me.iotos.softgateway.northProxy.device.Device;
+import hekr.me.iotos.softgateway.northProxy.device.DeviceService;
+import hekr.me.iotos.softgateway.northProxy.device.DeviceType;
+import hekr.me.iotos.softgateway.utils.AESUtils;
 import hekr.me.iotos.softgateway.utils.JsonUtil;
+import hekr.me.iotos.softgateway.utils.MapUtil;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tio.http.common.HttpRequest;
 import org.tio.http.common.HttpResponse;
@@ -20,6 +32,10 @@ import org.tio.http.server.util.Resps;
 @RequestPath(value = "/gateway")
 public class HttpController {
 
+  @Autowired private DeviceService deviceService;
+
+  @Autowired private ProxyService proxyService;
+
   public HttpController() {}
 
   @SneakyThrows
@@ -27,13 +43,36 @@ public class HttpController {
   public HttpResponse postInOutRecord(HttpRequest request) {
     // 将数据解码后
     try {
-      //      EntranceReq entranceReq =
-      //          JsonUtil.fromBytes(AESUtils.decodeRequestData(request.getBody()),
-      // EntranceReq.class);
-      EntranceReq entranceReq = JsonUtil.fromBytes(request.getBody(), EntranceReq.class);
+      EntranceReq entranceReq =
+          JsonUtil.fromBytes(
+              AESUtils.decodeRequestData(new String(request.getBody())), EntranceReq.class);
+      //      EntranceReq entranceReq = JsonUtil.fromBytes(request.getBody(), EntranceReq.class);
       if (checkEntranceReq(entranceReq)) {
         return Resps.json(request, getLackResp());
       }
+
+      Device device = deviceService.getByIdAndType(entranceReq.getChannelID(), DeviceType.BARRIER);
+
+      DevSend devSend = new DevSend();
+      devSend.setDevId(device.getDevId());
+      devSend.setPk(device.getPk());
+
+      ModelData data = new ModelData();
+      data.setCmd("reportInOrOut");
+      Map<String, Object> resp = new HashMap<>();
+      resp.put("GUID", entranceReq.getGUID());
+      resp.put("carCode", entranceReq.getCarCode());
+      resp.put("imagePath", entranceReq.getImagePath());
+      resp.put("inOrOut", entranceReq.getInOrOut());
+      resp.put("inTime", entranceReq.getInTime());
+      resp.put("parkID", entranceReq.getParkID());
+      resp.put("passTime", entranceReq.getPassTime());
+
+      data.setParams(resp);
+      devSend.setData(data);
+      devSend.setAction(Action.DEV_SEND.getAction());
+      proxyService.devSend(devSend);
+
       return Resps.json(request, getSuccessResp());
     } catch (Exception e) {
       log.warn(e.getMessage());

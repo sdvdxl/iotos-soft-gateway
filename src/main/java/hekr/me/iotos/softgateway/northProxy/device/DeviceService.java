@@ -56,11 +56,11 @@ public class DeviceService {
   private static final ConcurrentMap<String, Device> SUBSYSTEM_DEVICE_MAP =
       new ConcurrentHashMap<>();
 
-  public static Device getByDevId(String devId) {
+  public Device getByDevId(String devId) {
     return IOT_DEVICE_MAP.getOrDefault(devId, null);
   }
 
-  public static Device getByIdAndType(String Id, DeviceType deviceType) {
+  public Device getByIdAndType(String Id, DeviceType deviceType) {
     return SUBSYSTEM_DEVICE_MAP.getOrDefault(Id + "@" + deviceType.name(), null);
   }
 
