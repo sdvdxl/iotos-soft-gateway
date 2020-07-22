@@ -1,11 +1,14 @@
 package hekr.me.iotos.softgateway.pluginAsClient.http;
 
+import hekr.me.iotos.softgateway.common.config.ProxyConfig;
 import hekr.me.iotos.softgateway.common.dto.BaseResp;
 import hekr.me.iotos.softgateway.common.dto.ChargeReq;
 import hekr.me.iotos.softgateway.common.dto.EntranceReq;
 import hekr.me.iotos.softgateway.utils.JsonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.tio.http.common.HttpRequest;
 import org.tio.http.common.HttpResponse;
 import org.tio.http.server.annotation.RequestPath;
@@ -16,32 +19,32 @@ import java.util.List;
 import java.util.Random;
 
 @Slf4j
-@RequestPath
+//@Service
+@Component
 public class TestClient {
-
     @Autowired
-    Random random;
+    ProxyConfig proxyConfig;
 
-    @RequestPath(value = "/postInOutRecord")
-    public HttpResponse inOutRecord(HttpRequest request) throws Exception {
-        BaseResp baseResp = new BaseResp();
+    private Random random=new Random();
+
+    public void inOutRecord(HttpRequest request) throws Exception {
         List<EntranceReq> info = new ArrayList<>();
         EntranceReq car = new EntranceReq();
 
         car.setCarCode(generateCarID());
         car.setInTime(generateTime()[0]);
         car.setPassTime(generateTime()[1]);
-        car.setParkID(Integer.toString(random.nextInt(10000)));
+        car.setParkID(Integer.toString(random.nextInt(10)));
         car.setInOrOut(Integer.toString(random.nextInt(1)));
         car.setGUID(Integer.toString(random.nextInt(1000000)));
         car.setChannelID(Integer.toString(random.nextInt(10)));
         car.setChannelName("test");
-        car.setImagePath("https://www.cnblogs.com/libinhong/p/10988752.png");
-
+        car.setImagePath("https://www.test.com/libinhong/p/10988752.png");
         info.add(car);
+        HttpUtils httpUtils = new HttpUtils();
+        String url = proxyConfig.getHTTP_URL() + "/gateway/postInOutRecord";
+//        httpUtils.post()
 
-        baseResp.setResMsg(JsonUtil.toJson(info));
-        return Resps.bytes(request, JsonUtil.toBytes(baseResp), "ok");
     }
 
     @RequestPath(value = "/postChargeRecord")
