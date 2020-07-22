@@ -5,6 +5,9 @@ import hekr.me.iotos.softgateway.common.dto.BaseResp;
 import hekr.me.iotos.softgateway.common.dto.ChargeReq;
 import hekr.me.iotos.softgateway.common.dto.EntranceReq;
 import hekr.me.iotos.softgateway.utils.JsonUtil;
+import hekr.me.iotos.softgateway.utils.MapUtil;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,7 +31,6 @@ public class TestClient {
     private Random random=new Random();
 
     public void inOutRecord(HttpRequest request) throws Exception {
-        List<EntranceReq> info = new ArrayList<>();
         EntranceReq car = new EntranceReq();
 
         car.setCarCode(generateCarID());
@@ -40,10 +42,13 @@ public class TestClient {
         car.setChannelID(Integer.toString(random.nextInt(10)));
         car.setChannelName("test");
         car.setImagePath("https://www.test.com/libinhong/p/10988752.png");
-        info.add(car);
+
+        Map<String, String> headerParams = new HashMap<>();
+        headerParams.put("Content-Type", "application/json");
+        Map<String, Object> body = MapUtil.objectToMap(car);
         HttpUtils httpUtils = new HttpUtils();
         String url = proxyConfig.getHTTP_URL() + "/gateway/postInOutRecord";
-//        httpUtils.post()
+        byte[] post = httpUtils.post(url, headerParams, body);
 
     }
 
