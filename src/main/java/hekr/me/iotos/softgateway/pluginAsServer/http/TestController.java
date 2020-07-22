@@ -69,39 +69,6 @@ public class TestController {
     baseResp.setResMsg(JsonUtil.toJson(info));
     return Resps.bytes(request, JsonUtil.toBytes(baseResp), "ok");
   }
-//
-//  @RequestPath(value = "/GetCarInfo")
-//  public HttpResponse getCarInfo(HttpRequest request) throws Exception {
-//    ChargeReq chargeReq = JsonUtil.fromBytes(request.getBody(), ChargeReq.class);
-//    BaseResp baseResp = new BaseResp();
-//    List<ChargeReq> info = new ArrayList<>();
-//    ChargeReq car1 = new ChargeReq();
-//    car1.setCarCode(Integer.toString(random.nextInt(100000)));
-//    car1.setInTime(Integer.toString(random.nextInt(100000) + 1595330303));
-//    int chargeMoney1 = random.nextInt(50);
-//    car1.setChargeMoney(chargeMoney1);
-//    car1.setPaidMoney(chargeMoney1);
-//    car1.setJMMoney(0);
-//
-//    ChargeReq car2 = new ChargeReq();
-//    car1.setCarCode(Integer.toString(random.nextInt(100000)));
-//    car1.setInTime(Integer.toString(random.nextInt(100000) + 1595330303));
-//    int chargeMoney2 = random.nextInt(50);
-//    car1.setChargeMoney(chargeMoney2);
-//    car1.setPaidMoney(chargeMoney2);
-//    car1.setJMMoney(0);
-//    if ("carCode001".equals(chargeReq.getCarCode())) {
-//      info.add(car1);
-//    } else if ("carCode002".equals(chargeReq.getCarCode())) {
-//      info.add(car2);
-//    } else {
-//      info.add(car1);
-//      info.add(car2);
-//    }
-//
-//    baseResp.setResMsg(JsonUtil.toJson(info));
-//    return Resps.bytes(request, JsonUtil.toBytes(baseResp), "ok");
-//  }
 
   // 车牌号的组成一般为：省份+地区代码+5位数字/字母
   private static String generateCarID() {
@@ -110,7 +77,7 @@ public class TestController {
       '京', '津', '沪', '渝', '冀', '豫', '云', '辽', '黑', '湘', '皖', '鲁', '苏', '浙', '赣', '鄂', '甘', '晋', '陕',
       '吉', '闽', '贵', '粤', '青', '川', '琼', '宁', '新', '藏', '桂', '蒙', '港', '澳', '台'
     };
-    String alphas = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"; // 24个字母 + 10个数字
+    String alphas = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"; // 26个字母 + 10个数字
 
     Random random = new Random(); // 随机数生成器
 
