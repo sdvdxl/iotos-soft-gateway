@@ -19,7 +19,6 @@ import org.tio.http.server.util.Resps;
 @Service
 @RequestPath(value = "/gateway")
 public class HttpController {
-  private DataCodec dataCodec = new RawDataCodec();
 
   public HttpController() {}
 

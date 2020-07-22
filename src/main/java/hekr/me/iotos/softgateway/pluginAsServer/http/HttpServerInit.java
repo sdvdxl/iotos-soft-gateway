@@ -4,6 +4,7 @@ import hekr.me.iotos.softgateway.IoTGatewayApplication;
 import hekr.me.iotos.softgateway.common.config.ProxyConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.tio.http.common.HttpConfig;
 import org.tio.http.common.handler.HttpRequestHandler;
@@ -14,18 +15,22 @@ import org.tio.utils.jfinal.P;
 /** http server 初始化启动类 */
 @Service
 public class HttpServerInit {
-  //  @Autowired ProxyConfig proxyConfig;
+  //  private ProxyConfig proxyConfig;
 
-  @Value("${http.server.port}")
-  private int HTTP_PORT;
+  //  @Value("${http.server.port}")
+  //  private int HTTP_PORT;
 
   public HttpConfig httpConfig;
   public HttpRequestHandler requestHandler;
   public HttpServerStarter httpServerStarter;
 
-  public HttpServerInit() throws Exception {
+  @Autowired
+  public HttpServerInit(ProxyConfig proxyConfig) throws Exception {
+    //    this.proxyConfig = proxyConfig;
 
-    int port = HTTP_PORT; // 启动端口
+    //    int port = HTTP_PORT; // 启动端口
+    int port = proxyConfig.getHTTP_PORT(); // 启动端口
+
     httpConfig = new HttpConfig(port, null, null, null);
     httpConfig.setUseSession(false);
     httpConfig.setCheckHost(false);

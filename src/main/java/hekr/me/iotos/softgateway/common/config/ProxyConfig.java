@@ -37,4 +37,12 @@ public class ProxyConfig {
 
   @Value("${http.server.port}")
   private int HTTP_PORT;
+
+  public static String AES_KEY;
+
+  @Value("${AES.key}")
+  public void setAesKey(String aesKey){
+    AES_KEY = aesKey;
+  }
+
 }

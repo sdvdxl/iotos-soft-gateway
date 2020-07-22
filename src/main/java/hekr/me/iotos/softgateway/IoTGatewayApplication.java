@@ -14,7 +14,7 @@ public class IoTGatewayApplication {
     SpringApplication.run(IoTGatewayApplication.class, args);
 
     // 获取配置文件中的相关参数
-    P.use("config.properties");
+    P.use("application.yml");
 
     // 软网关初始化，完成软网关参数读取、登陆操作
 //    ProxyService.init();
