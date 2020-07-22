@@ -21,8 +21,6 @@ public class IoTGatewayApplication {
     // 软网关对云端下发指令或回复指令进行相应处理的processor注册
     //    ProxyCallbackService.processorManager.register(new CloudSendProcessor());
 
-
-
     //     使用http client示例
     //    Thread.sleep(5000);
     //    HttpClient.example();
