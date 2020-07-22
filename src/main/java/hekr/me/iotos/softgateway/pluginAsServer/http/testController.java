@@ -21,8 +21,8 @@ import java.util.Random;
 
 @Slf4j
 @RequestPath
-public class TestController {
-  public TestController() {}
+public class testController {
+  public testController() {}
 
   @SneakyThrows
   @RequestPath(value = "/GetChannelInfo")
