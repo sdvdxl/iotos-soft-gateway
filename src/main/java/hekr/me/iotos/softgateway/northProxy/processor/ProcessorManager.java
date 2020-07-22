@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProcessorManager {
 
-  private Map<Action, Processor> processorMap = new HashMap<>();
+  private Map<Action, Processor> processorMap;
 
   public ProcessorManager(List<Processor> processorList) {
     processorMap =

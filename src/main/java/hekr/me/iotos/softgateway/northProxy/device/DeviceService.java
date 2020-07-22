@@ -144,6 +144,10 @@ public class DeviceService {
     for (String s : split) {
       try {
         Device device = JsonUtil.fromJson(s, Device.class);
+        if (DeviceType.BARRIER.equals(device.getDeviceType())) {
+          device.setPk(barrierPk);
+          device.setProductSecret(barrierProductSecret);
+        }
         deviceList.add(device);
       } catch (Exception e) {
         e.printStackTrace();

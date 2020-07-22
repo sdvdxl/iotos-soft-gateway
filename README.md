@@ -54,3 +54,8 @@
 ### 3、开发参考建议
 - 开发者可以自行导入springboot以方便开发，如Processor的自动装配等
 - 建议开发者将实际设备和IoTOS设备的映射关系缓存在内存中，甚至持久化，方便设备的对接与维护
+
+
+```json
+{"channelID":1,"devId":"barrier001","deviceType":"BARRIER","devName":"道闸一号"}
+```
