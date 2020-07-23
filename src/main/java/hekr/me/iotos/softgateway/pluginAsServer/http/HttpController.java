@@ -20,6 +20,9 @@ import java.util.Map;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 import org.tio.http.common.HttpRequest;
 import org.tio.http.common.HttpResponse;
@@ -28,7 +31,7 @@ import org.tio.http.server.util.Resps;
 
 /** */
 @Slf4j
-@Service
+@Component
 @RequestPath(value = "/gateway")
 public class HttpController {
 
@@ -47,9 +50,9 @@ public class HttpController {
           JsonUtil.fromBytes(
               AESUtils.decodeRequestData(new String(request.getBody())), EntranceReq.class);
       //      EntranceReq entranceReq = JsonUtil.fromBytes(request.getBody(), EntranceReq.class);
-      if (checkEntranceReq(entranceReq)) {
-        return Resps.json(request, getLackResp());
-      }
+      //      if (checkEntranceReq(entranceReq)) {
+      //        return Resps.json(request, getLackResp());
+      //      }
 
       Device device = deviceService.getByIdAndType(entranceReq.getChannelID(), DeviceType.BARRIER);
 
