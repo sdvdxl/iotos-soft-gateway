@@ -1,7 +1,5 @@
 package hekr.me.iotos.softgateway.pluginAsServer.http;
 
-import hekr.me.iotos.softgateway.common.codec.DataCodec;
-import hekr.me.iotos.softgateway.common.codec.RawDataCodec;
 import hekr.me.iotos.softgateway.common.dto.BaseResp;
 import hekr.me.iotos.softgateway.common.dto.ChargeReq;
 import hekr.me.iotos.softgateway.common.dto.EntranceReq;
@@ -14,25 +12,23 @@ import hekr.me.iotos.softgateway.northProxy.device.DeviceService;
 import hekr.me.iotos.softgateway.northProxy.device.DeviceType;
 import hekr.me.iotos.softgateway.utils.AESUtils;
 import hekr.me.iotos.softgateway.utils.JsonUtil;
-import hekr.me.iotos.softgateway.utils.MapUtil;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tio.http.common.HttpRequest;
 import org.tio.http.common.HttpResponse;
-import org.tio.http.server.annotation.RequestPath;
 import org.tio.http.server.util.Resps;
 
 /** */
 @Slf4j
-@Component
-@RequestPath(value = "/gateway")
+@RestController
+@RequestMapping(value = "/gateway")
 public class HttpController {
 
   @Autowired private DeviceService deviceService;
@@ -42,13 +38,14 @@ public class HttpController {
   public HttpController() {}
 
   @SneakyThrows
-  @RequestPath(value = "/postInOutRecord")
-  public HttpResponse postInOutRecord(HttpRequest request) {
+  @PostMapping("/postInOutRecord")
+  public Object postInOutRecord(@RequestBody String body) {
+
     // 将数据解码后
     try {
       EntranceReq entranceReq =
           JsonUtil.fromBytes(
-              AESUtils.decodeRequestData(new String(request.getBody())), EntranceReq.class);
+              AESUtils.decodeRequestData(body), EntranceReq.class);
       //      EntranceReq entranceReq = JsonUtil.fromBytes(request.getBody(), EntranceReq.class);
       //      if (checkEntranceReq(entranceReq)) {
       //        return Resps.json(request, getLackResp());
@@ -76,15 +73,15 @@ public class HttpController {
       devSend.setAction(Action.DEV_SEND.getAction());
       proxyService.devSend(devSend);
 
-      return Resps.json(request, getSuccessResp());
+      return getSuccessResp();
     } catch (Exception e) {
       log.warn(e.getMessage());
-      return Resps.resp500(request, e);
+      throw e;
     }
   }
 
   @SneakyThrows
-  @RequestPath(value = "/postChargeRecord")
+  @PostMapping("/postChargeRecord")
   public HttpResponse postChargeRecord(HttpRequest request) {
     // 将数据解码后
     try {

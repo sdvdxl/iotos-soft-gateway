@@ -13,7 +13,7 @@ import org.tio.http.server.handler.DefaultHttpRequestHandler;
 import org.tio.utils.jfinal.P;
 
 /** http server 初始化启动类 */
-@Component
+//@Component
 public class HttpServerInit {
   //  private ProxyConfig proxyConfig;
 
@@ -24,7 +24,7 @@ public class HttpServerInit {
   public HttpRequestHandler requestHandler;
   public HttpServerStarter httpServerStarter;
 
-  @Autowired
+//  @Autowired
   public HttpServerInit(ProxyConfig proxyConfig) throws Exception {
     //    this.proxyConfig = proxyConfig;
 

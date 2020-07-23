@@ -1,4 +1,4 @@
-server.port: 8701
+server.port: 8070
 tio:
   core:
     server:
