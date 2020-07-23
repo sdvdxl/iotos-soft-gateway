@@ -60,7 +60,7 @@ public class HttpController {
       ModelData data = new ModelData();
       data.setCmd("reportInOrOut");
       Map<String, Object> resp = new HashMap<>();
-      resp.put("GUID", entranceReq.getGUID());
+      resp.put("GUID", entranceReq.getGuid());
       resp.put("carCode", entranceReq.getCarCode());
       resp.put("imagePath", entranceReq.getImagePath());
       resp.put("inOrOut", entranceReq.getInOrOut());
@@ -114,7 +114,7 @@ public class HttpController {
         entranceReq.getPassTime(),
         entranceReq.getParkID(),
         entranceReq.getInOrOut(),
-        entranceReq.getGUID(),
+        entranceReq.getGuid(),
         entranceReq.getChannelID());
   }
 

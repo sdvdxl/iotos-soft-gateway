@@ -29,7 +29,7 @@ public class TestClient {
     car.setPassTime(generateTime()[1]);
     car.setParkID(Integer.toString(random.nextInt(10)));
     car.setInOrOut(Integer.toString(random.nextInt(1)));
-    car.setGUID(Integer.toString(random.nextInt(100)));
+    car.setGuid(Integer.toString(random.nextInt(100)));
     car.setChannelID("1");
     car.setChannelName("test");
     car.setImagePath("https://www.test.com/libinhong/p/10988752.png");

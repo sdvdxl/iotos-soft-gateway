@@ -1,5 +1,6 @@
 package hekr.me.iotos.softgateway.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
@@ -17,7 +18,8 @@ public class EntranceReq {
   /** 必选，0:进场，1：出场 */
   private String inOrOut;
   /** 必选，车辆本次进场出场标识 */
-  private String GUID;
+  @JsonProperty("GUID")
+  private String guid;
   /** 必选，通道id */
   private String channelID;
   /** 通道名称 */
