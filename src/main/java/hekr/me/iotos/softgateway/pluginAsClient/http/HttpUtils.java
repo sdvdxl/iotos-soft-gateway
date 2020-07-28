@@ -2,7 +2,7 @@ package hekr.me.iotos.softgateway.pluginAsClient.http;
 
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson.JSON;
-import hekr.me.iotos.softgateway.utils.AESUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Iterator;
@@ -64,10 +64,6 @@ public class HttpUtils {
 
     // 此处为body为json格式的post请求
     MediaType mediaType = MediaType.parse("application/json;charset=UTF-8");
-    // 做加密处理
-    RequestBody requestBody =
-        RequestBody.create(mediaType, AESUtils.encodeBody(JSON.toJSONString(bodyParams)));
-    requestBuider.post(requestBody);
 
     Response response = null;
     try {

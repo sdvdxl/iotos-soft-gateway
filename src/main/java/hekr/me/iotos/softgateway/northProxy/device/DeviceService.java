@@ -4,8 +4,6 @@ import static java.util.stream.Collectors.toList;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.http.HttpUtil;
-import hekr.me.iotos.softgateway.common.dto.BaseResp;
-import hekr.me.iotos.softgateway.common.dto.GateControlReq;
 import hekr.me.iotos.softgateway.common.enums.Action;
 import hekr.me.iotos.softgateway.common.klink.CloudSend;
 import hekr.me.iotos.softgateway.common.klink.Dev;
@@ -88,53 +86,6 @@ public class DeviceService {
       return;
     }
     proxyService.getConfig();
-  }
-
-  public void deviceCommand(CloudSend cloudSend) {
-    Device device = getByDevId(cloudSend.getDevId());
-    if (DeviceType.BARRIER.equals(device.getDeviceType())) {
-      barrierCommand(cloudSend);
-    }
-  }
-
-  public void barrierCommand(CloudSend cloudSend) {
-    switch (cloudSend.getData().getCmd()) {
-      case "gateControl":
-        gateControl(cloudSend);
-        break;
-      default:
-        break;
-    }
-  }
-
-  private void gateControl(CloudSend cloudSend) {
-    Map<String, Object> params = cloudSend.getData().getParams();
-    GateControlReq gateControlReq = new GateControlReq();
-    Device device = getByDevId(cloudSend.getDevId());
-    gateControlReq.setChannelID(device.getChannelID());
-    gateControlReq.setControlType((int) params.get("controlType"));
-    if (params.containsKey("reason")) {
-      gateControlReq.setReason((String) params.get("reason"));
-    }
-    if (params.containsKey("userID")) {
-      gateControlReq.setReason((String) params.get("userID"));
-    }
-    byte[] bytes = httpClient.gateControl(gateControlReq);
-    BaseResp baseResp = JsonUtil.fromBytes(bytes, BaseResp.class);
-
-    // 返回数据上报
-    DevSend devSend = new DevSend();
-    devSend.setDevId(device.getDevId());
-    devSend.setPk(device.getPk());
-    ModelData data = new ModelData();
-    data.setCmd("reportCallback");
-    Map<String, Object> resp = new HashMap<>();
-    resp.put("resCode", baseResp.getResCode());
-    resp.put("resMsg", baseResp.getResMsg());
-    data.setParams(resp);
-    devSend.setData(data);
-    devSend.setAction(Action.DEV_SEND.getAction());
-    proxyService.devSend(devSend);
   }
 
   public void getConfigResp(GetConfigResp getConfigResp) {

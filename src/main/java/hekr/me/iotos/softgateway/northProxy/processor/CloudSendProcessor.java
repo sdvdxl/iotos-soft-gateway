@@ -12,10 +12,9 @@ import org.springframework.stereotype.Component;
 public class CloudSendProcessor implements Processor<CloudSend> {
 
   @Autowired private DeviceService deviceService;
+
   @Override
-  public void handle(CloudSend klink) {
-        deviceService.deviceCommand(klink);
-  }
+  public void handle(CloudSend klink) {}
 
   @Override
   public Action getAction() {
