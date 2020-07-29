@@ -41,12 +41,6 @@ public class DeviceService {
 
   @Autowired private HttpClient httpClient;
 
-  @Value("${subdev.barrier.pk}")
-  private String barrierPk;
-
-  @Value("${subdev.barrier.productSecret}")
-  private String barrierProductSecret;
-
   /** key:pk@devId */
   private static final ConcurrentMap<String, Device> IOT_DEVICE_MAP = new ConcurrentHashMap<>();
 
@@ -68,10 +62,7 @@ public class DeviceService {
     SUBSYSTEM_DEVICE_MAP.clear();
     for (Device device : deviceList) {
       IOT_DEVICE_MAP.put(device.getDevId(), device);
-      if (device.getDeviceType() == DeviceType.BARRIER) {
-        SUBSYSTEM_DEVICE_MAP.put(
-            device.getChannelID() + "@" + device.getDeviceType().name(), device);
-      }
+      SUBSYSTEM_DEVICE_MAP.put(device.getId() + "@" + device.getDeviceTypeId(), device);
     }
     proxyService.getTopo();
   }
@@ -95,10 +86,6 @@ public class DeviceService {
     for (String s : split) {
       try {
         Device device = JsonUtil.fromJson(s, Device.class);
-        if (DeviceType.BARRIER.equals(device.getDeviceType())) {
-          device.setPk(barrierPk);
-          device.setProductSecret(barrierProductSecret);
-        }
         deviceList.add(device);
       } catch (Exception e) {
         e.printStackTrace();
@@ -114,10 +101,6 @@ public class DeviceService {
     for (String s : split) {
       try {
         Device device = JsonUtil.fromJson(s, Device.class);
-        if (DeviceType.BARRIER.equals(device.getDeviceType())) {
-          device.setPk(barrierPk);
-          device.setProductSecret(barrierProductSecret);
-        }
         deviceList.add(device);
       } catch (Exception e) {
         e.printStackTrace();

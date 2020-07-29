@@ -7,7 +7,7 @@ import lombok.Data;
  * @date 2020/7/29
  */
 @Data
-public class Device {
+public class DeviceDto {
   /** 设备Id */
   private String Id;
   /** 设备名称 */
