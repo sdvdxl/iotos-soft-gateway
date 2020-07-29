@@ -47,19 +47,19 @@ public class DeviceService {
   @Value("${subdev.barrier.productSecret}")
   private String barrierProductSecret;
 
-  /** key:devId */
+  /** key:pk@devId */
   private static final ConcurrentMap<String, Device> IOT_DEVICE_MAP = new ConcurrentHashMap<>();
 
-  /** key:channelId@deviceType */
+  /** key:Id@deviceTypeId */
   private static final ConcurrentMap<String, Device> SUBSYSTEM_DEVICE_MAP =
       new ConcurrentHashMap<>();
 
-  public Device getByDevId(String devId) {
-    return IOT_DEVICE_MAP.getOrDefault(devId, null);
+  public Device getByPkAndDevId(String pk, String devId) {
+    return IOT_DEVICE_MAP.getOrDefault(pk + "@" + devId, null);
   }
 
-  public Device getByIdAndType(String Id, DeviceType deviceType) {
-    return SUBSYSTEM_DEVICE_MAP.getOrDefault(Id + "@" + deviceType.name(), null);
+  public Device getByIdAndDevType(String Id, String deviceTypeId) {
+    return SUBSYSTEM_DEVICE_MAP.getOrDefault(Id + "@" + deviceTypeId, null);
   }
 
   public synchronized void updateDevices(List<Device> deviceList) {
