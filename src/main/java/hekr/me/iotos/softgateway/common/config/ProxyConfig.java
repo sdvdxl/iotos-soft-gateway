@@ -33,6 +33,12 @@ public class ProxyConfig {
   @Value("${http.client.connect.host}")
   private String HTTP_URL;
 
+  @Value("${http.client.connect.aid}")
+  private String AID;
+
+  @Value("${http.client.connect.key}")
+  private String KEY;
+
   @Value("${http.server.port}")
   private int HTTP_PORT;
 
