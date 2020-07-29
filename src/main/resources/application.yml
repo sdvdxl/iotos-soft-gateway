@@ -48,3 +48,5 @@ http:
   client:
     connect:
       host: "http://localhost:8070"
+      aid: "test"
+      key: "111111"

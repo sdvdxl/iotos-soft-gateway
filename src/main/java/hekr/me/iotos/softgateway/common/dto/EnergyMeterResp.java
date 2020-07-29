@@ -4,12 +4,11 @@ import lombok.Data;
 
 @Data
 public class EnergyMeterResp {
-
-  private String StatusCode;
-  /** 返回信息 */
-  private String Info;
-  /** 返回结果数据，本接口为项目基本信息 */
-  private String Data;
+  //  private String StatusCode;
+  //  /** 返回信息 */
+  //  private String Info;
+  //  /** 返回结果数据，本接口为项目基本信息 */
+  //  private String Data;
 
   /** 关键字 */
   public String Id;

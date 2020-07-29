@@ -12,14 +12,12 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class ProxyConfig {
 
-  // tcp://MQTT安装的服务器地址:MQTT定义的端口号
-  // 进入产品中心-产品开发-智慧消防平台软网关，"MQTT接入方式"栏目即可查询
   @Value("${iotos.host}")
   private String HOST;
-  // 软网关的产品pk，进入产品中心-设备管理-智慧消防平台软网关，"产品pk"栏目即可查询
+
   @Value("${gateway.DEV_PK}")
   private String DEV_PK;
-  // 软网关的设备id，进入产品中心-设备管理-智慧消防平台软网关，"产品id"栏目即可查询
+
   @Value("${gateway.DEV_ID}")
   private String DEV_ID;
 
@@ -41,8 +39,7 @@ public class ProxyConfig {
   public static String AES_KEY;
 
   @Value("${AES.key}")
-  public void setAesKey(String aesKey){
+  public void setAesKey(String aesKey) {
     AES_KEY = aesKey;
   }
-
 }
