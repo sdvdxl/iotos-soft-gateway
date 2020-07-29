@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class EnergyMeterResp {
+
   private String StatusCode;
   /** 返回信息 */
   private String Info;
