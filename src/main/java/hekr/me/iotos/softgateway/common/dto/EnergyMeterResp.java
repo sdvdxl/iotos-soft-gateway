@@ -27,15 +27,15 @@ public class EnergyMeterResp {
   /** 能耗类别编码 */
   public String EnergyType;
   /** 该数据对应设备类别中的属性定义顺序号 */
-  public String DefineIndex;
+  public int DefineIndex;
   /** 计量用标志，0-普通（总值），1-峰值，2-谷值，3-平值 */
-  public String MeterFlag;
+  public int MeterFlag;
   /** 当前读数 */
-  public String CurValue;
+  public double CurValue;
   /** 上期读数 */
-  public String PreValue;
+  public double PreValue;
   /** 调整读数，换表时需要 */
-  public String AdjustValue;
+  public double AdjustValue;
   /** 本期用量 */
-  public String Quantity;
+  public double Quantity;
 }

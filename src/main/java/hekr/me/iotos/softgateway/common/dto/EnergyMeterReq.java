@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class EnergyMeterReq {
-
   /** 能耗类别代码 */
   private String energyType;
   /** 查询依据的父类别，取值为Area或Customer，表示查询区域或客户下的数据 */
