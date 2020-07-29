@@ -1,6 +1,7 @@
 package hekr.me.iotos.softgateway.pluginAsClient.http;
 
 import hekr.me.iotos.softgateway.common.config.ProxyConfig;
+import hekr.me.iotos.softgateway.common.dto.EnergyMeterReq;
 import hekr.me.iotos.softgateway.utils.MapUtil;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,13 +13,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class HttpClient {
   @Autowired ProxyConfig proxyConfig;
+  EnergyMeterReq energyMeterReq = new EnergyMeterReq();
+  Map<String, Object> energyMeter = MapUtil.objectToMap(energyMeterReq);
 
-//  public byte[] gateControl(GateControlReq gateControlReq) {
-//    Map<String, Object> gateControl = MapUtil.objectToMap(gateControlReq);
-//    Map<String, String> headerParams = new HashMap<>();
-//    headerParams.put("Content-Type", "application/json");
-//    String url = proxyConfig.getHTTP_URL() + "/GetChannelInfo";
-//    HttpUtils httpUtils = new HttpUtils();
-//    return httpUtils.post(url, headerParams, gateControl);
-//  }
+  public byte[] energyMeter(EnergyMeterReq energyMeterReq) {
+    Map<String, Object> eneryMeterCtrl = MapUtil.objectToMap(energyMeterReq);
+    Map<String, String> headerParams = new HashMap<>();
+    headerParams.put("Content-Type", "application/json");
+    String url = proxyConfig.getHTTP_URL() + "/api/bi/GetEnergyMeterData";
+    HttpUtils httpUtils = new HttpUtils();
+    return httpUtils.get(url, headerParams, eneryMeterCtrl);
+  }
 }
