@@ -3,10 +3,7 @@ package hekr.me.iotos.softgateway.pluginAsClient.http;
 import com.fasterxml.jackson.core.type.TypeReference;
 import hekr.me.iotos.softgateway.common.config.ProxyConfig;
 import hekr.me.iotos.softgateway.common.constant.Constants;
-import hekr.me.iotos.softgateway.common.dto.BaseResp;
-import hekr.me.iotos.softgateway.common.dto.EnergyMeterReq;
-import hekr.me.iotos.softgateway.common.dto.EnergyMeterResp;
-import hekr.me.iotos.softgateway.common.dto.TokenResp;
+import hekr.me.iotos.softgateway.common.dto.*;
 import hekr.me.iotos.softgateway.utils.JsonUtil;
 import hekr.me.iotos.softgateway.utils.MapUtil;
 import hekr.me.iotos.softgateway.utils.SignUtil;
@@ -73,5 +70,19 @@ public class HttpClient {
     byte[] bytes = httpUtils.get(url, headers, energyMeterCtrl);
     BaseResp<EnergyMeterResp> energyMeterResp =
         JsonUtil.fromBytes(bytes, new TypeReference<BaseResp<EnergyMeterResp>>() {});
+  }
+
+  public void getRuntimeData(RuntimeReq runtimeReq) {
+    Map<String, Object> runtimeDataCtrl = MapUtil.objectToMap(runtimeReq);
+    Map<String, String> headers = getHeaders(HttpUtils.getParams(runtimeDataCtrl));
+    if (headers == null) {
+      log.warn("请求[GetRuntimeData]失败，未完成登陆校验");
+      return;
+    }
+    String url = proxyConfig.getHTTP_URL() + "/api/bi/GetRuntimeData";
+    HttpUtils httpUtils = new HttpUtils();
+    byte[] bytes = httpUtils.get(url, headers, runtimeDataCtrl);
+    BaseResp<RuntimeResp> runtimeDataResp =
+        JsonUtil.fromBytes(bytes, new TypeReference<BaseResp<RuntimeResp>>() {});
   }
 }
