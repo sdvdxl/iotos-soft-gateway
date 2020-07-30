@@ -8,8 +8,9 @@ import cn.hutool.core.convert.Convert;
  */
 public class SignUtil {
   public static String GetSignature(String timeStamp, String nonce, String tokenKey, String data) {
+    String s = data.replaceAll("=", "").replaceAll("&", "");
     // 拼接签名数据
-    String signStr = timeStamp + nonce + tokenKey + data;
+    String signStr = timeStamp + nonce + tokenKey + s;
     byte[] bytes = signStr.getBytes();
     return DataSummary(bytes);
   }

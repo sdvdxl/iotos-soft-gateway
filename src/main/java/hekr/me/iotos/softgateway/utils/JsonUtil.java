@@ -58,6 +58,11 @@ public class JsonUtil {
   }
 
   @SneakyThrows
+  public static <T> T fromBytes(byte[] payload, TypeReference<T> tTypeReference) {
+    return objectMapper.readValue(payload, tTypeReference);
+  }
+
+  @SneakyThrows
   public static <T> T fromBase64(String payload, TypeReference<T> tTypeReference) {
     return objectMapper.readValue(Base64.decodeBase64(payload), tTypeReference);
   }
