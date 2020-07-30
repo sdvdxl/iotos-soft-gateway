@@ -4,28 +4,23 @@ import static java.util.stream.Collectors.toList;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.http.HttpUtil;
-import hekr.me.iotos.softgateway.common.enums.Action;
-import hekr.me.iotos.softgateway.common.klink.CloudSend;
-import hekr.me.iotos.softgateway.common.klink.Dev;
-import hekr.me.iotos.softgateway.common.klink.DevSend;
+import hekr.me.iotos.softgateway.common.dto.BaseResp;
+import hekr.me.iotos.softgateway.common.dto.RuntimeReq;
+import hekr.me.iotos.softgateway.common.dto.RuntimeResp;
 import hekr.me.iotos.softgateway.common.klink.DevUpgrade;
 import hekr.me.iotos.softgateway.common.klink.GetConfigResp;
 import hekr.me.iotos.softgateway.common.klink.GetTopoResp;
-import hekr.me.iotos.softgateway.common.klink.ModelData;
 import hekr.me.iotos.softgateway.northProxy.ProxyConnectService;
 import hekr.me.iotos.softgateway.northProxy.ProxyService;
 import hekr.me.iotos.softgateway.pluginAsClient.http.HttpClient;
 import hekr.me.iotos.softgateway.utils.JsonUtil;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -52,8 +47,8 @@ public class DeviceService {
     return IOT_DEVICE_MAP.getOrDefault(pk + "@" + devId, null);
   }
 
-  public Device getByIdAndDevType(String Id, String deviceTypeId) {
-    return SUBSYSTEM_DEVICE_MAP.getOrDefault(Id + "@" + deviceTypeId, null);
+  public Device getById(String Id) {
+    return SUBSYSTEM_DEVICE_MAP.getOrDefault(Id, null);
   }
 
   public synchronized void updateDevices(List<Device> deviceList) {
@@ -61,8 +56,8 @@ public class DeviceService {
     IOT_DEVICE_MAP.clear();
     SUBSYSTEM_DEVICE_MAP.clear();
     for (Device device : deviceList) {
-      IOT_DEVICE_MAP.put(device.getDevId(), device);
-      SUBSYSTEM_DEVICE_MAP.put(device.getId() + "@" + device.getDeviceTypeId(), device);
+      IOT_DEVICE_MAP.put(device.getPk() + "@" + device.getDevId(), device);
+      SUBSYSTEM_DEVICE_MAP.put(device.getId(), device);
     }
     proxyService.getTopo();
   }
@@ -115,15 +110,18 @@ public class DeviceService {
    * @param klink
    */
   public void syncDevices(GetTopoResp klink) {
-    List<String> gatewaySubDevs = klink.getSubs().stream().map(Dev::getDevId).collect(toList());
+    List<String> gatewaySubDevs =
+        klink.getSubs().stream().map(dev -> dev.getPk() + "@" + dev.getDevId()).collect(toList());
     doSyncDevice(gatewaySubDevs);
-    //    updateDeviceStatus();
+    updateDeviceStatus();
     //    doSyncDeviceInfo(allDevices);
   }
 
   private void doSyncDevice(List<String> gatewaySubDevs) {
     List<String> iotDeviceIdList =
-        IOT_DEVICE_MAP.values().stream().map(Device::getDevId).collect(toList());
+        IOT_DEVICE_MAP.values().stream()
+            .map(device -> device.getPk() + "@" + device.getDevId())
+            .collect(toList());
     // 找出 remoteDevs 中存在，但是 gatewaySubDevs 中不存在的，进行添加拓扑
     List<String> addTopoList = CollectionUtil.subtractToList(iotDeviceIdList, gatewaySubDevs);
     log.info("需要新添加的设备：{}", addTopoList);
@@ -167,6 +165,41 @@ public class DeviceService {
           Device device = IOT_DEVICE_MAP.get(d);
           proxyService.delDev(device.getPk(), d);
         });
+  }
+
+  /** 更新设备状态 */
+  private void updateDeviceStatus() {
+    String[] deviceIds = IOT_DEVICE_MAP.values().stream().map(Device::getId).toArray(String[]::new);
+    if (deviceIds.length <= 0) {
+      return;
+    }
+    String deviceIdString = String.join(",", deviceIds);
+    RuntimeReq runtimeReq = new RuntimeReq();
+    runtimeReq.setDeviceIds(deviceIdString);
+    BaseResp<List<RuntimeResp>> runtimeData = httpClient.getRuntimeData(runtimeReq);
+    if (runtimeData == null) {
+      return;
+    }
+    List<RuntimeResp> data = runtimeData.getData();
+    List<String> offlineList =
+        data.stream()
+            .filter(runtimeResp -> runtimeResp.getErrorCode() == -1)
+            .map(RuntimeResp::getDeviceId)
+            .collect(toList());
+
+    offlineList.forEach(
+        s -> {
+          Device device = getById(s);
+          proxyService.devLogout(device.getPk(), device.getDevId());
+        });
+
+    data.stream()
+        .filter(runtimeResp -> !offlineList.contains(runtimeResp.getDeviceId()))
+        .forEach(
+            runtimeResp -> {
+              Device device = getById(runtimeResp.getDeviceId());
+              proxyService.devLogin(device.getPk(), device.getDevId());
+            });
   }
 
   private void sleep(int timeout) {

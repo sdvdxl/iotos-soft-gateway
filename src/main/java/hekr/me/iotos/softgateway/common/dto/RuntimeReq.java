@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class RuntimeReq {
     /** 设备Id */
-    private String DeviceId;
+    private String DeviceIds;
 }

@@ -8,6 +8,7 @@ import hekr.me.iotos.softgateway.utils.JsonUtil;
 import hekr.me.iotos.softgateway.utils.MapUtil;
 import hekr.me.iotos.softgateway.utils.SignUtil;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,17 +73,16 @@ public class HttpClient {
         JsonUtil.fromBytes(bytes, new TypeReference<BaseResp<EnergyMeterResp>>() {});
   }
 
-  public void getRuntimeData(RuntimeReq runtimeReq) {
+  public BaseResp<List<RuntimeResp>> getRuntimeData(RuntimeReq runtimeReq) {
     Map<String, Object> runtimeDataCtrl = MapUtil.objectToMap(runtimeReq);
     Map<String, String> headers = getHeaders(HttpUtils.getParams(runtimeDataCtrl));
     if (headers == null) {
       log.warn("请求[GetRuntimeData]失败，未完成登陆校验");
-      return;
+      return null;
     }
     String url = proxyConfig.getHTTP_URL() + "/api/bi/GetRuntimeData";
     HttpUtils httpUtils = new HttpUtils();
     byte[] bytes = httpUtils.get(url, headers, runtimeDataCtrl);
-    BaseResp<RuntimeResp> runtimeDataResp =
-        JsonUtil.fromBytes(bytes, new TypeReference<BaseResp<RuntimeResp>>() {});
+    return JsonUtil.fromBytes(bytes, new TypeReference<BaseResp<List<RuntimeResp>>>() {});
   }
 }
