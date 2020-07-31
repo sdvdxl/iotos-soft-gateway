@@ -70,11 +70,14 @@ public class ProxyService {
     register.setDevId(subDevId);
     register.setPk(subDevPk);
     register.setName(devName);
-    register.setRandom(Constants.RANDOM);
-    register.setHashMethod(Constants.HASH_METHOD);
-    register.setSign(
-        ParseUtil.parseByte2HexStr(
-            ParseUtil.HmacSHA1Encrypt(subDevPk + productSecret + Constants.RANDOM, productSecret)));
+    if (productSecret != null) {
+      register.setRandom(Constants.RANDOM);
+      register.setHashMethod(Constants.HASH_METHOD);
+      register.setSign(
+          ParseUtil.parseByte2HexStr(
+              ParseUtil.HmacSHA1Encrypt(
+                  subDevPk + productSecret + Constants.RANDOM, productSecret)));
+    }
     proxyConnectService.publish(register);
   }
 

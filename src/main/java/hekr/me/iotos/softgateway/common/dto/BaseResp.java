@@ -1,5 +1,6 @@
 package hekr.me.iotos.softgateway.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
@@ -8,7 +9,12 @@ import lombok.Data;
  */
 @Data
 public class BaseResp<T> {
-  private int StatusCode;
-  private String Info;
-  private T Data;
+  @JsonProperty("StatusCode")
+  private int statusCode;
+
+  @JsonProperty("Info")
+  private String info;
+
+  @JsonProperty("Data")
+  private T data;
 }

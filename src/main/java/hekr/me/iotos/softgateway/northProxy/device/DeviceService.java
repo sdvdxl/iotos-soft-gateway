@@ -7,15 +7,20 @@ import cn.hutool.http.HttpUtil;
 import hekr.me.iotos.softgateway.common.dto.BaseResp;
 import hekr.me.iotos.softgateway.common.dto.RuntimeReq;
 import hekr.me.iotos.softgateway.common.dto.RuntimeResp;
+import hekr.me.iotos.softgateway.common.enums.Action;
+import hekr.me.iotos.softgateway.common.klink.DevSend;
 import hekr.me.iotos.softgateway.common.klink.DevUpgrade;
 import hekr.me.iotos.softgateway.common.klink.GetConfigResp;
 import hekr.me.iotos.softgateway.common.klink.GetTopoResp;
+import hekr.me.iotos.softgateway.common.klink.ModelData;
 import hekr.me.iotos.softgateway.northProxy.ProxyConnectService;
 import hekr.me.iotos.softgateway.northProxy.ProxyService;
 import hekr.me.iotos.softgateway.pluginAsClient.http.HttpClient;
 import hekr.me.iotos.softgateway.utils.JsonUtil;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -57,12 +62,12 @@ public class DeviceService {
     SUBSYSTEM_DEVICE_MAP.clear();
     for (Device device : deviceList) {
       IOT_DEVICE_MAP.put(device.getPk() + "@" + device.getDevId(), device);
-      SUBSYSTEM_DEVICE_MAP.put(device.getId(), device);
+      SUBSYSTEM_DEVICE_MAP.put(device.getDeviceId(), device);
     }
     proxyService.getTopo();
   }
 
-  @Scheduled(fixedDelay = 60 * 1000)
+  @Scheduled(fixedDelay = 10 * 1000)
   //  @Scheduled(fixedDelay = 10000)
   public void scheduleUpdateDevStatus() {
     if (proxyConnectService.isConnected()) {
@@ -132,7 +137,7 @@ public class DeviceService {
             Device device = IOT_DEVICE_MAP.get(d);
             try {
               proxyService.register(
-                  device.getPk(), d, device.getProductSecret(), device.getDevName());
+                  device.getPk(), device.getDevId(), device.getProductSecret(), device.getDevName());
             } catch (Exception e) {
               e.printStackTrace();
             }
@@ -144,7 +149,7 @@ public class DeviceService {
       addTopoList.forEach(
           d -> {
             Device device = IOT_DEVICE_MAP.get(d);
-            proxyService.addDev(device.getPk(), d, null);
+            proxyService.addDev(device.getPk(), device.getDevId(), null);
           });
 
       sleep(5);
@@ -153,7 +158,7 @@ public class DeviceService {
       addTopoList.forEach(
           d -> {
             Device device = IOT_DEVICE_MAP.get(d);
-            proxyService.devLogin(device.getPk(), d);
+            proxyService.devLogin(device.getPk(), device.getDevId());
           });
     }
 
@@ -163,13 +168,13 @@ public class DeviceService {
     delTopoList.forEach(
         d -> {
           Device device = IOT_DEVICE_MAP.get(d);
-          proxyService.delDev(device.getPk(), d);
+          proxyService.delDev(device.getPk(), device.getDevId());
         });
   }
 
   /** 更新设备状态 */
   private void updateDeviceStatus() {
-    String[] deviceIds = IOT_DEVICE_MAP.values().stream().map(Device::getId).toArray(String[]::new);
+    String[] deviceIds = IOT_DEVICE_MAP.values().stream().map(Device::getDeviceId).toArray(String[]::new);
     if (deviceIds.length <= 0) {
       return;
     }
@@ -181,25 +186,47 @@ public class DeviceService {
       return;
     }
     List<RuntimeResp> data = runtimeData.getData();
+    // 若参数的errorCode为-1则说明设备离线
     List<String> offlineList =
         data.stream()
             .filter(runtimeResp -> runtimeResp.getErrorCode() == -1)
             .map(RuntimeResp::getDeviceId)
             .collect(toList());
 
+    // 对离线设备进行下线操作
     offlineList.forEach(
         s -> {
           Device device = getById(s);
           proxyService.devLogout(device.getPk(), device.getDevId());
         });
 
-    data.stream()
-        .filter(runtimeResp -> !offlineList.contains(runtimeResp.getDeviceId()))
-        .forEach(
-            runtimeResp -> {
-              Device device = getById(runtimeResp.getDeviceId());
-              proxyService.devLogin(device.getPk(), device.getDevId());
-            });
+    // 对非离线设备进行登录以及数据更新操作
+    List<String> onlineList =
+        data.stream()
+            .filter(runtimeResp -> !offlineList.contains(runtimeResp.getDeviceId()))
+            .map(RuntimeResp::getDeviceId)
+            .collect(toList());
+    onlineList.forEach(
+        s -> {
+          Device device = getById(s);
+          proxyService.devLogin(device.getPk(), device.getDevId());
+          DevSend devSend = new DevSend();
+          devSend.setPk(device.getPk());
+          devSend.setDevId(device.getDevId());
+          devSend.setAction(Action.DEV_SEND.getAction());
+          ModelData modelData = new ModelData();
+          modelData.setCmd("reportValue");
+          Map<String, Object> params = new HashMap<>();
+          data.stream()
+              .filter(runtimeResp -> runtimeResp.getDeviceId().equals(s))
+              .forEach(
+                  runtimeResp -> {
+                    params.put("DI_" + runtimeResp.getDefineIndex(), runtimeResp.getValue());
+                  });
+          modelData.setParams(params);
+          devSend.setData(modelData);
+          proxyService.devSend(devSend);
+        });
   }
 
   private void sleep(int timeout) {

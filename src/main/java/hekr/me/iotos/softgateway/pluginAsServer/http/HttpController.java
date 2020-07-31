@@ -1,22 +1,15 @@
 package hekr.me.iotos.softgateway.pluginAsServer.http;
 
 import hekr.me.iotos.softgateway.common.dto.BaseResp;
-import hekr.me.iotos.softgateway.common.dto.EnergyMeterResp;
+import hekr.me.iotos.softgateway.common.dto.RuntimeResp;
 import hekr.me.iotos.softgateway.common.dto.TokenResp;
-import hekr.me.iotos.softgateway.utils.JsonUtil;
 import java.util.ArrayList;
 import java.util.List;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.tio.http.common.HttpRequest;
-import org.tio.http.common.HttpResponse;
-import org.tio.http.server.util.Resps;
 
 /** */
 @Slf4j
@@ -40,5 +33,28 @@ public class HttpController {
       tokenRespBaseResp.setStatusCode(500);
     }
     return tokenRespBaseResp;
+  }
+
+  @GetMapping("/GetRuntimeData")
+  public BaseResp<List<RuntimeResp>> getRuntimeData(@RequestParam String[] deviceIds) {
+    List<RuntimeResp> respList = new ArrayList<>();
+    RuntimeResp dev1_101 = new RuntimeResp();
+    dev1_101.setDefineIndex(101);
+    dev1_101.setDeviceId("12e8ef8b5332fa2d");
+    dev1_101.setValue(23.23);
+    RuntimeResp dev1_102 = new RuntimeResp();
+    dev1_102.setDefineIndex(102);
+    dev1_102.setDeviceId("12e8ef8b5332fa2d");
+    dev1_102.setValue(233.23);
+    RuntimeResp dev1_103 = new RuntimeResp();
+    dev1_103.setDefineIndex(103);
+    dev1_103.setDeviceId("12e8ef8b5332fa2d");
+    dev1_103.setValue(253.23);
+    respList.add(dev1_101);
+    respList.add(dev1_102);
+    respList.add(dev1_103);
+    BaseResp<List<RuntimeResp>> listBaseResp = new BaseResp<>();
+    listBaseResp.setData(respList);
+    return listBaseResp;
   }
 }

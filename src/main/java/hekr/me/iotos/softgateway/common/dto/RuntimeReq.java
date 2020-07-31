@@ -1,9 +1,11 @@
 package hekr.me.iotos.softgateway.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
 public class RuntimeReq {
     /** 设备Id */
-    private String DeviceIds;
+    @JsonProperty("DeviceIds")
+    private String deviceIds;
 }

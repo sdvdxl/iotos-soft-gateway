@@ -1,5 +1,6 @@
 package hekr.me.iotos.softgateway.northProxy.device;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /** 设备 */
@@ -15,15 +16,21 @@ public class Device {
   private String productSecret;
 
   /** 设备Id */
-  private String Id;
+  @JsonProperty("DeviceId")
+  private String deviceId;
   /** 设备名称 */
-  private String Name;
+  @JsonProperty("Name")
+  private String name;
   /** 设备类别Id */
-  private String DeviceTypeId;
+  @JsonProperty("DeviceTypeId")
+  private String deviceTypeId;
   /** 区域Id */
-  private String AreaId;
+  @JsonProperty("AreaId")
+  private String areaId;
   /** 客户编号 */
-  private String CustomerCode;
+  @JsonProperty("CustomerCode")
+  private String customerCode;
   /** 父设备Id */
-  private String ParentId;
+  @JsonProperty("ParentId")
+  private String parentId;
 }

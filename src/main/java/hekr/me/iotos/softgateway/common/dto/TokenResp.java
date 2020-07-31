@@ -1,5 +1,6 @@
 package hekr.me.iotos.softgateway.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import lombok.Data;
 
@@ -10,11 +11,15 @@ import lombok.Data;
 @Data
 public class TokenResp {
   /** 应用程序ID */
-  private String ApplicationId;
+  @JsonProperty("ApplicationId")
+  private String applicationId;
   /** Token ID */
-  private String Id;
+  @JsonProperty("Id")
+  private String id;
   /** Token Key */
-  private String Key;
+  @JsonProperty("Key")
+  private String key;
   /** Token 过期时间 */
-  private Date ExpireTime;
+  @JsonProperty("ExpireTime")
+  private Date expireTime;
 }

@@ -30,9 +30,9 @@ iotos:
   host: '106.75.50.110:1883'
 
 gateway:
-  DEV_PK: 'ecd49c91bdd4430d93f121f2e53b5bb8'
-  DEV_ID: 'gateway_parking'
-  devSecret: '5d85ff6089794d69a38244c093bb6953'
+  DEV_PK: '2b4e2ed44f7d473fa39e7fb1e48f5ded'
+  DEV_ID: 'gateway_energy'
+  devSecret: '751e9b9c2a3e4419b29969946fb86def'
 
 subdev:
   barrier:
