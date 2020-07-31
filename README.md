@@ -16,8 +16,6 @@
 |C相电流|109
 |总功率|110
 |正向总有功电能|111
-|高压侧电流|201
-|高压侧电压|202
 |有功功率|203
 |无功功率|204
 |视在功率|205
@@ -39,9 +37,22 @@
 ### 远程配置示例
 
 ```json
+
 {"devId":"dev001","pk":"a0d89988c6b2419994951b076afd0150","DeviceId":"12e8ef8b5332fa2d","devName": "楼层电表001"}
+{"devId":"BYQ001","pk":"0a118c82e1744cfd99b3c3afbff5a853","DeviceId":"30524b183f8e3ae3","devName": "变压器001"}
+{"devId":"DXPD001","pk":"f0d9b9266ca54ad080ef8c590861bdcd","DeviceId":"30524b183f8e3ae3","devName": "地下配电001"}
+{"devId":"DYBJ001","pk":"35234f5c84aa4b21b4b5d69ab90e8e70","DeviceId":"145bdd7a3c27d2d5","devName": "低压表具001"}
+
+
 ```
 
+
+
+"12e8ef8b5332fa2d"));
+    respList.addAll(getRespList("35dd9a224718c971"));
+    respList.addAll(getRespList("30524b183f8e3ae3"));
+    respList.addAll(getRespList("145bdd7a3c27d2d5"));
+    respList.addAll(getRespList("5daad14f8e7e88d4"));
 
 ## 简要说明
 软件网关作为IoTOS的配套组件，以开源形式提供，对于一些无法直连到IoTOS上的设备，研发人员可以基于此配套代码做二次开发并解决连接问题。

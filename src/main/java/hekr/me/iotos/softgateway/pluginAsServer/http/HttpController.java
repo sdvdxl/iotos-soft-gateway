@@ -1,10 +1,13 @@
 package hekr.me.iotos.softgateway.pluginAsServer.http;
 
+import cn.hutool.core.util.ArrayUtil;
 import hekr.me.iotos.softgateway.common.dto.BaseResp;
 import hekr.me.iotos.softgateway.common.dto.RuntimeResp;
 import hekr.me.iotos.softgateway.common.dto.TokenResp;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,23 +41,53 @@ public class HttpController {
   @GetMapping("/GetRuntimeData")
   public BaseResp<List<RuntimeResp>> getRuntimeData(@RequestParam String[] deviceIds) {
     List<RuntimeResp> respList = new ArrayList<>();
-    RuntimeResp dev1_101 = new RuntimeResp();
-    dev1_101.setDefineIndex(101);
-    dev1_101.setDeviceId("12e8ef8b5332fa2d");
-    dev1_101.setValue(23.23);
-    RuntimeResp dev1_102 = new RuntimeResp();
-    dev1_102.setDefineIndex(102);
-    dev1_102.setDeviceId("12e8ef8b5332fa2d");
-    dev1_102.setValue(233.23);
-    RuntimeResp dev1_103 = new RuntimeResp();
-    dev1_103.setDefineIndex(103);
-    dev1_103.setDeviceId("12e8ef8b5332fa2d");
-    dev1_103.setValue(253.23);
-    respList.add(dev1_101);
-    respList.add(dev1_102);
-    respList.add(dev1_103);
+
+    respList.addAll(getRespList("12e8ef8b5332fa2d"));
+    respList.addAll(getRespList("35dd9a224718c971"));
+    respList.addAll(getRespList("30524b183f8e3ae3"));
+    respList.addAll(getRespList("145bdd7a3c27d2d5"));
+    respList.addAll(getRespList("5daad14f8e7e88d4"));
+
     BaseResp<List<RuntimeResp>> listBaseResp = new BaseResp<>();
-    listBaseResp.setData(respList);
+    List<RuntimeResp> result =
+        respList.stream()
+            .filter(runtimeResp -> ArrayUtil.contains(deviceIds, runtimeResp.getDeviceId()))
+            .collect(Collectors.toList());
+    listBaseResp.setData(result);
     return listBaseResp;
+  }
+
+  private List<RuntimeResp> getRespList(String deviceId) {
+    List<RuntimeResp> respList = new ArrayList<>();
+
+    int errorCode = Math.random() > 0.1 ? 1 : 0;
+    DecimalFormat df = new DecimalFormat("#.00");
+    for (int i = 101; i < 112; i++) {
+      RuntimeResp dev = new RuntimeResp();
+      dev.setErrorCode(errorCode - 1);
+      dev.setDeviceId(deviceId);
+      dev.setDefineIndex(i);
+      dev.setValue(Double.parseDouble(df.format(1 + Math.random() * (900))));
+      respList.add(dev);
+    }
+    for (int i = 203; i < 210; i++) {
+      RuntimeResp dev = new RuntimeResp();
+      dev.setErrorCode(errorCode - 1);
+      dev.setDefineIndex(i);
+      dev.setDeviceId(deviceId);
+      dev.setValue(Double.parseDouble(df.format(1 + Math.random() * (900))));
+      respList.add(dev);
+    }
+
+    for (int i = 210; i < 214; i++) {
+      RuntimeResp dev = new RuntimeResp();
+      dev.setErrorCode(errorCode - 1);
+      dev.setDefineIndex(i);
+      dev.setDeviceId(deviceId);
+      dev.setValue(Math.random() > 0.1 ? 1 : 0);
+      respList.add(dev);
+    }
+
+    return respList;
   }
 }

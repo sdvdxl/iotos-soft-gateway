@@ -137,7 +137,10 @@ public class DeviceService {
             Device device = IOT_DEVICE_MAP.get(d);
             try {
               proxyService.register(
-                  device.getPk(), device.getDevId(), device.getProductSecret(), device.getDevName());
+                  device.getPk(),
+                  device.getDevId(),
+                  device.getProductSecret(),
+                  device.getDevName());
             } catch (Exception e) {
               e.printStackTrace();
             }
@@ -174,7 +177,8 @@ public class DeviceService {
 
   /** 更新设备状态 */
   private void updateDeviceStatus() {
-    String[] deviceIds = IOT_DEVICE_MAP.values().stream().map(Device::getDeviceId).toArray(String[]::new);
+    String[] deviceIds =
+        IOT_DEVICE_MAP.values().stream().map(Device::getDeviceId).toArray(String[]::new);
     if (deviceIds.length <= 0) {
       return;
     }
@@ -221,12 +225,22 @@ public class DeviceService {
               .filter(runtimeResp -> runtimeResp.getDeviceId().equals(s))
               .forEach(
                   runtimeResp -> {
-                    params.put("DI_" + runtimeResp.getDefineIndex(), runtimeResp.getValue());
+                    params.put(
+                        "DI_" + runtimeResp.getDefineIndex(), formatValue(runtimeResp.getValue()));
                   });
           modelData.setParams(params);
           devSend.setData(modelData);
           proxyService.devSend(devSend);
         });
+  }
+
+  /** 格式化数据，整数则返回整数 */
+  private Object formatValue(double value) {
+    if (value == 1.0 || value == 0.0) {
+      return (int) value;
+    } else {
+      return value;
+    }
   }
 
   private void sleep(int timeout) {
