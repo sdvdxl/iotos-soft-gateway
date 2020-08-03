@@ -2,6 +2,10 @@ package hekr.me.iotos.softgateway.pluginAsServer.http;
 
 import cn.hutool.core.util.ArrayUtil;
 import hekr.me.iotos.softgateway.common.dto.BaseResp;
+import hekr.me.iotos.softgateway.common.dto.EnergyMeterReq;
+import hekr.me.iotos.softgateway.common.dto.EnergyMeterResp;
+import hekr.me.iotos.softgateway.common.dto.EnergyStatDataReq;
+import hekr.me.iotos.softgateway.common.dto.EnergyStatDataResp;
 import hekr.me.iotos.softgateway.common.dto.RuntimeResp;
 import hekr.me.iotos.softgateway.common.dto.TokenResp;
 import java.text.DecimalFormat;
@@ -41,20 +45,30 @@ public class HttpController {
   @GetMapping("/GetRuntimeData")
   public BaseResp<List<RuntimeResp>> getRuntimeData(@RequestParam String[] deviceIds) {
     List<RuntimeResp> respList = new ArrayList<>();
-
-    respList.addAll(getRespList("12e8ef8b5332fa2d"));
-    respList.addAll(getRespList("35dd9a224718c971"));
-    respList.addAll(getRespList("30524b183f8e3ae3"));
-    respList.addAll(getRespList("145bdd7a3c27d2d5"));
-    respList.addAll(getRespList("5daad14f8e7e88d4"));
+    for (String deviceId : deviceIds) {
+      respList.addAll(getRespList(deviceId));
+    }
 
     BaseResp<List<RuntimeResp>> listBaseResp = new BaseResp<>();
-    List<RuntimeResp> result =
-        respList.stream()
-            .filter(runtimeResp -> ArrayUtil.contains(deviceIds, runtimeResp.getDeviceId()))
-            .collect(Collectors.toList());
-    listBaseResp.setData(result);
+    listBaseResp.setData(respList);
     return listBaseResp;
+  }
+
+  @GetMapping("/GetEnergyStatData")
+  public BaseResp<List<EnergyStatDataResp>> getEnergyMeterData(@RequestParam String parentId) {
+    BaseResp<List<EnergyStatDataResp>> listBaseResp = new BaseResp<>();
+    listBaseResp.setData(getTotalResp(parentId));
+    return listBaseResp;
+  }
+
+  private List<EnergyStatDataResp> getTotalResp(String devId) {
+    List<EnergyStatDataResp> resps = new ArrayList<>();
+    EnergyStatDataResp energyStatDataResp = new EnergyStatDataResp();
+    energyStatDataResp.setDeviceId(devId);
+    energyStatDataResp.setDefineIndex(111);
+    energyStatDataResp.setCurrentAmount(getTotalEnergy());
+    resps.add(energyStatDataResp);
+    return resps;
   }
 
   private List<RuntimeResp> getRespList(String deviceId) {
@@ -62,20 +76,75 @@ public class HttpController {
 
     int errorCode = Math.random() > 0.1 ? 1 : 0;
     DecimalFormat df = new DecimalFormat("#.00");
-    for (int i = 101; i < 112; i++) {
+    for (int i = 101; i < 104; i++) {
       RuntimeResp dev = new RuntimeResp();
       dev.setErrorCode(errorCode - 1);
       dev.setDeviceId(deviceId);
       dev.setDefineIndex(i);
-      dev.setValue(Double.parseDouble(df.format(1 + Math.random() * (900))));
+      dev.setValue(Double.parseDouble(df.format(220 + Math.random() * (10))));
       respList.add(dev);
     }
-    for (int i = 203; i < 210; i++) {
+    for (int i = 104; i < 107; i++) {
+      RuntimeResp dev = new RuntimeResp();
+      dev.setErrorCode(errorCode - 1);
+      dev.setDeviceId(deviceId);
+      dev.setDefineIndex(i);
+      dev.setValue(Double.parseDouble(df.format(380 + Math.random() * (10))));
+      respList.add(dev);
+    }
+    for (int i = 107; i < 110; i++) {
+      RuntimeResp dev = new RuntimeResp();
+      dev.setErrorCode(errorCode - 1);
+      dev.setDeviceId(deviceId);
+      dev.setDefineIndex(i);
+      dev.setValue(Double.parseDouble(df.format(10 + Math.random() * (10))));
+      respList.add(dev);
+    }
+    RuntimeResp dev1 = new RuntimeResp();
+    dev1.setErrorCode(errorCode - 1);
+    dev1.setDeviceId(deviceId);
+    dev1.setDefineIndex(110);
+    dev1.setValue(Double.parseDouble(df.format(3500 + Math.random() * (1000))));
+    respList.add(dev1);
+
+    RuntimeResp dev2 = new RuntimeResp();
+    dev2.setErrorCode(errorCode - 1);
+    dev2.setDeviceId(deviceId);
+    dev2.setDefineIndex(111);
+    dev2.setValue(Double.parseDouble(df.format(1 + Math.random() * (900))));
+    respList.add(dev2);
+
+    for (int i = 203; i < 205; i++) {
       RuntimeResp dev = new RuntimeResp();
       dev.setErrorCode(errorCode - 1);
       dev.setDefineIndex(i);
       dev.setDeviceId(deviceId);
-      dev.setValue(Double.parseDouble(df.format(1 + Math.random() * (900))));
+      dev.setValue(Double.parseDouble(df.format(1500 + Math.random() * (500))));
+      respList.add(dev);
+    }
+
+    // 视在功率
+    RuntimeResp dev3 = new RuntimeResp();
+    dev3.setErrorCode(errorCode - 1);
+    dev3.setDeviceId(deviceId);
+    dev3.setDefineIndex(205);
+    dev3.setValue(Double.parseDouble(df.format(2500 + Math.random() * (2000))));
+    respList.add(dev3);
+
+    // 功率因数
+    RuntimeResp dev4 = new RuntimeResp();
+    dev4.setErrorCode(errorCode - 1);
+    dev4.setDeviceId(deviceId);
+    dev4.setDefineIndex(206);
+    dev4.setValue(Double.parseDouble(df.format(0.85 + Math.random() * (0.1))));
+    respList.add(dev4);
+
+    for (int i = 207; i < 210; i++) {
+      RuntimeResp dev = new RuntimeResp();
+      dev.setErrorCode(errorCode - 1);
+      dev.setDefineIndex(i);
+      dev.setDeviceId(deviceId);
+      dev.setValue(Double.parseDouble(df.format(0 + Math.random() * (100))));
       respList.add(dev);
     }
 
@@ -89,5 +158,14 @@ public class HttpController {
     }
 
     return respList;
+  }
+
+  /** 模拟总电能 */
+  private double getTotalEnergy() {
+    DecimalFormat df = new DecimalFormat("#.00");
+
+    double value = ((double) System.currentTimeMillis() / 100000 - 15900000.0);
+
+    return Double.parseDouble(df.format(value));
   }
 }

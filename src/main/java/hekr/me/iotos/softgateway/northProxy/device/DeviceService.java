@@ -5,6 +5,8 @@ import static java.util.stream.Collectors.toList;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.http.HttpUtil;
 import hekr.me.iotos.softgateway.common.dto.BaseResp;
+import hekr.me.iotos.softgateway.common.dto.EnergyStatDataReq;
+import hekr.me.iotos.softgateway.common.dto.EnergyStatDataResp;
 import hekr.me.iotos.softgateway.common.dto.RuntimeReq;
 import hekr.me.iotos.softgateway.common.dto.RuntimeResp;
 import hekr.me.iotos.softgateway.common.enums.Action;
@@ -17,7 +19,13 @@ import hekr.me.iotos.softgateway.northProxy.ProxyConnectService;
 import hekr.me.iotos.softgateway.northProxy.ProxyService;
 import hekr.me.iotos.softgateway.pluginAsClient.http.HttpClient;
 import hekr.me.iotos.softgateway.utils.JsonUtil;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +82,7 @@ public class DeviceService {
       log.info("正在定时更新设备状态");
     } else {
       log.warn("等待mqtt连接，发送 getTopo,同步设备");
+      proxyConnectService.connect();
       return;
     }
     proxyService.getConfig();
@@ -109,6 +118,55 @@ public class DeviceService {
     updateDevices(deviceList);
   }
 
+  @Scheduled(fixedDelay = 10 * 1000)
+  public void scheduleGetTotal() {
+    if (proxyConnectService.isConnected()) {
+      log.info("正在定时发送日消耗统计");
+      IOT_DEVICE_MAP.values().stream()
+          .forEach(
+              device -> {
+                EnergyStatDataReq energyStatDataReq = new EnergyStatDataReq();
+                energyStatDataReq.setDateRange("Day");
+                energyStatDataReq.setEnergyType("01");
+                energyStatDataReq.setParentType("Device");
+                energyStatDataReq.setParentId(device.getDeviceId());
+                // 获取时间
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime startDay = LocalDateTime.of(now.toLocalDate(), LocalTime.MIN);
+                LocalDateTime endDay = LocalDateTime.of(now.toLocalDate(), LocalTime.MAX);
+                Date begin = new Date(startDay.toInstant(ZoneOffset.of("+8")).toEpochMilli());
+                Date end = new Date(endDay.toInstant(ZoneOffset.of("+8")).toEpochMilli());
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                energyStatDataReq.setBeginDate(format.format(begin));
+                energyStatDataReq.setEndDate(format.format(end));
+                BaseResp<List<EnergyStatDataResp>> energyStatData =
+                    httpClient.getEnergyStatData(energyStatDataReq);
+                if (energyStatData.getData() != null) {
+                  List<EnergyStatDataResp> data = energyStatData.getData();
+                  if (data.size() > 0) {
+                    EnergyStatDataResp energyStatDataResp = data.get(0);
+                    DevSend devSend = new DevSend();
+                    devSend.setPk(device.getPk());
+                    devSend.setDevId(device.getDevId());
+                    devSend.setAction(Action.DEV_SEND.getAction());
+                    ModelData modelData = new ModelData();
+                    modelData.setCmd("reportValue");
+                    Map<String, Object> params = new HashMap<>();
+                    params.put(
+                        "DI_T_" + energyStatDataResp.getDefineIndex(),
+                        energyStatDataResp.getCurrentAmount());
+                    modelData.setParams(params);
+                    devSend.setData(modelData);
+                    proxyService.devSend(devSend);
+                  }
+                }
+              });
+    } else {
+      log.warn("等待mqtt连接，发送 getTopo,同步设备");
+      return;
+    }
+  }
+
   /**
    * 通过 getTopoResp 来同步设备列表
    *
@@ -135,6 +193,10 @@ public class DeviceService {
       addTopoList.forEach(
           d -> {
             Device device = IOT_DEVICE_MAP.get(d);
+            if (device == null) {
+              log.warn("【进行注册操作】设备不存在，设备pk和设备ID为：{}", d);
+              return;
+            }
             try {
               proxyService.register(
                   device.getPk(),
@@ -142,7 +204,7 @@ public class DeviceService {
                   device.getProductSecret(),
                   device.getDevName());
             } catch (Exception e) {
-              e.printStackTrace();
+              log.warn(e.getMessage());
             }
           });
       sleep(5);
@@ -152,6 +214,10 @@ public class DeviceService {
       addTopoList.forEach(
           d -> {
             Device device = IOT_DEVICE_MAP.get(d);
+            if (device == null) {
+              log.warn("【进行添加拓扑关系操作】设备不存在，设备pk和设备ID为：{}", d);
+              return;
+            }
             proxyService.addDev(device.getPk(), device.getDevId(), null);
           });
 
@@ -161,6 +227,10 @@ public class DeviceService {
       addTopoList.forEach(
           d -> {
             Device device = IOT_DEVICE_MAP.get(d);
+            if (device == null) {
+              log.warn("【进行发送登录信息操作】设备不存在，设备pk和设备ID为：{}", d);
+              return;
+            }
             proxyService.devLogin(device.getPk(), device.getDevId());
           });
     }
@@ -170,8 +240,8 @@ public class DeviceService {
     log.info("需要删除的设备：{}", delTopoList);
     delTopoList.forEach(
         d -> {
-          Device device = IOT_DEVICE_MAP.get(d);
-          proxyService.delDev(device.getPk(), device.getDevId());
+          String[] split = d.split("@");
+          proxyService.delDev(split[0], split[1]);
         });
   }
 
@@ -190,29 +260,22 @@ public class DeviceService {
       return;
     }
     List<RuntimeResp> data = runtimeData.getData();
-    // 若参数的errorCode为-1则说明设备离线
-    List<String> offlineList =
-        data.stream()
-            .filter(runtimeResp -> runtimeResp.getErrorCode() == -1)
-            .map(RuntimeResp::getDeviceId)
-            .collect(toList());
-
-    // 对离线设备进行下线操作
-    offlineList.forEach(
-        s -> {
-          Device device = getById(s);
-          proxyService.devLogout(device.getPk(), device.getDevId());
-        });
-
-    // 对非离线设备进行登录以及数据更新操作
+    // 若参数的errorCode为0则说明设备在线
     List<String> onlineList =
         data.stream()
-            .filter(runtimeResp -> !offlineList.contains(runtimeResp.getDeviceId()))
+            .filter(runtimeResp -> runtimeResp.getErrorCode() == 0)
             .map(RuntimeResp::getDeviceId)
+            .distinct()
             .collect(toList());
+
+    // 对在线设备进行登录操作
     onlineList.forEach(
         s -> {
           Device device = getById(s);
+          if (device == null) {
+            log.warn("【进行登录操作】设备不存在，设备pk和设备ID为：{}", s);
+            return;
+          }
           proxyService.devLogin(device.getPk(), device.getDevId());
           DevSend devSend = new DevSend();
           devSend.setPk(device.getPk());
@@ -228,9 +291,34 @@ public class DeviceService {
                     params.put(
                         "DI_" + runtimeResp.getDefineIndex(), formatValue(runtimeResp.getValue()));
                   });
+          params.put("online", 1);
           modelData.setParams(params);
           devSend.setData(modelData);
           proxyService.devSend(devSend);
+        });
+
+    // 获取所有未在线的设备进行下线
+    List<String> offlineList = CollectionUtil.subtractToList(Arrays.asList(deviceIds), onlineList);
+    offlineList.forEach(
+        s -> {
+          Device device = getById(s);
+          if (device == null) {
+            log.warn("【进行离线操作】设备不存在，设备pk和设备ID为：{}", s);
+            return;
+          }
+          DevSend devSend = new DevSend();
+          devSend.setPk(device.getPk());
+          devSend.setDevId(device.getDevId());
+          devSend.setAction(Action.DEV_SEND.getAction());
+          ModelData modelData = new ModelData();
+          modelData.setCmd("reportValue");
+          Map<String, Object> params = new HashMap<>();
+          params.put("online", 0);
+          modelData.setParams(params);
+          devSend.setData(modelData);
+          proxyService.devSend(devSend);
+
+          proxyService.devLogout(device.getPk(), device.getDevId());
         });
   }
 

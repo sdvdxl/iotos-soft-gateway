@@ -24,12 +24,6 @@ public class ProxyConfig {
   @Value("${gateway.devSecret}")
   private String DEV_SECRET;
 
-  @Value("${subdev.barrier.pk}")
-  private String SUB_BARRIER_PK;
-
-  @Value("${subdev.barrier.productSecret}")
-  private String SUB_BARRIER_PROD_SECRET;
-
   @Value("${http.client.connect.host}")
   private String HTTP_URL;
 
@@ -41,11 +35,4 @@ public class ProxyConfig {
 
   @Value("${http.server.port}")
   private int HTTP_PORT;
-
-  public static String AES_KEY;
-
-  @Value("${AES.key}")
-  public void setAesKey(String aesKey) {
-    AES_KEY = aesKey;
-  }
 }

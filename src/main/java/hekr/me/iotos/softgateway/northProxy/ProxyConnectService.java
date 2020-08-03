@@ -23,6 +23,8 @@ public class ProxyConnectService {
 
   private final MqttClient client;
 
+  private final MqttConnectOptions options;
+
   @Lazy @Autowired private ProxyCallbackService proxyCallbackService;
 
   //  private String UP_TOPIC = "up/dev/" + proxyConfig.getDEV_PK() + "/" + proxyConfig.getDEV_ID();
@@ -58,11 +60,7 @@ public class ProxyConnectService {
             "tcp://" + proxyConfig.getHOST(),
             "dev:" + proxyConfig.getDEV_PK() + ":" + proxyConfig.getDEV_ID(),
             new MemoryPersistence());
-  }
-
-  // 定义一个主题
-  public void connect() {
-    MqttConnectOptions options = new MqttConnectOptions();
+    options = new MqttConnectOptions();
     options.setCleanSession(true);
     options.setUserName(Constants.HASH_METHOD + ":" + Constants.RANDOM);
     options.setPassword(getPassword().toCharArray());
@@ -70,13 +68,19 @@ public class ProxyConnectService {
     options.setConnectionTimeout(10);
     // 设置会话心跳时间
     options.setKeepAliveInterval(20);
+  }
+
+  // 定义一个主题
+  public void connect() {
+    log.info("软件网关开始连接");
+
     try {
       client.setCallback(proxyCallbackService);
       client.connect(options);
       // 订阅
       client.subscribe(getDownTopic(), 0);
     } catch (Exception e) {
-      e.printStackTrace();
+      log.warn("软件网关连接失败", e);
     }
   }
 

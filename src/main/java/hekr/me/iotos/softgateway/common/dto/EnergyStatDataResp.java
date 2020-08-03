@@ -8,6 +8,10 @@ import lombok.Data;
  */
 @Data
 public class EnergyStatDataResp {
+
+  private String deviceId;
+  /** 设备属性序号，该数据对应设备类别中的属性定义顺序号。 */
+  private int DefineIndex;
   /** 当前读数。 */
   private double CurValue;
   /** 上期读数。 */

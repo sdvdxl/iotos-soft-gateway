@@ -53,24 +53,23 @@ public class HttpClient {
     headerParams.put("token", tokenId);
     headerParams.put("nonce", Constants.NONCE);
     String timeMillis = Long.toString(System.currentTimeMillis());
-    String signature = SignUtil.GetSignature(timeMillis, Constants.NONCE, tokenKey, params);
+    String signature = SignUtil.getSignature(timeMillis, Constants.NONCE, tokenKey, params);
     headerParams.put("timestamp", timeMillis);
     headerParams.put("signature", signature);
     return headerParams;
   }
 
-  public void getEnergyMeterData(EnergyMeterReq energyMeterReq) {
-    Map<String, Object> energyMeterCtrl = MapUtil.objectToMap(energyMeterReq);
+  public BaseResp<List<EnergyStatDataResp>> getEnergyStatData(EnergyStatDataReq energyStatDataReq) {
+    Map<String, Object> energyMeterCtrl = MapUtil.objectToMap(energyStatDataReq);
     Map<String, String> headers = getHeaders(HttpUtils.getParams(energyMeterCtrl));
     if (headers == null) {
-      log.warn("请求[GetEnergyMeterData]失败，未完成登陆校验");
-      return;
+      log.warn("请求[GetEnergyStatData]失败，未完成登陆校验");
+      return null;
     }
-    String url = proxyConfig.getHTTP_URL() + "/api/bi/GetEnergyMeterData";
+    String url = proxyConfig.getHTTP_URL() + "/api/bi/GetEnergyStatData";
     HttpUtils httpUtils = new HttpUtils();
     byte[] bytes = httpUtils.get(url, headers, energyMeterCtrl);
-    BaseResp<EnergyMeterResp> energyMeterResp =
-        JsonUtil.fromBytes(bytes, new TypeReference<BaseResp<EnergyMeterResp>>() {});
+    return JsonUtil.fromBytes(bytes, new TypeReference<BaseResp<List<EnergyStatDataResp>>>() {});
   }
 
   public BaseResp<List<RuntimeResp>> getRuntimeData(RuntimeReq runtimeReq) {

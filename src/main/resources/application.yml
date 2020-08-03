@@ -34,14 +34,6 @@ gateway:
   DEV_ID: 'gateway_energy'
   devSecret: '751e9b9c2a3e4419b29969946fb86def'
 
-subdev:
-  barrier:
-    pk: 'e35181badec84ae29041d1b36dd16257'
-    productSecret: '5a1d5a0ba6ca4464a4dc03f31eecb67d'
-
-AES:
-  key: 'cmVmb3JtZXJyZWZvcm1lcg=='
-
 http:
   server:
     port: 8070
