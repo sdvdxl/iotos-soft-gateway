@@ -14,10 +14,8 @@ public class IoTGatewayApplication {
     SpringApplication.run(IoTGatewayApplication.class, args);
 
     // 获取配置文件中的相关参数
-    P.use("application.yml");
-
-
+    P.use("config.properties");
   }
 
-  public IoTGatewayApplication() {}
+//  public IoTGatewayApplication() {}
 }

@@ -10,8 +10,8 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>hekr.me</groupId>
-  <artifactId>mqtt</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <artifactId>energy-manager</artifactId>
+  <version>0.0.1</version>
   <name>mqtt</name>
   <description>Demo project for Spring Boot</description>
 
@@ -178,6 +178,15 @@
     <!--      <version>0.0.8-SNAPSHOT</version>-->
     <!--    </dependency>-->
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 
 
 </project>

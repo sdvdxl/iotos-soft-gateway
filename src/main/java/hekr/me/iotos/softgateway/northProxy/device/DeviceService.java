@@ -75,7 +75,7 @@ public class DeviceService {
     proxyService.getTopo();
   }
 
-  @Scheduled(fixedDelay = 10 * 1000)
+  @Scheduled(fixedDelay = 60 * 1000)
   //  @Scheduled(fixedDelay = 10000)
   public void scheduleUpdateDevStatus() {
     if (proxyConnectService.isConnected()) {
@@ -118,11 +118,12 @@ public class DeviceService {
     updateDevices(deviceList);
   }
 
-  @Scheduled(fixedDelay = 10 * 1000)
+  @Scheduled(cron = "0 0 23 * * *")
   public void scheduleGetTotal() {
     if (proxyConnectService.isConnected()) {
       log.info("正在定时发送日消耗统计");
-      IOT_DEVICE_MAP.values().stream()
+      IOT_DEVICE_MAP
+          .values()
           .forEach(
               device -> {
                 EnergyStatDataReq energyStatDataReq = new EnergyStatDataReq();
