@@ -1,6 +1,5 @@
-package hekr.me.iotos.softgateway.pluginAsServer.tcp.packet;
+package hekr.me.iotos.softgateway.pluginAsClient.tcp.packet;
 
-import hekr.me.iotos.softgateway.pluginAsServer.tcp.packet.TcpPacket;
 import org.tio.core.ChannelContext;
 import org.tio.core.TioConfig;
 import org.tio.core.exception.AioDecodeException;

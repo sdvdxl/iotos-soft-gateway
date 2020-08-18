@@ -1,6 +1,8 @@
-package hekr.me.iotos.softgateway.pluginAsServer.tcp.packet;
+package hekr.me.iotos.softgateway.pluginAsClient.tcp.packet;
 
+import hekr.me.iotos.softgateway.utils.ParseUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import org.tio.core.ChannelContext;
 import org.tio.core.TioConfig;
 import org.tio.core.exception.AioDecodeException;
@@ -10,8 +12,11 @@ import java.nio.ByteBuffer;
 
 /** 此类表示拆包方式为以换行符"\n"作为分割标识进行拆包 */
 @Slf4j
+@Component
 public class LinePacketCodec implements PacketCodec {
-  public static final byte SPLIT = '\n';
+  public static final byte HEAD = (byte) 0xff;
+
+  public static final int baseLength = 4;
 
   /**
    * 消息解码
@@ -29,7 +34,7 @@ public class LinePacketCodec implements PacketCodec {
       ByteBuffer buffer, int limit, int position, int readableLength, ChannelContext channelContext)
       throws AioDecodeException {
     // 消息不够组包直接返回，等待后续的包
-    if (readableLength <= 0) {
+    if (readableLength < baseLength) {
       return null;
     }
 
@@ -48,22 +53,49 @@ public class LinePacketCodec implements PacketCodec {
       return new TcpPacket();
     }
 
+    // 具体内容开始的index
+    int contentStartReader;
+    // 具体内容结束的index
+    int contentEndReader;
+
     int i = 0;
     for (; i < readableLength; i++) {
       byte b = buffer.get(position + i);
-      if (b == SPLIT) {
+      if (b == HEAD) {
+        buffer.get();
         break;
       }
     }
-    // 没有结束符，返回null，等待下次解码
-    if (i == readableLength) {
+    // 没有起始符，返回null，等待下次解码
+    if (i + baseLength > readableLength) {
       return null;
     }
-    byte[] dst = new byte[i + 1];
-    buffer.get(dst);
-    TcpPacket imPacket = new TcpPacket();
-    imPacket.setBody(dst);
-    return imPacket;
+
+    byte cmdByte = buffer.get();
+
+    byte lengthByte = buffer.get();
+
+    int length = ParseUtil.byte2int(lengthByte);
+
+    // 若不够数据长度，返回null，等待下次解码
+    if (i + length + baseLength > readableLength) {
+      return null;
+    }
+
+    byte[] body = new byte[length + baseLength - 1];
+    body[0] = HEAD;
+    body[1] = cmdByte;
+    body[2] = lengthByte;
+    buffer.get(body, 3, length);
+
+    byte flagByte = buffer.get();
+    byte flag = bytesXOR(body);
+    if (flagByte == flag) {
+      TcpPacket imPacket = new TcpPacket();
+      imPacket.setBody(body);
+      return imPacket;
+    }
+    return new TcpPacket();
   }
 
   /**
@@ -100,5 +132,13 @@ public class LinePacketCodec implements PacketCodec {
     }
 
     return buffer;
+  }
+
+  private byte bytesXOR(byte[] bytes) {
+    byte res = bytes[0];
+    for (int i = 1; i < bytes.length; i++) {
+      res = (byte) (res ^ bytes[i]);
+    }
+    return res;
   }
 }

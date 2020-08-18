@@ -39,4 +39,13 @@ public class ParseUtil {
     }
     return sb.toString();
   }
+
+  /** byte转为十进制int */
+  public static int byte2int(byte bytes) {
+    // 将byte转换为8位二进制字符串 依赖 commons-lang-x.x.jar包
+    String binaryString =
+        String.format("%8s", Integer.toBinaryString(bytes & 0xFF)).replace(' ', '0');
+    // 将二进制字符串转换为十进制整数值
+    return Integer.parseInt(binaryString, 2);
+  }
 }

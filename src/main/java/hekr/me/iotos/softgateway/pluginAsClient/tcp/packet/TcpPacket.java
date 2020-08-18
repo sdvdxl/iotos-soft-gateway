@@ -1,4 +1,4 @@
-package hekr.me.iotos.softgateway.pluginAsServer.tcp.packet;
+package hekr.me.iotos.softgateway.pluginAsClient.tcp.packet;
 
 import org.tio.core.intf.Packet;
 

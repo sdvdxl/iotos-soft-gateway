@@ -24,6 +24,13 @@ public class ProxyConfig {
   @Value("${gateway.devSecret}")
   private String DEV_SECRET;
 
+  @Value("${tcp.client.connect.ip}")
+  private String TCP_CONNECT_IP;
+
+  @Value("${tcp.client.connect.port}")
+  private int TCP_CONNECT_PORT;
+
+
   @Value("${http.client.connect.host}")
   private String HTTP_URL;
 

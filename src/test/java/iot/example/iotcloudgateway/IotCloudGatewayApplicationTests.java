@@ -1,4 +1,7 @@
-//package iot.example.iotcloudgateway;
+package iot.example.iotcloudgateway;
+
+import hekr.me.iotos.softgateway.utils.ParseUtil;
+
 //
 //import hekr.me.iotos.softgateway.utils.SignUtil;
 //import java.sql.Timestamp;
@@ -9,8 +12,11 @@
 //import java.time.ZoneOffset;
 //import java.util.Date;
 //
-//public class IotCloudGatewayApplicationTests {
-//  public static void main(String[] args) {
+public class IotCloudGatewayApplicationTests {
+  public static void main(String[] args) {
+
+    byte HEAD = (byte) 0xf0;
+    System.out.println(ParseUtil.byte2int(HEAD));
 //    //    BaseResp<List<TokenResp>> tokenRespBaseResp = new BaseResp<>();
 //    //    tokenRespBaseResp.setInfo("请求(或处理)成功");
 //    //    tokenRespBaseResp.setStatusCode(200);
@@ -55,7 +61,7 @@
 //    DecimalFormat df = new DecimalFormat("#.0000");
 //    double value = ((double) System.currentTimeMillis() / 100000 - 15900000.0) * fix;
 //    return Double.parseDouble(df.format(value));
-//  }
+  }
 //
 //
-//}
+}

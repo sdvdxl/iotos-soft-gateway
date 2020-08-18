@@ -75,7 +75,7 @@ public class DeviceService {
     proxyService.getTopo();
   }
 
-  @Scheduled(fixedDelay = 60 * 1000)
+//  @Scheduled(fixedDelay = 60 * 1000)
   //  @Scheduled(fixedDelay = 10000)
   public void scheduleUpdateDevStatus() {
     if (proxyConnectService.isConnected()) {

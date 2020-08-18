@@ -2,14 +2,15 @@ package hekr.me.iotos.softgateway.pluginAsClient.tcp;
 
 import hekr.me.iotos.softgateway.common.klink.DevSend;
 import hekr.me.iotos.softgateway.common.codec.DataCodec;
-import hekr.me.iotos.softgateway.pluginAsServer.tcp.packet.LinePacketCodec;
+import hekr.me.iotos.softgateway.pluginAsClient.tcp.packet.LinePacketCodec;
 import hekr.me.iotos.softgateway.common.codec.RawDataCodec;
-import hekr.me.iotos.softgateway.northProxy.ProxyService;
-import hekr.me.iotos.softgateway.pluginAsServer.tcp.packet.TcpPacket;
+import hekr.me.iotos.softgateway.pluginAsClient.tcp.packet.TcpPacket;
 
 import java.nio.ByteBuffer;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.tio.client.intf.ClientAioHandler;
 import org.tio.core.ChannelContext;
 import org.tio.core.TioConfig;
@@ -17,8 +18,9 @@ import org.tio.core.exception.AioDecodeException;
 import org.tio.core.intf.Packet;
 
 @Slf4j
+@Service
 public class TcpClientHandler implements ClientAioHandler {
-  private LinePacketCodec packetCodec = new LinePacketCodec();
+  @Autowired private LinePacketCodec packetCodec;
   private DataCodec dataCodec = new RawDataCodec();
 
   /** 此处由于发送心跳包，可在此处自定义心跳包格式 */
@@ -59,6 +61,6 @@ public class TcpClientHandler implements ClientAioHandler {
     }
 
     // 对转码后的数据按照klink的action进行不同业务的操作
-//    ProxyService.sendKlink(klinkDev);
+    //    ProxyService.sendKlink(klinkDev);
   }
 }
