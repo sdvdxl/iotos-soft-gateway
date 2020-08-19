@@ -4,12 +4,14 @@ import static java.util.stream.Collectors.toList;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.http.HttpUtil;
+import hekr.me.iotos.softgateway.common.config.ProxyConfig;
 import hekr.me.iotos.softgateway.common.dto.BaseResp;
 import hekr.me.iotos.softgateway.common.dto.EnergyStatDataReq;
 import hekr.me.iotos.softgateway.common.dto.EnergyStatDataResp;
 import hekr.me.iotos.softgateway.common.dto.RuntimeReq;
 import hekr.me.iotos.softgateway.common.dto.RuntimeResp;
 import hekr.me.iotos.softgateway.common.enums.Action;
+import hekr.me.iotos.softgateway.common.klink.Dev;
 import hekr.me.iotos.softgateway.common.klink.DevSend;
 import hekr.me.iotos.softgateway.common.klink.DevUpgrade;
 import hekr.me.iotos.softgateway.common.klink.GetConfigResp;
@@ -44,24 +46,23 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class DeviceService {
+  @Autowired private ProxyConfig proxyConfig;
   @Autowired private ProxyService proxyService;
   @Autowired private ProxyConnectService proxyConnectService;
 
-  @Autowired private HttpClient httpClient;
-
-  /** key:pk@devId */
+  /** key:devId */
   private static final ConcurrentMap<String, Device> IOT_DEVICE_MAP = new ConcurrentHashMap<>();
 
-  /** key:Id@deviceTypeId */
-  private static final ConcurrentMap<String, Device> SUBSYSTEM_DEVICE_MAP =
+  /** key:areaNum */
+  private static final ConcurrentMap<Integer, Device> SUBSYSTEM_DEVICE_MAP =
       new ConcurrentHashMap<>();
 
-  public Device getByPkAndDevId(String pk, String devId) {
-    return IOT_DEVICE_MAP.getOrDefault(pk + "@" + devId, null);
+  public Device getByPkAndDevId(String devId) {
+    return IOT_DEVICE_MAP.getOrDefault(devId, null);
   }
 
-  public Device getById(String Id) {
-    return SUBSYSTEM_DEVICE_MAP.getOrDefault(Id, null);
+  public Device getByAreaNum(Integer areaNum) {
+    return SUBSYSTEM_DEVICE_MAP.getOrDefault(areaNum, null);
   }
 
   public synchronized void updateDevices(List<Device> deviceList) {
@@ -69,14 +70,14 @@ public class DeviceService {
     IOT_DEVICE_MAP.clear();
     SUBSYSTEM_DEVICE_MAP.clear();
     for (Device device : deviceList) {
-      IOT_DEVICE_MAP.put(device.getPk() + "@" + device.getDevId(), device);
-      SUBSYSTEM_DEVICE_MAP.put(device.getDeviceId(), device);
+      IOT_DEVICE_MAP.put(device.getDevId(), device);
+      SUBSYSTEM_DEVICE_MAP.put(device.getAreaNum(), device);
     }
     proxyService.getTopo();
   }
 
-//  @Scheduled(fixedDelay = 60 * 1000)
-  //  @Scheduled(fixedDelay = 10000)
+  //  @Scheduled(fixedDelay = 60 * 1000)
+  @Scheduled(fixedDelay = 10000)
   public void scheduleUpdateDevStatus() {
     if (proxyConnectService.isConnected()) {
       log.info("正在定时更新设备状态");
@@ -88,6 +89,7 @@ public class DeviceService {
     proxyService.getConfig();
   }
 
+  /** 主动获取远程配置的回复 */
   public void getConfigResp(GetConfigResp getConfigResp) {
     String config = HttpUtil.get(getConfigResp.getUrl());
     String[] split = config.split("\n");
@@ -97,12 +99,13 @@ public class DeviceService {
         Device device = JsonUtil.fromJson(s, Device.class);
         deviceList.add(device);
       } catch (Exception e) {
-        e.printStackTrace();
+        log.error("读取远程配置出错", e);
       }
     }
     updateDevices(deviceList);
   }
 
+  /** 网关远程配置下发处理 */
   public void getConfigResp(DevUpgrade klink) {
     String config = HttpUtil.get(klink.getUrl());
     String[] split = config.split("\n");
@@ -112,60 +115,10 @@ public class DeviceService {
         Device device = JsonUtil.fromJson(s, Device.class);
         deviceList.add(device);
       } catch (Exception e) {
-        e.printStackTrace();
+        log.error("读取远程配置出错", e);
       }
     }
     updateDevices(deviceList);
-  }
-
-  @Scheduled(cron = "0 0 23 * * *")
-  public void scheduleGetTotal() {
-    if (proxyConnectService.isConnected()) {
-      log.info("正在定时发送日消耗统计");
-      IOT_DEVICE_MAP
-          .values()
-          .forEach(
-              device -> {
-                EnergyStatDataReq energyStatDataReq = new EnergyStatDataReq();
-                energyStatDataReq.setDateRange("Day");
-                energyStatDataReq.setEnergyType("01");
-                energyStatDataReq.setParentType("Device");
-                energyStatDataReq.setParentId(device.getDeviceId());
-                // 获取时间
-                LocalDateTime now = LocalDateTime.now();
-                LocalDateTime startDay = LocalDateTime.of(now.toLocalDate(), LocalTime.MIN);
-                LocalDateTime endDay = LocalDateTime.of(now.toLocalDate(), LocalTime.MAX);
-                Date begin = new Date(startDay.toInstant(ZoneOffset.of("+8")).toEpochMilli());
-                Date end = new Date(endDay.toInstant(ZoneOffset.of("+8")).toEpochMilli());
-                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                energyStatDataReq.setBeginDate(format.format(begin));
-                energyStatDataReq.setEndDate(format.format(end));
-                BaseResp<List<EnergyStatDataResp>> energyStatData =
-                    httpClient.getEnergyStatData(energyStatDataReq);
-                if (energyStatData.getData() != null) {
-                  List<EnergyStatDataResp> data = energyStatData.getData();
-                  if (data.size() > 0) {
-                    EnergyStatDataResp energyStatDataResp = data.get(0);
-                    DevSend devSend = new DevSend();
-                    devSend.setPk(device.getPk());
-                    devSend.setDevId(device.getDevId());
-                    devSend.setAction(Action.DEV_SEND.getAction());
-                    ModelData modelData = new ModelData();
-                    modelData.setCmd("reportValue");
-                    Map<String, Object> params = new HashMap<>();
-                    params.put(
-                        "DI_T_" + energyStatDataResp.getDefineIndex(),
-                        energyStatDataResp.getCurrentAmount());
-                    modelData.setParams(params);
-                    devSend.setData(modelData);
-                    proxyService.devSend(devSend);
-                  }
-                }
-              });
-    } else {
-      log.warn("等待mqtt连接，发送 getTopo,同步设备");
-      return;
-    }
   }
 
   /**
@@ -174,18 +127,13 @@ public class DeviceService {
    * @param klink
    */
   public void syncDevices(GetTopoResp klink) {
-    List<String> gatewaySubDevs =
-        klink.getSubs().stream().map(dev -> dev.getPk() + "@" + dev.getDevId()).collect(toList());
+    List<String> gatewaySubDevs = klink.getSubs().stream().map(Dev::getDevId).collect(toList());
     doSyncDevice(gatewaySubDevs);
-    updateDeviceStatus();
-    //    doSyncDeviceInfo(allDevices);
   }
 
   private void doSyncDevice(List<String> gatewaySubDevs) {
     List<String> iotDeviceIdList =
-        IOT_DEVICE_MAP.values().stream()
-            .map(device -> device.getPk() + "@" + device.getDevId())
-            .collect(toList());
+        IOT_DEVICE_MAP.values().stream().map(Device::getDevId).collect(toList());
     // 找出 remoteDevs 中存在，但是 gatewaySubDevs 中不存在的，进行添加拓扑
     List<String> addTopoList = CollectionUtil.subtractToList(iotDeviceIdList, gatewaySubDevs);
     log.info("需要新添加的设备：{}", addTopoList);
@@ -195,14 +143,14 @@ public class DeviceService {
           d -> {
             Device device = IOT_DEVICE_MAP.get(d);
             if (device == null) {
-              log.warn("【进行注册操作】设备不存在，设备pk和设备ID为：{}", d);
+              log.warn("【进行注册操作】设备不存在，设备ID为：{}", d);
               return;
             }
             try {
               proxyService.register(
-                  device.getPk(),
+                  proxyConfig.getSUB_PK(),
                   device.getDevId(),
-                  device.getProductSecret(),
+                  proxyConfig.getSUB_PRODUCT_SECRET(),
                   device.getDevName());
             } catch (Exception e) {
               log.warn(e.getMessage());
@@ -216,10 +164,10 @@ public class DeviceService {
           d -> {
             Device device = IOT_DEVICE_MAP.get(d);
             if (device == null) {
-              log.warn("【进行添加拓扑关系操作】设备不存在，设备pk和设备ID为：{}", d);
+              log.warn("【进行添加拓扑关系操作】设备不存在，设备ID为：{}", d);
               return;
             }
-            proxyService.addDev(device.getPk(), device.getDevId(), null);
+            proxyService.addDev(proxyConfig.getSUB_PK(), device.getDevId(), null);
           });
 
       sleep(5);
@@ -229,10 +177,10 @@ public class DeviceService {
           d -> {
             Device device = IOT_DEVICE_MAP.get(d);
             if (device == null) {
-              log.warn("【进行发送登录信息操作】设备不存在，设备pk和设备ID为：{}", d);
+              log.warn("【进行发送登录信息操作】设备不存在，设备ID为：{}", d);
               return;
             }
-            proxyService.devLogin(device.getPk(), device.getDevId());
+            proxyService.devLogin(proxyConfig.getSUB_PK(), device.getDevId());
           });
     }
 
@@ -244,92 +192,6 @@ public class DeviceService {
           String[] split = d.split("@");
           proxyService.delDev(split[0], split[1]);
         });
-  }
-
-  /** 更新设备状态 */
-  private void updateDeviceStatus() {
-    String[] deviceIds =
-        IOT_DEVICE_MAP.values().stream().map(Device::getDeviceId).toArray(String[]::new);
-    if (deviceIds.length <= 0) {
-      return;
-    }
-    String deviceIdString = String.join(",", deviceIds);
-    RuntimeReq runtimeReq = new RuntimeReq();
-    runtimeReq.setDeviceIds(deviceIdString);
-    BaseResp<List<RuntimeResp>> runtimeData = httpClient.getRuntimeData(runtimeReq);
-    if (runtimeData == null) {
-      return;
-    }
-    List<RuntimeResp> data = runtimeData.getData();
-    // 若参数的errorCode为0则说明设备在线
-    List<String> onlineList =
-        data.stream()
-            .filter(runtimeResp -> runtimeResp.getErrorCode() == 0)
-            .map(RuntimeResp::getDeviceId)
-            .distinct()
-            .collect(toList());
-
-    // 对在线设备进行登录操作
-    onlineList.forEach(
-        s -> {
-          Device device = getById(s);
-          if (device == null) {
-            log.warn("【进行登录操作】设备不存在，设备pk和设备ID为：{}", s);
-            return;
-          }
-          proxyService.devLogin(device.getPk(), device.getDevId());
-          DevSend devSend = new DevSend();
-          devSend.setPk(device.getPk());
-          devSend.setDevId(device.getDevId());
-          devSend.setAction(Action.DEV_SEND.getAction());
-          ModelData modelData = new ModelData();
-          modelData.setCmd("reportValue");
-          Map<String, Object> params = new HashMap<>();
-          data.stream()
-              .filter(runtimeResp -> runtimeResp.getDeviceId().equals(s))
-              .forEach(
-                  runtimeResp -> {
-                    params.put(
-                        "DI_" + runtimeResp.getDefineIndex(), formatValue(runtimeResp.getValue()));
-                  });
-          params.put("online", 1);
-          modelData.setParams(params);
-          devSend.setData(modelData);
-          proxyService.devSend(devSend);
-        });
-
-    // 获取所有未在线的设备进行下线
-    List<String> offlineList = CollectionUtil.subtractToList(Arrays.asList(deviceIds), onlineList);
-    offlineList.forEach(
-        s -> {
-          Device device = getById(s);
-          if (device == null) {
-            log.warn("【进行离线操作】设备不存在，设备pk和设备ID为：{}", s);
-            return;
-          }
-          DevSend devSend = new DevSend();
-          devSend.setPk(device.getPk());
-          devSend.setDevId(device.getDevId());
-          devSend.setAction(Action.DEV_SEND.getAction());
-          ModelData modelData = new ModelData();
-          modelData.setCmd("reportValue");
-          Map<String, Object> params = new HashMap<>();
-          params.put("online", 0);
-          modelData.setParams(params);
-          devSend.setData(modelData);
-          proxyService.devSend(devSend);
-
-          proxyService.devLogout(device.getPk(), device.getDevId());
-        });
-  }
-
-  /** 格式化数据，整数则返回整数 */
-  private Object formatValue(double value) {
-    if (value == 1.0 || value == 0.0) {
-      return (int) value;
-    } else {
-      return value;
-    }
   }
 
   private void sleep(int timeout) {

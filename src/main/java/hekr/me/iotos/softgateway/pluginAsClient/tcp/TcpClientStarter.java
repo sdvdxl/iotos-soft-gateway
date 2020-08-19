@@ -26,7 +26,7 @@ public class TcpClientStarter {
 
   private TioClient tioClient;
 
-  ClientChannelContext clientChannelContext;
+  private ClientChannelContext clientChannelContext;
 
   @PostConstruct
   public void start() throws Exception {

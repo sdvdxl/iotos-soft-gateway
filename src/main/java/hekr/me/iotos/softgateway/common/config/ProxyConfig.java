@@ -24,6 +24,12 @@ public class ProxyConfig {
   @Value("${gateway.devSecret}")
   private String DEV_SECRET;
 
+  @Value("${gateway.sub.pk}")
+  private String SUB_PK;
+
+  @Value("${gateway.sub.productSecret}")
+  private String SUB_PRODUCT_SECRET;
+
   @Value("${tcp.client.connect.ip}")
   private String TCP_CONNECT_IP;
 

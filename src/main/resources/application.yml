@@ -33,6 +33,9 @@ gateway:
   DEV_PK: 'b16a0ca59bff4e46b5a0f6b09fc2b74c'
   DEV_ID: 'gateway-boundary'
   devSecret: '57dcfc7905aa4b83bfa66abb6091ea1f'
+  sub:
+    pk: '371d619518244ee0a9f266149af2bcbf'
+    productSecret: '874597784ffe47b3a1557c8a14958855'
 
 http:
   server:

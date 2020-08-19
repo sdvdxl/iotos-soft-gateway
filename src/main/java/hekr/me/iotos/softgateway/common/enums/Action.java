@@ -2,6 +2,7 @@ package hekr.me.iotos.softgateway.common.enums;
 
 import static java.util.stream.Collectors.toMap;
 
+import hekr.me.iotos.softgateway.common.klink.BatchDevSend;
 import hekr.me.iotos.softgateway.common.klink.DevUpgrade;
 import hekr.me.iotos.softgateway.common.klink.GetConfig;
 import hekr.me.iotos.softgateway.common.klink.GetConfigResp;
@@ -59,6 +60,11 @@ public enum Action {
   DEV_SEND("devSend", FrameType.DEV_UP, DevSend.class),
   /** 设备发送结果回复 */
   DEV_SEND_RESP("devSendResp", FrameType.DEV_DOWN),
+
+  /** 设备批量发送 */
+  BATCH_DEV_SEND("batchDevSend", FrameType.DEV_UP, BatchDevSend.class),
+  /** 设备批量发送结果回复 */
+  BATCH_DEV_SEND_RESP("batchDevSendResp", FrameType.DEV_DOWN),
 
   /** 设备登录 */
   DEV_LOGIN("devLogin", FrameType.DEV_UP, DevLogin.class),

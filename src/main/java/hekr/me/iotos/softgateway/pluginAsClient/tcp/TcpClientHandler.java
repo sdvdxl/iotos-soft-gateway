@@ -1,7 +1,9 @@
 package hekr.me.iotos.softgateway.pluginAsClient.tcp;
 
+import hekr.me.iotos.softgateway.common.klink.BatchDevSend;
 import hekr.me.iotos.softgateway.common.klink.DevSend;
 import hekr.me.iotos.softgateway.common.codec.DataCodec;
+import hekr.me.iotos.softgateway.northProxy.ProxyService;
 import hekr.me.iotos.softgateway.pluginAsClient.tcp.packet.LinePacketCodec;
 import hekr.me.iotos.softgateway.common.codec.RawDataCodec;
 import hekr.me.iotos.softgateway.pluginAsClient.tcp.packet.TcpPacket;
@@ -21,7 +23,8 @@ import org.tio.core.intf.Packet;
 @Service
 public class TcpClientHandler implements ClientAioHandler {
   @Autowired private LinePacketCodec packetCodec;
-  private DataCodec dataCodec = new RawDataCodec();
+  @Autowired private DataCodec dataCodec;
+  @Autowired private ProxyService proxyService;
 
   /** 此处由于发送心跳包，可在此处自定义心跳包格式 */
   @Override
@@ -53,13 +56,15 @@ public class TcpClientHandler implements ClientAioHandler {
       return;
     }
 
-    DevSend klinkDev = dataCodec.decode(tcpPacket);
+    BatchDevSend klinkDev = (BatchDevSend) dataCodec.decode(tcpPacket);
 
     if (klinkDev == null) {
       log.error("数据解码成klink格式失败：{}", tcpPacket.getBody());
       return;
     }
 
+
+    proxyService.devSend(klinkDev);
     // 对转码后的数据按照klink的action进行不同业务的操作
     //    ProxyService.sendKlink(klinkDev);
   }

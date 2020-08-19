@@ -38,10 +38,8 @@
 
 ```json
 
-{"devId":"dev001","pk":"a0d89988c6b2419994951b076afd0150","DeviceId":"12e8ef8b5332fa2d","devName": "楼层电表001"}
-{"devId":"BYQ001","pk":"0a118c82e1744cfd99b3c3afbff5a853","DeviceId":"30524b183f8e3ae3","devName": "变压器001"}
-{"devId":"DXPD001","pk":"f0d9b9266ca54ad080ef8c590861bdcd","DeviceId":"35dd9a224718c971","devName": "地下配电001"}
-{"devId":"DYBJ001","pk":"35234f5c84aa4b21b4b5d69ab90e8e70","DeviceId":"145bdd7a3c27d2d5","devName": "低压表具001"}
+{"devId":"dev001","areaNum":1,"devName": "一号防区"}
+{"devId":"dev002","areaNum":2,"devName": "二号防区"}
 
 
 ```
