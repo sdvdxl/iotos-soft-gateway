@@ -1,5 +1,6 @@
 package hekr.me.iotos.softgateway.pluginAsClient.tcp.packet;
 
+import cn.hutool.core.util.ArrayUtil;
 import hekr.me.iotos.softgateway.utils.ParseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -122,13 +123,18 @@ public class LinePacketCodec implements PacketCodec {
       bodyLen = body.length;
     }
     // 创建一个新的bytebuffer
-    ByteBuffer buffer = ByteBuffer.allocate(bodyLen);
+    ByteBuffer buffer = ByteBuffer.allocate(bodyLen + 2);
     // 设置字节序
     buffer.order(tioConfig.getByteOrder());
 
     // 写入消息体
     if (body != null) {
+      buffer.put(HEAD);
       buffer.put(body);
+      byte[] bytes = new byte[1];
+      bytes[0] = HEAD;
+      byte[] all = ArrayUtil.addAll(bytes, body);
+      buffer.put(bytesXOR(all));
     }
 
     return buffer;

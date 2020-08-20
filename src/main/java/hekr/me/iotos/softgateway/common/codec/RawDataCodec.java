@@ -3,9 +3,11 @@ package hekr.me.iotos.softgateway.common.codec;
 import cn.hutool.core.util.ArrayUtil;
 import hekr.me.iotos.softgateway.common.config.ProxyConfig;
 import hekr.me.iotos.softgateway.common.constant.SubKlinkAction;
+import hekr.me.iotos.softgateway.common.enums.Action;
 import hekr.me.iotos.softgateway.common.klink.BatchDevSend;
 import hekr.me.iotos.softgateway.common.klink.DevSend;
 import hekr.me.iotos.softgateway.common.klink.KlinkDev;
+import hekr.me.iotos.softgateway.common.klink.ModelData;
 import hekr.me.iotos.softgateway.common.klink.SuModelData;
 import hekr.me.iotos.softgateway.northProxy.device.Device;
 import hekr.me.iotos.softgateway.northProxy.device.DeviceService;
@@ -71,6 +73,7 @@ public class RawDataCodec implements DataCodec {
             map.put("CODE", i + 1);
             if (ArrayUtil.contains(STATUS, status)) {
               map.put("PRT", ParseUtil.byte2int(status));
+              map.put("ALM", 0);
             } else if (ArrayUtil.contains(ALARMS, status)) {
               map.put("ALM", ParseUtil.byte2int(status));
             }
@@ -83,33 +86,28 @@ public class RawDataCodec implements DataCodec {
         batchDevSend.setPk(proxyConfig.getDEV_PK());
         batchDevSend.setData(devSendList);
         return batchDevSend;
-        //      case 2:
-        //        // 获取pk长度
-        //        int pkLength = wrap.getShort();
-        //        byte[] dstPk = new byte[pkLength];
-        //        // 获取pk值
-        //        wrap.get(dstPk);
-        //        String pk = new String(dstPk, TcpPacket.CHARSET);
-        //        // 获取devId长度
-        //        short devIdLength = wrap.getShort();
-        //        // 获取devId
-        //        byte[] dstDevId = new byte[devIdLength];
-        //        wrap.get(dstDevId);
-        //        String devId = new String(dstDevId, TcpPacket.CHARSET);
-        //
-        //        short devSecretLength = wrap.getShort();
-        //        byte[] dstDevSecret = new byte[devSecretLength];
-        //        wrap.get(dstDevSecret);
-        //        String devSecret = new String(dstDevSecret, TcpPacket.CHARSET);
-        //
-        //        // 构造上线指令
-        //        DevSend klinkDev = new DevSend();
-        //        klinkDev.setDevId(devId);
-        //        klinkDev.setPk(pk);
-        //        klinkDev.setMsgId(1);
-        //        klinkDev.setDevSecret(devSecret);
-        //        klinkDev.setAction(SubKlinkAction.DEV_LOGIN);
-        //        return klinkDev;
+      case 2:
+        wrap.get();
+        int areaNum = ParseUtil.byte2int(wrap.get());
+        byte status = wrap.get();
+        byte success = wrap.get();
+        if (success == 0x01) {
+          DevSend devSend = new DevSend();
+          devSend.setAction(Action.DEV_SEND.getAction());
+          devSend.setDevId(deviceService.getByAreaNum(areaNum).getDevId());
+          devSend.setPk(proxyConfig.getSUB_PK());
+          ModelData modelData = new ModelData();
+          modelData.setCmd("report");
+          Map<String, Object> map = new HashMap<>();
+          if (status == 0x01) {
+            map.put("PRT", 1);
+          } else if (status == 0x00) {
+            map.put("PRT", 2);
+          }
+          modelData.setParams(map);
+          devSend.setData(modelData);
+          return devSend;
+        }
       default:
         break;
     }

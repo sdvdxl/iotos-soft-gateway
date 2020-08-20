@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.tio.client.ClientChannelContext;
 import org.tio.client.ClientTioConfig;
 import org.tio.client.ReconnConf;
@@ -17,7 +18,7 @@ import org.tio.core.Tio;
 import org.tio.utils.jfinal.P;
 
 @Slf4j
-@Component
+@Service
 public class TcpClientStarter {
   @Autowired private ProxyConfig proxyConfig;
 
@@ -35,12 +36,11 @@ public class TcpClientStarter {
     clientChannelContext =
         tioClient.connect(
             new Node(proxyConfig.getTCP_CONNECT_IP(), proxyConfig.getTCP_CONNECT_PORT()));
-    getMsg();
   }
 
-  public void getMsg() {
+  public void send(byte[] body) {
     TcpPacket tcpPacket = new TcpPacket();
-    tcpPacket.setBody(TcpPacket.GET_MSG);
+    tcpPacket.setBody(body);
     Tio.send(clientChannelContext, tcpPacket);
   }
 }

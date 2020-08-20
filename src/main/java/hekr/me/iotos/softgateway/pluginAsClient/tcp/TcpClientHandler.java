@@ -3,6 +3,7 @@ package hekr.me.iotos.softgateway.pluginAsClient.tcp;
 import hekr.me.iotos.softgateway.common.klink.BatchDevSend;
 import hekr.me.iotos.softgateway.common.klink.DevSend;
 import hekr.me.iotos.softgateway.common.codec.DataCodec;
+import hekr.me.iotos.softgateway.common.klink.KlinkDev;
 import hekr.me.iotos.softgateway.northProxy.ProxyService;
 import hekr.me.iotos.softgateway.pluginAsClient.tcp.packet.LinePacketCodec;
 import hekr.me.iotos.softgateway.common.codec.RawDataCodec;
@@ -56,12 +57,13 @@ public class TcpClientHandler implements ClientAioHandler {
       return;
     }
 
-    BatchDevSend klinkDev = (BatchDevSend) dataCodec.decode(tcpPacket);
+    KlinkDev klinkDev = dataCodec.decode(tcpPacket);
 
     if (klinkDev == null) {
       log.error("数据解码成klink格式失败：{}", tcpPacket.getBody());
       return;
     }
+
 
 
     proxyService.devSend(klinkDev);

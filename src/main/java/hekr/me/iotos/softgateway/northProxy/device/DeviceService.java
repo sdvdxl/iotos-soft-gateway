@@ -77,7 +77,7 @@ public class DeviceService {
   }
 
   //  @Scheduled(fixedDelay = 60 * 1000)
-  @Scheduled(fixedDelay = 10000)
+  @Scheduled(fixedDelay = 60000)
   public void scheduleUpdateDevStatus() {
     if (proxyConnectService.isConnected()) {
       log.info("正在定时更新设备状态");
