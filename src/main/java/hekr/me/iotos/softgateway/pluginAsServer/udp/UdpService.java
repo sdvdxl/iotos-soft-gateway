@@ -1,6 +1,7 @@
 package hekr.me.iotos.softgateway.pluginAsServer.udp;
 
 import lombok.SneakyThrows;
+import org.springframework.stereotype.Service;
 import org.tio.core.udp.UdpServer;
 import org.tio.core.udp.UdpServerConf;
 import org.tio.utils.jfinal.P;
@@ -9,6 +10,7 @@ import org.tio.utils.jfinal.P;
  * @author jiatao
  * @date 2020/7/13
  */
+@Service
 public class UdpService {
   public static UdpServer udpServer;
 

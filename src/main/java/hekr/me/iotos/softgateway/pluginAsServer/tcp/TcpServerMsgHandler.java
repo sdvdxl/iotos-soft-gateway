@@ -8,6 +8,7 @@ import hekr.me.iotos.softgateway.common.codec.RawDataCodec;
 import hekr.me.iotos.softgateway.pluginAsClient.tcp.packet.LinePacketCodec;
 import hekr.me.iotos.softgateway.pluginAsClient.tcp.packet.TcpPacket;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.tio.core.ChannelContext;
 import org.tio.core.Tio;
 import org.tio.core.TioConfig;
@@ -22,6 +23,7 @@ import java.nio.ByteBuffer;
  * 具体拆包和解码的方法用户可以自行实现com.example.iotcloudgateway.codec中的DataCodec和PacketCodec接口进行二次开发。
  */
 @Slf4j
+@Service
 public class TcpServerMsgHandler implements ServerAioHandler {
   /**
    * 本示例代码分别列举了一种拆包方式和一种业务数据处理方式

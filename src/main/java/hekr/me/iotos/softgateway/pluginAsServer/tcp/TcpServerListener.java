@@ -1,12 +1,14 @@
 package hekr.me.iotos.softgateway.pluginAsServer.tcp;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.tio.core.ChannelContext;
 import org.tio.core.intf.Packet;
 import org.tio.server.intf.ServerAioListener;
 
 /** tcp server的监听模块， */
 @Slf4j
+@Service
 public class TcpServerListener implements ServerAioListener {
 
   @Override

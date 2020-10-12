@@ -36,6 +36,8 @@ public class ProxyConfig {
   @Value("${tcp.client.connect.port}")
   private int TCP_CONNECT_PORT;
 
+  @Value("${tcp.server.port}")
+  private int TCP_SERVER_PORT;
 
   @Value("${http.client.connect.host}")
   private String HTTP_URL;

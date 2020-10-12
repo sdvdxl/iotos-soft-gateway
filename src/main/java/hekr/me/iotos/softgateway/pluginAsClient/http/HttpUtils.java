@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
@@ -138,6 +139,7 @@ public class HttpUtils {
   }
 
   /*编辑参数列表*/
+  @SneakyThrows
   public static String getParams(Map<String, Object> params) {
     StringBuilder sb = new StringBuilder("?");
     if (params != null && !params.isEmpty()) {
@@ -145,9 +147,9 @@ public class HttpUtils {
         Object value = item.getValue();
         if (value != null) {
           sb.append("&");
-          sb.append(item.getKey());
+          sb.append(URLEncoder.encode(item.getKey(), "UTF-8"));
           sb.append("=");
-          sb.append(value);
+          sb.append(URLEncoder.encode(String.valueOf(value), "UTF-8"));
         }
       }
       return sb.toString();

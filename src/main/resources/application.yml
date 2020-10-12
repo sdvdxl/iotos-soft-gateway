@@ -51,3 +51,5 @@ tcp:
     connect:
       ip: 192.168.50.212
       port: 8080
+  server:
+    port: 7070

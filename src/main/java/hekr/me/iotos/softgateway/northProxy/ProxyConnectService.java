@@ -27,10 +27,6 @@ public class ProxyConnectService {
 
   @Lazy @Autowired private ProxyCallbackService proxyCallbackService;
 
-  //  private String UP_TOPIC = "up/dev/" + proxyConfig.getDEV_PK() + "/" + proxyConfig.getDEV_ID();
-
-  //  private String DOWN_TOPIC =
-  //      "down" + "/dev/" + proxyConfig.getDEV_PK() + "/" + proxyConfig.getDEV_ID();
 
   public String getUpTopic() {
     return "up/dev/" + proxyConfig.getDEV_PK() + "/" + proxyConfig.getDEV_ID();
@@ -94,7 +90,6 @@ public class ProxyConnectService {
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
       }
-      //      mqttServer.getConfig();
     }
   }
 
