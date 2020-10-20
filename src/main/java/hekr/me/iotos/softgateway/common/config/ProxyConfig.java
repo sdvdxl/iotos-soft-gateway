@@ -12,13 +12,13 @@ import org.springframework.context.annotation.Configuration;
 @Data
 public class ProxyConfig {
 
-  @Value("${iotos.host}")
+  @Value("${connect.mqtt.endpoint}")
   private String HOST;
 
-  @Value("${gateway.DEV_PK}")
+  @Value("${gateway.pk}")
   private String DEV_PK;
 
-  @Value("${gateway.DEV_ID}")
+  @Value("${gateway.devId}")
   private String DEV_ID;
 
   @Value("${gateway.devSecret}")

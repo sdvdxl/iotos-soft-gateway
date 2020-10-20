@@ -13,7 +13,7 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover LOG_PATH 可以在启动命令参数改变 logging.path=/data/logs -->
-            <FileNamePattern>${LOG_PATH:-/data/logs}/iot-cloud-os-core.%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
+            <FileNamePattern>${LOG_PATH:-/data/logs}/iot-soft-gateway.%d{yyyy-MM-dd}.%i.log.zip</FileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
               class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
                 <maxFileSize>500MB</maxFileSize>

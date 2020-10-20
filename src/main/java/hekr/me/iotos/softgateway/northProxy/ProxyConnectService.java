@@ -53,7 +53,7 @@ public class ProxyConnectService {
     // MemoryPersistence设置clientid的保存形式，默认为以内存保存
     client =
         new MqttClient(
-            "tcp://" + proxyConfig.getHOST(),
+            proxyConfig.getHOST(),
             "dev:" + proxyConfig.getDEV_PK() + ":" + proxyConfig.getDEV_ID(),
             new MemoryPersistence());
     options = new MqttConnectOptions();

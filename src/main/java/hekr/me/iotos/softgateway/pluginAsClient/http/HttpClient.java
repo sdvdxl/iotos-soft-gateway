@@ -24,7 +24,7 @@ public class HttpClient {
   private static String tokenKey;
 
   /** 登陆请求获取token */
-  @Scheduled(fixedDelay = 20 * 1000)
+//  @Scheduled(fixedDelay = 20 * 1000)
   public void login() {
     String url = proxyConfig.getHTTP_URL() + "/api/bi/Login";
     HttpUtils httpUtils = new HttpUtils();

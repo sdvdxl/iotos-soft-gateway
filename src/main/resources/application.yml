@@ -1,4 +1,36 @@
-server.port: 8070
+server:
+  port: 8070
+
+connect:
+  mqtt:
+    endpoint: 'tcp://106.75.50.110:1883'
+
+gateway:
+  pk: 'driver_001'
+  devId: 'driver_test001'
+  devSecret: '311e9707469241938e08f6d64a55b157'
+  sub:
+    pk: '371d619518244ee0a9f266149af2bcbf'
+    productSecret: '874597784ffe47b3a1557c8a14958855'
+
+http:
+  server:
+    port: 8070
+  client:
+    connect:
+      host: "http://localhost:8070"
+      aid: "test"
+      key: "111111"
+
+tcp:
+  client:
+    connect:
+      ip: 192.168.50.212
+      port: 8080
+  server:
+    port: 7070
+
+
 tio:
   core:
     server:
@@ -25,31 +57,3 @@ tio:
         key-store:
         password:
         trust-store:
-
-iotos:
-  host: '106.75.50.110:1883'
-
-gateway:
-  DEV_PK: 'b16a0ca59bff4e46b5a0f6b09fc2b74c'
-  DEV_ID: 'gateway-boundary'
-  devSecret: '57dcfc7905aa4b83bfa66abb6091ea1f'
-  sub:
-    pk: '371d619518244ee0a9f266149af2bcbf'
-    productSecret: '874597784ffe47b3a1557c8a14958855'
-
-http:
-  server:
-    port: 8070
-  client:
-    connect:
-      host: "http://localhost:8070"
-      aid: "test"
-      key: "111111"
-
-tcp:
-  client:
-    connect:
-      ip: 192.168.50.212
-      port: 8080
-  server:
-    port: 7070

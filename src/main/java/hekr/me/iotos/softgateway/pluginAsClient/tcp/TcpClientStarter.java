@@ -29,7 +29,7 @@ public class TcpClientStarter {
 
   private ClientChannelContext clientChannelContext;
 
-  @PostConstruct
+//  @PostConstruct
   public void start() throws Exception {
     ReconnConf reconnConf = new ReconnConf(5000L);
     tioClient = new TioClient(new ClientTioConfig(tioClientHandler, aioListener, reconnConf));

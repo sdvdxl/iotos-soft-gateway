@@ -1,19 +1,13 @@
 package hekr.me.iotos.softgateway.pluginAsServer.http;
 
-import cn.hutool.core.util.ArrayUtil;
-import hekr.me.iotos.softgateway.common.dto.BaseResp;
-import hekr.me.iotos.softgateway.common.dto.EnergyMeterReq;
-import hekr.me.iotos.softgateway.common.dto.EnergyMeterResp;
-import hekr.me.iotos.softgateway.common.dto.EnergyStatDataReq;
-import hekr.me.iotos.softgateway.common.dto.EnergyStatDataResp;
-import hekr.me.iotos.softgateway.common.dto.RuntimeResp;
-import hekr.me.iotos.softgateway.common.dto.TokenResp;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import hekr.me.iotos.softgateway.common.enums.Action;
+import hekr.me.iotos.softgateway.common.klink.DevSend;
+import hekr.me.iotos.softgateway.northProxy.ProxyService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,25 +15,28 @@ import org.springframework.web.bind.annotation.RestController;
 /** */
 @Slf4j
 @RestController
-@RequestMapping(value = "/api/bi")
+@RequestMapping(value = "/gateway")
 public class HttpController {
+  @Autowired ProxyService proxyService;
 
-  @GetMapping("/Login")
-  public BaseResp<TokenResp> login(@RequestParam String aid, @RequestParam String key) {
-    BaseResp<TokenResp> tokenRespBaseResp = new BaseResp<>();
-    if ("test".equals(aid) && "111111".equals(key)) {
-      tokenRespBaseResp.setInfo("请求(或处理)成功");
-      tokenRespBaseResp.setStatusCode(200);
-      TokenResp tokenResp = new TokenResp();
-      tokenResp.setApplicationId("test");
-      tokenResp.setId("c9648f504179bdd2");
-      tokenResp.setKey("b62987f93ced7dd2");
-      tokenRespBaseResp.setData(tokenResp);
-    } else {
-      tokenRespBaseResp.setInfo("失败");
-      tokenRespBaseResp.setStatusCode(500);
-    }
-    return tokenRespBaseResp;
+  @PostMapping("/devSend")
+  public Object devSend(@RequestBody DevSend devSend) {
+    devSend.setAction(Action.DEV_SEND.getAction());
+    proxyService.devSend(devSend);
+    return null;
   }
 
+  @GetMapping("/register")
+  public Object register(
+      @RequestParam String devId, @RequestParam String pk, @RequestParam String devName) {
+    proxyService.register(pk, devId, null, devName);
+    proxyService.addDev(pk, devId, null);
+    return null;
+  }
+
+  @GetMapping("/login")
+  public Object login(@RequestParam String devId, @RequestParam String pk) {
+    proxyService.devLogin(pk, devId);
+    return null;
+  }
 }
