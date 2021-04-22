@@ -9,11 +9,11 @@
     <version>2.1.6.RELEASE</version>
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
-  <groupId>hekr.me</groupId>
-  <artifactId>energy-manager</artifactId>
+  <groupId>me.hekr</groupId>
+  <artifactId>iot-softgateway</artifactId>
   <version>0.0.1</version>
-  <name>mqtt</name>
-  <description>Demo project for Spring Boot</description>
+  <name>iot-soft-gateway</name>
+  <description>IoTOS 软网关</description>
 
   <properties>
     <java.version>1.8</java.version>
