@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Map;
 import lombok.Data;
 
+/** @author iotos */
 @Data
 public class ModelData implements Serializable {
 
@@ -19,5 +20,10 @@ public class ModelData implements Serializable {
 
   public Map<String, Object> getParams() {
     return params == null ? Collections.emptyMap() : params;
+  }
+
+  @Override
+  public String toString() {
+    return "cmd='" + cmd + '\'' + ", params=" + params;
   }
 }

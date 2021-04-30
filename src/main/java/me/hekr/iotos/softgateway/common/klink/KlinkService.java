@@ -31,6 +31,11 @@ public class KlinkService {
   /** 动态注册设备 */
   @SneakyThrows
   public void register(String subDevPk, String subDevId, String productSecret, String devName) {
+    doRegister(subDevPk, subDevId, productSecret, devName);
+  }
+
+  private void doRegister(String subDevPk, String subDevId, String productSecret, String devName)
+      throws Exception {
     Register register = new Register();
     register.setDevId(subDevId);
     register.setPk(subDevPk);
@@ -45,6 +50,7 @@ public class KlinkService {
     }
     mqttService.publish(register);
   }
+
   /** 设备拓扑 */
   @SneakyThrows
   public void addDev(String subDevPk, String subDevId) {

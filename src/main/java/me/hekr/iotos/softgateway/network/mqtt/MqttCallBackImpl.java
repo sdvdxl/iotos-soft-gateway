@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
  *
  * <p>public void deliveryComplete(MqttDeliveryToken token)) 接收到已经发布的 QoS 1 或 QoS 2 消息的传递令牌时调用。 由
  * MqttClient.connect 激活此回调。
+ *
+ * @author iotos
  */
 @Slf4j
 @Service
@@ -37,7 +39,7 @@ public class MqttCallBackImpl implements MqttCallback {
   public void connectionLost(Throwable cause) {
     // 连接丢失后，一般在这里面进行重连
     log.warn("软网关已经连接断开,准备开始重连");
-    mqttService.connect();
+    mqttService.init();
   }
 
   @Override

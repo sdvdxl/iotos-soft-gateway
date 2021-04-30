@@ -104,6 +104,15 @@ public class DeviceMapper {
   }
 
   @Override
+  public String toString() {
+    return data.toString();
+  }
+
+  public <T> T getProp(String prop) {
+    return (T) data.get(prop);
+  }
+
+  @Override
   public boolean equals(Object o) {
     if (this == o) {
       return true;
@@ -121,11 +130,15 @@ public class DeviceMapper {
   }
 
   public String getPk() {
-    return (String) data.get("pk");
+    return getProp("pk");
   }
 
   public String getDevId() {
-    return (String) data.get("devId");
+    return getProp("devId");
+  }
+
+  public String getDevName() {
+    return getProp("devName");
   }
 
   public static class Props {
@@ -140,6 +153,11 @@ public class DeviceMapper {
 
     private void put(String prop, Object value) {
       data.put(prop, value);
+    }
+
+    @Override
+    public String toString() {
+      return data.toString();
     }
 
     public static class PropsBuilder {

@@ -10,9 +10,9 @@ connect:
     keepAliveTime: 60
 
 gateway:
-  pk: 'driver_001'
-  devId: 'driver_test001'
-  devSecret: '311e9707469241938e08f6d64a55b157'
+  pk: 'b6e2cc8aaf6c4255a15106d4806cd7ec'
+  devId: 'demo_gateway'
+  devSecret: 'ae0122eeb6cd48e4b10405d04987946f'
 
 http:
   server:
