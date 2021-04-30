@@ -4,14 +4,15 @@ server:
 connect:
   mqtt:
     endpoint: 'tcp://106.75.50.110:1883'
+    # 链接超时时间，秒
+    connectionTimeout: 10
+    # 心跳保持，秒
+    keepAliveTime: 60
 
 gateway:
   pk: 'driver_001'
   devId: 'driver_test001'
   devSecret: '311e9707469241938e08f6d64a55b157'
-  sub:
-    pk: '371d619518244ee0a9f266149af2bcbf'
-    productSecret: '874597784ffe47b3a1557c8a14958855'
 
 http:
   server:
@@ -39,7 +40,7 @@ tio:
       # 心跳时间
       heartbeat-timeout: 30000
       # 监控时段,多个之间用逗号隔开
-      ip-stat-durations: [60]
+      ip-stat-durations: [ 60 ]
     # 集群配置 默认关闭
     cluster:
       enabled: false

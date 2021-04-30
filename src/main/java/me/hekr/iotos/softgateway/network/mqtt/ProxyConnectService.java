@@ -1,13 +1,11 @@
-package me.hekr.iotos.softgateway.northProxy;
+package me.hekr.iotos.softgateway.network.mqtt;
 
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.common.config.ProxyConfig;
-import me.hekr.iotos.softgateway.common.constant.Constants;
+import me.hekr.iotos.softgateway.common.config.IotOsConfig;
+import me.hekr.iotos.softgateway.common.config.MqttConfig;
 import me.hekr.iotos.softgateway.utils.JsonUtil;
-import me.hekr.iotos.softgateway.utils.ParseUtil;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -22,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class ProxyConnectService {
-  @Autowired private final ProxyConfig proxyConfig;
+  @Autowired private final IotOsConfig iotOsConfig;
 
   private final MqttClient client;
 
@@ -30,42 +28,20 @@ public class ProxyConnectService {
 
   @Lazy @Autowired private ProxyCallbackService proxyCallbackService;
 
-  public String getUpTopic() {
-    return "up/dev/" + proxyConfig.getDEV_PK() + "/" + proxyConfig.getDEV_ID();
-  }
-
-  public String getDownTopic() {
-    return "down" + "/dev/" + proxyConfig.getDEV_PK() + "/" + proxyConfig.getDEV_ID();
-  }
-
-  @SneakyThrows
-  public String getPassword() {
-    return ParseUtil.parseByte2HexStr(
-        (ParseUtil.HmacSHA1Encrypt(
-            proxyConfig.getDEV_PK()
-                + proxyConfig.getDEV_ID()
-                + proxyConfig.getDEV_SECRET()
-                + Constants.RANDOM,
-            proxyConfig.getDEV_SECRET())));
-  }
-
   @Autowired
-  public ProxyConnectService(ProxyConfig proxyConfig) throws MqttException {
-    this.proxyConfig = proxyConfig;
+  public ProxyConnectService(IotOsConfig iotOsConfig) throws MqttException {
+    this.iotOsConfig = iotOsConfig;
+    MqttConfig mqtt = iotOsConfig.getMqttConfig();
     // MemoryPersistence设置clientid的保存形式，默认为以内存保存
-    client =
-        new MqttClient(
-            proxyConfig.getHOST(),
-            "dev:" + proxyConfig.getDEV_PK() + ":" + proxyConfig.getDEV_ID(),
-            new MemoryPersistence());
+    client = new MqttClient(mqtt.getEndpoint(), mqtt.getClientId(), new MemoryPersistence());
     options = new MqttConnectOptions();
     options.setCleanSession(true);
-    options.setUserName(Constants.HASH_METHOD + ":" + Constants.RANDOM);
-    options.setPassword(getPassword().toCharArray());
+    options.setUserName(mqtt.getUsername());
+    options.setPassword(mqtt.getPassword());
     // 设置超时时间
-    options.setConnectionTimeout(10);
+    options.setConnectionTimeout(mqtt.getConnectTimeout());
     // 设置会话心跳时间
-    options.setKeepAliveInterval(20);
+    options.setKeepAliveInterval(mqtt.getKeepAliveTime());
   }
 
   // 定义一个主题
@@ -76,7 +52,7 @@ public class ProxyConnectService {
       client.setCallback(proxyCallbackService);
       client.connect(options);
       // 订阅
-      client.subscribe(getDownTopic(), 0);
+      client.subscribe(iotOsConfig.getGatewayConfig().getDownTopic(), 0);
     } catch (Exception e) {
       log.warn("软件网关连接失败", e);
     }
@@ -96,12 +72,13 @@ public class ProxyConnectService {
   }
 
   /**
-   * @param message
+   * @param message 消息，发送的时候会被 toJson
    * @throws MqttPersistenceException
    * @throws MqttException
    */
   public void publish(Object message) throws MqttPersistenceException, MqttException {
-    client.publish(getUpTopic(), new MqttMessage(JsonUtil.toBytes(message)));
+    client.publish(
+        iotOsConfig.getGatewayConfig().getUpTopic(), new MqttMessage(JsonUtil.toBytes(message)));
     if (log.isInfoEnabled()) {
       log.info("发送消息成功：{}", JsonUtil.toJson(message));
     }

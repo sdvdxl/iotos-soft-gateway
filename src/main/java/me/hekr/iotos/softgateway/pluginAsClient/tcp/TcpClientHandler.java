@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.codec.DataCodec;
 import me.hekr.iotos.softgateway.common.klink.KlinkDev;
-import me.hekr.iotos.softgateway.northProxy.ProxyService;
+import me.hekr.iotos.softgateway.network.mqtt.ProxyService;
 import me.hekr.iotos.softgateway.pluginAsClient.tcp.packet.LinePacketCodec;
 import me.hekr.iotos.softgateway.pluginAsClient.tcp.packet.TcpPacket;
 import org.springframework.beans.factory.annotation.Autowired;

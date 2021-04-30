@@ -1,10 +1,10 @@
-package me.hekr.iotos.softgateway.northProxy;
+package me.hekr.iotos.softgateway.network.mqtt;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.enums.Action;
 import me.hekr.iotos.softgateway.common.klink.KlinkDev;
-import me.hekr.iotos.softgateway.northProxy.processor.ProcessorManager;
+import me.hekr.iotos.softgateway.network.mqtt.processor.ProcessorManager;
 import me.hekr.iotos.softgateway.utils.JsonUtil;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;

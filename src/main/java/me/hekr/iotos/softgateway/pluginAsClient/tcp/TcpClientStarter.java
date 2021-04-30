@@ -1,7 +1,7 @@
 package me.hekr.iotos.softgateway.pluginAsClient.tcp;
 
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.common.config.ProxyConfig;
+import me.hekr.iotos.softgateway.common.config.IotOsConfig;
 import me.hekr.iotos.softgateway.pluginAsClient.tcp.packet.TcpPacket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import org.tio.core.Tio;
 @Slf4j
 @Service
 public class TcpClientStarter {
-  @Autowired private ProxyConfig proxyConfig;
+  @Autowired private IotOsConfig iotOsConfig;
 
   @Autowired private ClientAioHandler tioClientHandler;
   @Autowired private ClientAioListener aioListener;
@@ -31,8 +31,7 @@ public class TcpClientStarter {
     ReconnConf reconnConf = new ReconnConf(5000L);
     tioClient = new TioClient(new ClientTioConfig(tioClientHandler, aioListener, reconnConf));
     clientChannelContext =
-        tioClient.connect(
-            new Node(proxyConfig.getTCP_CONNECT_IP(), proxyConfig.getTCP_CONNECT_PORT()));
+        tioClient.connect(new Node(iotOsConfig.getTcpConnectIp(), iotOsConfig.getTcpConnectPort()));
   }
 
   public void send(byte[] body) {

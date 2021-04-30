@@ -3,7 +3,7 @@ package me.hekr.iotos.softgateway.pluginAsServer.http;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.enums.Action;
 import me.hekr.iotos.softgateway.common.klink.DevSend;
-import me.hekr.iotos.softgateway.northProxy.ProxyService;
+import me.hekr.iotos.softgateway.network.mqtt.ProxyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

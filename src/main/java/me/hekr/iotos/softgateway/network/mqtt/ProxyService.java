@@ -1,8 +1,8 @@
-package me.hekr.iotos.softgateway.northProxy;
+package me.hekr.iotos.softgateway.network.mqtt;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.common.config.ProxyConfig;
+import me.hekr.iotos.softgateway.common.config.IotOsConfig;
 import me.hekr.iotos.softgateway.common.constant.Constants;
 import me.hekr.iotos.softgateway.common.enums.Action;
 import me.hekr.iotos.softgateway.common.klink.AddTopo;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class ProxyService {
-  @Autowired private ProxyConfig proxyConfig;
+  @Autowired private IotOsConfig iotOsConfig;
   @Autowired private ProxyConnectService proxyConnectService;
 
   public void sendKlink(KlinkDev klinkDev) {
@@ -95,8 +95,8 @@ public class ProxyService {
                   subDevPk + subDevId + subDevSecret + Constants.RANDOM, subDevSecret)));
     }
     addTopo.setSub(topoSub);
-    addTopo.setPk(proxyConfig.getDEV_PK());
-    addTopo.setDevId(proxyConfig.getDEV_ID());
+    addTopo.setPk(iotOsConfig.getGatewayPk());
+    addTopo.setDevId(iotOsConfig.getGatewayDevId());
     proxyConnectService.publish(addTopo);
   }
 
@@ -122,8 +122,8 @@ public class ProxyService {
   @SneakyThrows
   public void getTopo() {
     GetTopo getTopo = new GetTopo();
-    getTopo.setPk(proxyConfig.getDEV_PK());
-    getTopo.setDevId(proxyConfig.getDEV_ID());
+    getTopo.setPk(iotOsConfig.getGatewayPk());
+    getTopo.setDevId(iotOsConfig.getGatewayDevId());
     proxyConnectService.publish(getTopo);
   }
 
@@ -135,8 +135,8 @@ public class ProxyService {
     topoSub.setPk(subDevPk);
     topoSub.setDevId(subDevId);
     delTopo.setSub(topoSub);
-    delTopo.setPk(proxyConfig.getDEV_PK());
-    delTopo.setDevId(proxyConfig.getDEV_ID());
+    delTopo.setPk(iotOsConfig.getGatewayPk());
+    delTopo.setDevId(iotOsConfig.getGatewayDevId());
     proxyConnectService.publish(delTopo);
   }
 
@@ -150,8 +150,8 @@ public class ProxyService {
   @SneakyThrows
   public void getConfig() {
     GetConfig getConfig = new GetConfig();
-    getConfig.setPk(proxyConfig.getDEV_PK());
-    getConfig.setDevId(proxyConfig.getDEV_ID());
+    getConfig.setPk(iotOsConfig.getGatewayPk());
+    getConfig.setDevId(iotOsConfig.getGatewayDevId());
     proxyConnectService.publish(getConfig);
   }
 }

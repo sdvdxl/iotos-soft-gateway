@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.common.config.ProxyConfig;
+import me.hekr.iotos.softgateway.common.config.IotOsConfig;
 import me.hekr.iotos.softgateway.common.constant.Constants;
 import me.hekr.iotos.softgateway.common.dto.BaseResp;
 import me.hekr.iotos.softgateway.common.dto.EnergyStatDataReq;
@@ -22,7 +22,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class HttpClient {
-  @Autowired ProxyConfig proxyConfig;
+  @Autowired
+  IotOsConfig iotOsConfig;
 
   private static String tokenId;
   private static String tokenKey;
@@ -30,11 +31,11 @@ public class HttpClient {
   /** 登陆请求获取token */
   //  @Scheduled(fixedDelay = 20 * 1000)
   public void login() {
-    String url = proxyConfig.getHTTP_URL() + "/api/bi/Login";
+    String url = iotOsConfig.getHttpUrl() + "/api/bi/Login";
     HttpUtils httpUtils = new HttpUtils();
     Map<String, Object> login = new HashMap<>();
-    login.put("aid", proxyConfig.getAID());
-    login.put("key", proxyConfig.getKEY());
+    login.put("aid", iotOsConfig.getAid());
+    login.put("key", iotOsConfig.getKey());
     Map<String, String> headerParams = new HashMap<>();
     byte[] bytes = httpUtils.get(url, headerParams, login);
     BaseResp<TokenResp> tokenResp =
@@ -70,7 +71,7 @@ public class HttpClient {
       log.warn("请求[GetEnergyStatData]失败，未完成登陆校验");
       return null;
     }
-    String url = proxyConfig.getHTTP_URL() + "/api/bi/GetEnergyStatData";
+    String url = iotOsConfig.getHttpUrl() + "/api/bi/GetEnergyStatData";
     HttpUtils httpUtils = new HttpUtils();
     byte[] bytes = httpUtils.get(url, headers, energyMeterCtrl);
     return JsonUtil.fromBytes(bytes, new TypeReference<BaseResp<List<EnergyStatDataResp>>>() {});
@@ -83,7 +84,7 @@ public class HttpClient {
       log.warn("请求[GetRuntimeData]失败，未完成登陆校验");
       return null;
     }
-    String url = proxyConfig.getHTTP_URL() + "/api/bi/GetRuntimeData";
+    String url = iotOsConfig.getHttpUrl() + "/api/bi/GetRuntimeData";
     HttpUtils httpUtils = new HttpUtils();
     byte[] bytes = httpUtils.get(url, headers, runtimeDataCtrl);
     return JsonUtil.fromBytes(bytes, new TypeReference<BaseResp<List<RuntimeResp>>>() {});

@@ -1,7 +1,7 @@
 package me.hekr.iotos.softgateway.pluginAsServer.tcp;
 
 import lombok.SneakyThrows;
-import me.hekr.iotos.softgateway.common.config.ProxyConfig;
+import me.hekr.iotos.softgateway.common.config.IotOsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tio.server.ServerTioConfig;
@@ -12,13 +12,14 @@ import org.tio.server.TioServer;
 public class TcpServerStarter {
   @Autowired TcpServerMsgHandler tcpServerMsgHandler;
   @Autowired TcpServerListener tcpServerListener;
-  @Autowired ProxyConfig proxyConfig;
+  @Autowired
+  IotOsConfig iotOsConfig;
 
   @SneakyThrows
   //  @PostConstruct
   public void start() {
     ServerTioConfig serverTioConfig = new ServerTioConfig(tcpServerMsgHandler, tcpServerListener);
     TioServer tioServer = new TioServer(serverTioConfig); // 可以为空
-    tioServer.start(null, proxyConfig.getTCP_SERVER_PORT());
+    tioServer.start(null, iotOsConfig.getTcpServerPort());
   }
 }
