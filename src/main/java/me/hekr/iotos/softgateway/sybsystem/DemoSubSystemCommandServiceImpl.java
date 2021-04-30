@@ -1,8 +1,9 @@
-package me.hekr.iotos.softgateway.core.subsystem;
+package me.hekr.iotos.softgateway.sybsystem;
 
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.common.config.DeviceMapper;
 import me.hekr.iotos.softgateway.core.common.klink.ModelData;
+import me.hekr.iotos.softgateway.core.subsystem.SubsystemCommandService;
 import org.springframework.stereotype.Service;
 
 /**
