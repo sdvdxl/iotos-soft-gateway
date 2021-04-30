@@ -58,3 +58,20 @@ tio:
         key-store:
         password:
         trust-store:
+
+# 日志配置
+logging:
+  level.root: INFO
+  file: logs/iotos-soft-gateway.log
+  pattern:
+    file: '%date{"yyyy-MM-dd HH:mm:ss.SSS"} %-5level [%thread] %logger{128}.%M:%line - %msg %n'
+    console: '%date{"yyyy-MM-dd HH:mm:ss.SSS"} %-5level [%thread] %logger{128}.%M:%line - %msg %n'
+  charset:
+    console: UTF-8
+    file: UTF-8
+  logback:
+    rollingpolicy:
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz
+      clean-history-on-start: true
+      max-file-size: '500mb'
+      max-history: 7

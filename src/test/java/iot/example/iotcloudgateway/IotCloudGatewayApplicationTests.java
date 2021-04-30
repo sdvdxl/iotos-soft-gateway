@@ -1,6 +1,6 @@
 package iot.example.iotcloudgateway;
 
-import me.hekr.iotos.softgateway.utils.ParseUtil;
+import me.hekr.iotos.softgateway.core.utils.ParseUtil;
 
 //
 // import hekr.me.iotos.softgateway.utils.SignUtil;
