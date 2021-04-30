@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.network.mqtt.processor;
+package me.hekr.iotos.softgateway.common.klink.processor;
 
 import cn.hutool.http.HttpUtil;
 import lombok.extern.slf4j.Slf4j;

@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.codec.DataCodec;
 import me.hekr.iotos.softgateway.common.klink.KlinkDev;
-import me.hekr.iotos.softgateway.network.mqtt.ProxyService;
+import me.hekr.iotos.softgateway.common.klink.KlinkService;
 import me.hekr.iotos.softgateway.pluginAsClient.tcp.packet.LinePacketCodec;
 import me.hekr.iotos.softgateway.pluginAsClient.tcp.packet.TcpPacket;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import org.tio.core.intf.Packet;
 public class TcpClientHandler implements ClientAioHandler {
   @Autowired private LinePacketCodec packetCodec;
   @Autowired private DataCodec dataCodec;
-  @Autowired private ProxyService proxyService;
+  @Autowired private KlinkService klinkService;
 
   /** 此处由于发送心跳包，可在此处自定义心跳包格式 */
   @Override
@@ -59,7 +59,7 @@ public class TcpClientHandler implements ClientAioHandler {
       return;
     }
 
-    proxyService.devSend(klinkDev);
+    klinkService.devSend(klinkDev);
     // 对转码后的数据按照klink的action进行不同业务的操作
     //    ProxyService.sendKlink(klinkDev);
   }

@@ -13,10 +13,9 @@ import org.springframework.context.annotation.Configuration;
  * @date 2020/7/9
  */
 @Configuration
-@Getter
 public class IotOsConfig {
-  private MqttConfig mqttConfig;
-  private GatewayConfig gatewayConfig;
+  @Getter private MqttConfig mqttConfig;
+  @Getter private GatewayConfig gatewayConfig;
 
   @Value("${connect.mqtt.endpoint}")
   private String endpoint;
@@ -37,24 +36,31 @@ public class IotOsConfig {
   private String gatewayDevSecret;
 
   @Value("${tcp.client.connect.ip}")
+  @Getter
   private String tcpConnectIp;
 
   @Value("${tcp.client.connect.port}")
+  @Getter
   private int tcpConnectPort;
 
   @Value("${tcp.server.port}")
+  @Getter
   private int tcpServerPort;
 
   @Value("${http.client.connect.host}")
+  @Getter
   private String httpUrl;
 
   @Value("${http.client.connect.aid}")
+  @Getter
   private String aid;
 
   @Value("${http.client.connect.key}")
+  @Getter
   private String key;
 
   @Value("${http.server.port}")
+  @Getter
   private int httpPort;
 
   @PostConstruct

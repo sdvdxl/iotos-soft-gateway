@@ -1,19 +1,11 @@
-package me.hekr.iotos.softgateway.network.mqtt;
+package me.hekr.iotos.softgateway.common.klink;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import me.hekr.iotos.softgateway.common.config.GatewayConfig;
 import me.hekr.iotos.softgateway.common.config.IotOsConfig;
 import me.hekr.iotos.softgateway.common.constant.Constants;
-import me.hekr.iotos.softgateway.common.enums.Action;
-import me.hekr.iotos.softgateway.common.klink.AddTopo;
-import me.hekr.iotos.softgateway.common.klink.DelTopo;
-import me.hekr.iotos.softgateway.common.klink.DevLogin;
-import me.hekr.iotos.softgateway.common.klink.DevLogout;
-import me.hekr.iotos.softgateway.common.klink.GetConfig;
-import me.hekr.iotos.softgateway.common.klink.GetTopo;
-import me.hekr.iotos.softgateway.common.klink.KlinkDev;
-import me.hekr.iotos.softgateway.common.klink.Register;
-import me.hekr.iotos.softgateway.common.klink.TopoSub;
+import me.hekr.iotos.softgateway.network.mqtt.MqttService;
 import me.hekr.iotos.softgateway.utils.ParseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,43 +14,18 @@ import org.springframework.stereotype.Service;
  * Title:Server 这是发送消息的服务端 配置数据平台相关参数，可执行设备上报数据至平台以及平台下发数据至设备 Description:
  * 服务器向多个客户端推送主题，即不同客户端可向服务器订阅相同主题 此为模拟烟雾传感器连接至智慧消防平台，并且其与IoTOS平台进行交互的代码
  * 添加设备和配置流程详情请见《设备连接软网关数据上报说明书》
+ *
+ * @author iotos
  */
 @Slf4j
 @Service
-public class ProxyService {
+public class KlinkService {
   @Autowired private IotOsConfig iotOsConfig;
   @Autowired private MqttService mqttService;
-
-  public void sendKlink(KlinkDev klinkDev) {
-    switch (Action.of(klinkDev.getAction())) {
-      case REGISTER:
-        register(
-            klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getProductSecret(), klinkDev.getName());
-        break;
-      case ADD_TOPO:
-        addDev(klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getDevSecret());
-        break;
-      case DEV_LOGIN:
-        addDev(klinkDev.getPk(), klinkDev.getDevId(), klinkDev.getDevSecret());
-        devLogin(klinkDev.getPk(), klinkDev.getDevId());
-        break;
-      case DEV_LOGOUT:
-        devLogout(klinkDev.getPk(), klinkDev.getDevId());
-        break;
-      case GET_TOPO:
-        getTopo();
-        break;
-      case DEL_TOPO:
-        delDev(klinkDev.getPk(), klinkDev.getDevId());
-        break;
-      case DEV_SEND:
-        devSend(klinkDev);
-        break;
-      case HEARTBEAT:
-        break;
-      default:
-        throw new IllegalStateException("Unexpected value: " + klinkDev.getAction());
-    }
+  /** 动态注册设备 */
+  @SneakyThrows
+  public void register(String subDevPk, String subDevId, String devName) {
+    register(subDevPk, subDevId, null, devName);
   }
 
   /** 动态注册设备 */
@@ -78,10 +45,19 @@ public class ProxyService {
     }
     mqttService.publish(register);
   }
+  /** 设备拓扑 */
+  @SneakyThrows
+  public void addDev(String subDevPk, String subDevId) {
+    addDev(subDevPk, subDevId, null);
+  }
 
   /** 设备拓扑 */
   @SneakyThrows
   public void addDev(String subDevPk, String subDevId, String subDevSecret) {
+    doAddTopo(subDevPk, subDevId, subDevSecret);
+  }
+
+  private void doAddTopo(String subDevPk, String subDevId, String subDevSecret) throws Exception {
     AddTopo addTopo = new AddTopo();
     TopoSub topoSub = new TopoSub();
     topoSub.setPk(subDevPk);
@@ -95,14 +71,19 @@ public class ProxyService {
                   subDevPk + subDevId + subDevSecret + Constants.RANDOM, subDevSecret)));
     }
     addTopo.setSub(topoSub);
-    addTopo.setPk(iotOsConfig.getGatewayPk());
-    addTopo.setDevId(iotOsConfig.getGatewayDevId());
+    GatewayConfig g = iotOsConfig.getGatewayConfig();
+    addTopo.setPk(g.getPk());
+    addTopo.setDevId(g.getDevId());
     mqttService.publish(addTopo);
   }
 
   /** 设备上线 */
   @SneakyThrows
   public void devLogin(String subDevPk, String subDevId) {
+    doDevLogin(subDevPk, subDevId);
+  }
+
+  private void doDevLogin(String subDevPk, String subDevId) {
     DevLogin devLogin = new DevLogin();
     devLogin.setDevId(subDevId);
     devLogin.setPk(subDevPk);
@@ -112,6 +93,10 @@ public class ProxyService {
   /** 设备离线 */
   @SneakyThrows
   public void devLogout(String subDevPk, String subDevId) {
+    doDevLogout(subDevPk, subDevId);
+  }
+
+  private void doDevLogout(String subDevPk, String subDevId) {
     DevLogout devLogout = new DevLogout();
     devLogout.setDevId(subDevId);
     devLogout.setPk(subDevPk);
@@ -121,9 +106,13 @@ public class ProxyService {
   /** 获取拓扑关系 */
   @SneakyThrows
   public void getTopo() {
+    doGetTopo();
+  }
+
+  private void doGetTopo() {
     GetTopo getTopo = new GetTopo();
-    getTopo.setPk(iotOsConfig.getGatewayPk());
-    getTopo.setDevId(iotOsConfig.getGatewayDevId());
+    getTopo.setPk(iotOsConfig.getGatewayConfig().getPk());
+    getTopo.setDevId(iotOsConfig.getGatewayConfig().getDevId());
     mqttService.publish(getTopo);
   }
 
@@ -135,8 +124,9 @@ public class ProxyService {
     topoSub.setPk(subDevPk);
     topoSub.setDevId(subDevId);
     delTopo.setSub(topoSub);
-    delTopo.setPk(iotOsConfig.getGatewayPk());
-    delTopo.setDevId(iotOsConfig.getGatewayDevId());
+    GatewayConfig g = iotOsConfig.getGatewayConfig();
+    delTopo.setPk(g.getPk());
+    delTopo.setDevId(g.getDevId());
     mqttService.publish(delTopo);
   }
 
@@ -150,8 +140,9 @@ public class ProxyService {
   @SneakyThrows
   public void getConfig() {
     GetConfig getConfig = new GetConfig();
-    getConfig.setPk(iotOsConfig.getGatewayPk());
-    getConfig.setDevId(iotOsConfig.getGatewayDevId());
+    GatewayConfig g = iotOsConfig.getGatewayConfig();
+    getConfig.setPk(g.getPk());
+    getConfig.setDevId(g.getDevId());
     mqttService.publish(getConfig);
   }
 }

@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.network.mqtt.processor;
+package me.hekr.iotos.softgateway.common.klink.processor;
 
 import me.hekr.iotos.softgateway.common.enums.Action;
 import me.hekr.iotos.softgateway.common.klink.Klink;

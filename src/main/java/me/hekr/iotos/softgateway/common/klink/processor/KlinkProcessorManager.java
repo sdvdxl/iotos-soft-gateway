@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.network.mqtt.processor;
+package me.hekr.iotos.softgateway.common.klink.processor;
 
 import java.util.List;
 import java.util.Map;
