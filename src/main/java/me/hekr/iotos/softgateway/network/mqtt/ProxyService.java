@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProxyService {
   @Autowired private IotOsConfig iotOsConfig;
-  @Autowired private ProxyConnectService proxyConnectService;
+  @Autowired private MqttService mqttService;
 
   public void sendKlink(KlinkDev klinkDev) {
     switch (Action.of(klinkDev.getAction())) {
@@ -76,7 +76,7 @@ public class ProxyService {
               ParseUtil.HmacSHA1Encrypt(
                   subDevPk + productSecret + Constants.RANDOM, productSecret)));
     }
-    proxyConnectService.publish(register);
+    mqttService.publish(register);
   }
 
   /** 设备拓扑 */
@@ -97,7 +97,7 @@ public class ProxyService {
     addTopo.setSub(topoSub);
     addTopo.setPk(iotOsConfig.getGatewayPk());
     addTopo.setDevId(iotOsConfig.getGatewayDevId());
-    proxyConnectService.publish(addTopo);
+    mqttService.publish(addTopo);
   }
 
   /** 设备上线 */
@@ -106,7 +106,7 @@ public class ProxyService {
     DevLogin devLogin = new DevLogin();
     devLogin.setDevId(subDevId);
     devLogin.setPk(subDevPk);
-    proxyConnectService.publish(devLogin);
+    mqttService.publish(devLogin);
   }
 
   /** 设备离线 */
@@ -115,7 +115,7 @@ public class ProxyService {
     DevLogout devLogout = new DevLogout();
     devLogout.setDevId(subDevId);
     devLogout.setPk(subDevPk);
-    proxyConnectService.publish(devLogout);
+    mqttService.publish(devLogout);
   }
 
   /** 获取拓扑关系 */
@@ -124,7 +124,7 @@ public class ProxyService {
     GetTopo getTopo = new GetTopo();
     getTopo.setPk(iotOsConfig.getGatewayPk());
     getTopo.setDevId(iotOsConfig.getGatewayDevId());
-    proxyConnectService.publish(getTopo);
+    mqttService.publish(getTopo);
   }
 
   /** 删除子设备拓扑关系 */
@@ -137,13 +137,13 @@ public class ProxyService {
     delTopo.setSub(topoSub);
     delTopo.setPk(iotOsConfig.getGatewayPk());
     delTopo.setDevId(iotOsConfig.getGatewayDevId());
-    proxyConnectService.publish(delTopo);
+    mqttService.publish(delTopo);
   }
 
   /** 设备发送数据 */
   @SneakyThrows
   public void devSend(Object kLink) {
-    proxyConnectService.publish(kLink);
+    mqttService.publish(kLink);
   }
 
   /** 获取远程配置文件 */
@@ -152,6 +152,6 @@ public class ProxyService {
     GetConfig getConfig = new GetConfig();
     getConfig.setPk(iotOsConfig.getGatewayPk());
     getConfig.setDevId(iotOsConfig.getGatewayDevId());
-    proxyConnectService.publish(getConfig);
+    mqttService.publish(getConfig);
   }
 }

@@ -1,7 +1,7 @@
 package me.hekr.iotos.softgateway.common.exception;
 
 /**
- * @author jiatao
+ * @author iotos
  * @date 2020/7/20
  */
 public class HttpResponseException extends RuntimeException {

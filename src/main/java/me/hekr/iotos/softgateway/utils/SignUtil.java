@@ -1,7 +1,7 @@
 package me.hekr.iotos.softgateway.utils;
 
 /**
- * @author jiatao
+ * @author iotos
  * @date 2020/7/29
  */
 public class SignUtil {

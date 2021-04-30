@@ -11,23 +11,17 @@ import me.hekr.iotos.softgateway.utils.JsonUtil;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.stereotype.Service;
 
+/** @author iotos */
 @Slf4j
 @Service
-public class ProcessorManager {
+@SuppressWarnings("rawtypes")
+public class KlinkProcessorManager {
 
   private final Map<Action, Processor> processorMap;
 
-  public ProcessorManager(List<Processor> processorList) {
+  public KlinkProcessorManager(List<Processor> processorList) {
     processorMap =
         processorList.stream().collect(Collectors.toMap(Processor::getAction, Function.identity()));
-  }
-
-  public void register(Processor processor) {
-    processorMap.put(processor.getAction(), processor);
-  }
-
-  public void unRegister(Processor processor) {
-    processorMap.remove(processor.getAction());
   }
 
   public Processor getProcessor(Action action) {

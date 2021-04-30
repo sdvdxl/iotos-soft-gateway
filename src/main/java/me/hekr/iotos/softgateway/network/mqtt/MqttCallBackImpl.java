@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.enums.Action;
 import me.hekr.iotos.softgateway.common.klink.KlinkDev;
-import me.hekr.iotos.softgateway.network.mqtt.processor.ProcessorManager;
+import me.hekr.iotos.softgateway.network.mqtt.processor.KlinkProcessorManager;
 import me.hekr.iotos.softgateway.utils.JsonUtil;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -27,22 +27,25 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-public class ProxyCallbackService implements MqttCallback {
+public class MqttCallBackImpl implements MqttCallback {
 
-  @Autowired private ProcessorManager processorManager;
-  @Autowired private ProxyConnectService proxyConnectService;
+  @Autowired private KlinkProcessorManager klinkProcessorManager;
+  @Autowired private MqttService mqttService;
 
+  @Override
   @SneakyThrows
   public void connectionLost(Throwable cause) {
     // 连接丢失后，一般在这里面进行重连
     log.warn("软网关已经连接断开,准备开始重连");
-    proxyConnectService.connect();
+    mqttService.connect();
   }
 
+  @Override
   public void deliveryComplete(IMqttDeliveryToken token) {
     log.info("delivery Complete:" + token.isComplete());
   }
 
+  @Override
   public void messageArrived(String topic, MqttMessage message) throws Exception {
     log.info("-------------------------------------------------");
     log.info("接收消息主题 : " + topic);
@@ -53,6 +56,6 @@ public class ProxyCallbackService implements MqttCallback {
 
     KlinkDev klinkDev = JsonUtil.fromJson(payload, KlinkDev.class);
     Action action = Action.of(klinkDev.getAction());
-    processorManager.handle(topic, message, action);
+    klinkProcessorManager.handle(topic, message, action);
   }
 }

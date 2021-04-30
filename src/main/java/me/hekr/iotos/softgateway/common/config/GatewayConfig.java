@@ -4,7 +4,7 @@ import cn.hutool.core.lang.Assert;
 import lombok.Getter;
 import lombok.ToString;
 
-/** @author du */
+/** @author iotos */
 @Getter
 @ToString
 public class GatewayConfig {

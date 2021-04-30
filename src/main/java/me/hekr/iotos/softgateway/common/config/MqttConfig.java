@@ -3,7 +3,7 @@ package me.hekr.iotos.softgateway.common.config;
 import lombok.Getter;
 import lombok.ToString;
 
-/** @author du */
+/** @author iotos */
 @ToString
 @Getter
 public class MqttConfig {

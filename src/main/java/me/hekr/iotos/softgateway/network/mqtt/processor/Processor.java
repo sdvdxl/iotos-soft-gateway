@@ -3,7 +3,7 @@ package me.hekr.iotos.softgateway.network.mqtt.processor;
 import me.hekr.iotos.softgateway.common.enums.Action;
 import me.hekr.iotos.softgateway.common.klink.Klink;
 
-/** @author du */
+/** @author iotos */
 public interface Processor<T extends Klink> {
 
   /**

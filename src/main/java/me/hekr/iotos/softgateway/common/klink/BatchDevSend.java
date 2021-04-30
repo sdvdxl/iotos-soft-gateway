@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 import me.hekr.iotos.softgateway.common.enums.Action;
 
-/** @author du */
+/** @author iotos */
 @Getter
 @Setter
 @ToString(callSuper = true)
