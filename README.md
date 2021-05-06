@@ -140,8 +140,6 @@ IoTOS 与软件网关交互的数据中一定包含 PK 和 devID，若存量设�
 
 进入项目路径 `src/main/resources`，打开配置文件 `application.yml` 进行参数配置。
 
-![](pics/gatewayConfig.png)
-
 配置文件可以参考 [application.yml](src/main/resources/application.yml) 以下配置项为软件网关配置的必填信息
 
 ```yaml
