@@ -27,12 +27,14 @@ public class DeviceMapper {
   }
 
   public static void parseAndAdd(String line) {
+    @SuppressWarnings("unchecked")
     Map<String, Object> map = JsonUtil.fromJson(line, Map.class);
     DeviceMapper m = new DeviceMapper(map);
     parseAndAdd(m);
     log.info("after parseAndAdd: {}", getAll());
   }
 
+  @SuppressWarnings("unchecked")
   public static DeviceMapper parse(String line) {
     return new DeviceMapper(JsonUtil.fromJson(line, Map.class));
   }
@@ -125,6 +127,7 @@ public class DeviceMapper {
     return data.toString();
   }
 
+  @SuppressWarnings("unchecked")
   public <T> T getProp(String prop) {
     return (T) data.get(prop);
   }
@@ -159,7 +162,7 @@ public class DeviceMapper {
   }
 
   public static class Props {
-    private final Map<String, Object> data = new HashMap<String, Object>();
+    private final Map<String, Object> data = new HashMap<>();
 
     public static PropsBuilder p(String prop, Object value) {
       PropsBuilder pb = new PropsBuilder();
