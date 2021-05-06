@@ -21,14 +21,14 @@
     </fileSet>
     <!-- 包含根目录下的文件 -->
     <fileSet>
-      <directory>${basedir}</directory>
+      <directory>${maven.multiModuleProjectDirectory}</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
         <include>README.md</include>
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${basedir}/docs</directory>
+      <directory>${maven.multiModuleProjectDirectory}/docs</directory>
       <outputDirectory>.</outputDirectory>
       <includes>
         <include>*</include>
