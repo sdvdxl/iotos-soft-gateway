@@ -10,9 +10,9 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>me.hekr</groupId>
-  <artifactId>iot-softgateway</artifactId>
+  <artifactId>iotos-soft-gateway</artifactId>
   <version>0.0.1</version>
-  <name>iot-soft-gateway</name>
+  <name>iotos-soft-gateway</name>
   <description>IoTOS 软网关</description>
 
   <properties>
