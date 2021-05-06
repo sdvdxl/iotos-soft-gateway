@@ -59,8 +59,7 @@ public class TcpClientHandler implements ClientAioHandler {
       return;
     }
 
-    klinkService.devSend(klinkDev);
-    // 对转码后的数据按照klink的action进行不同业务的操作
-    //    ProxyService.sendKlink(klinkDev);
+    // 调用 devSend 发送数据
+    //    klinkService.devSend
   }
 }

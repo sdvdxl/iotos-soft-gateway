@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
  */
 @Slf4j
 @Service
-public class CoreMqttDisConnectListener implements MqttDisConnectListener {
+public class CoreMqttDisConnectListenerImpl implements MqttDisConnectListener {
 
   @Override
   public void onConnectFailed() {

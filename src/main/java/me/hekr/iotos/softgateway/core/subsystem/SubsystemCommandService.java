@@ -6,7 +6,7 @@ import me.hekr.iotos.softgateway.core.common.klink.ModelData;
 /**
  * 控制命令
  *
- * <p>实现类要加 @Service("XXSubsystemCommandService")，其中 xx 为 iotos 命令
+ * <p>实现类要加 @Service("XXSubsystemCommandService")，其中 xx 为 IoTOS 平台物模型 命令
  *
  * @author iotos
  */

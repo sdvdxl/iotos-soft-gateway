@@ -1,5 +1,6 @@
 package me.hekr.iotos.softgateway.core.common.klink;
 
+import java.util.Map;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.common.config.GatewayConfig;
@@ -51,7 +52,7 @@ public class KlinkService {
     mqttService.publish(register);
   }
 
-  /** 设备拓扑 */
+  /** 注册设备并添加拓扑 */
   @SneakyThrows
   public void addDev(String subDevPk, String subDevId) {
     addDev(subDevPk, subDevId, null);
@@ -63,7 +64,7 @@ public class KlinkService {
     addDev(subDevPk, null, subDevId, null, name);
   }
 
-  /** 设备拓扑 */
+  /** 添加拓扑 */
   @SneakyThrows
   public void addTopo(String subDevPk, String subDevId) {
     doAddTopo(subDevPk, subDevId, null);
@@ -152,8 +153,21 @@ public class KlinkService {
 
   /** 设备发送数据 */
   @SneakyThrows
-  public void devSend(Object kLink) {
+  public void devSend(String pk, String devId, String cmd, Map<String, Object> params) {
+    DevSend kLink = new DevSend();
+    kLink.setPk(pk);
+    kLink.setDevId(devId);
+    ModelData modelData = new ModelData();
+    modelData.setCmd(cmd);
+    modelData.setParams(params);
+    kLink.setData(modelData);
     mqttService.publish(kLink);
+  }
+
+  /** 设备发送数据， 没有参数，只有命令 */
+  @SneakyThrows
+  public void devSend(String pk, String devId, String cmd) {
+    devSend(pk, devId, cmd, null);
   }
 
   /** 获取远程配置文件 */

@@ -49,12 +49,12 @@ public class DeviceMapper implements Serializable {
 
   public static void parseAndAdd(DeviceMapper d) {
     SET.add(d);
-    log.info("after parseAndAdd: {}", getAllString());
+    log.info("after parseAndAdd: {}", getStatus());
   }
 
   public static void remove(DeviceMapper d) {
     SET.remove(d);
-    log.info("after remove: {}", getAllString());
+    log.info("after remove: {}", getStatus());
   }
 
   /**
@@ -67,10 +67,10 @@ public class DeviceMapper implements Serializable {
   public static void updateAll(Collection<DeviceMapper> deviceMappers) {
     SET.removeAll(CollectionUtil.subtract(SET, deviceMappers));
     addAll(deviceMappers);
-    log.info("after updateAll, {}", getAllString());
+    log.info("after updateAll, {}", getStatus());
   }
 
-  public static String getAllString() {
+  public static String getStatus() {
     return "size: " + size() + ", devices: " + getAll();
   }
 
@@ -81,7 +81,7 @@ public class DeviceMapper implements Serializable {
    */
   private static void addAll(Collection<DeviceMapper> deviceMappers) {
     SET.addAll(deviceMappers);
-    log.info("after addAll: {}", getAllString());
+    log.info("after addAll: {}", getStatus());
   }
 
   public static Set<DeviceMapper> getAll() {
@@ -116,7 +116,7 @@ public class DeviceMapper implements Serializable {
   public static void parseMultiLinesAndUpdateAll(String content) {
     Set<DeviceMapper> deviceMappers = DeviceMapper.parseMultiLines(content);
     DeviceMapper.updateAll(deviceMappers);
-    log.info("after parseMultiLinesAndUpdateAll: {}", getAllString());
+    log.info("after parseMultiLinesAndUpdateAll: {}", getStatus());
   }
 
   public static boolean isEmpty() {

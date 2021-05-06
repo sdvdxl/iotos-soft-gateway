@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.tio.utils.jfinal.P;
 
+/** @author iotos */
 @SpringBootApplication
 @EnableScheduling
 public class IoTGatewayApplication {
