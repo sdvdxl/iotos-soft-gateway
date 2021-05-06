@@ -20,6 +20,7 @@ public class KlinkProcessorManager {
   private final Map<Action, Processor> processorMap;
 
   public KlinkProcessorManager(List<Processor> processorList) {
+
     processorMap =
         processorList.stream().collect(Collectors.toMap(Processor::getAction, Function.identity()));
   }
@@ -29,6 +30,7 @@ public class KlinkProcessorManager {
     return processor == null ? processorMap.get(Action.NOT_SUPPORT) : processor;
   }
 
+  @SuppressWarnings("unchecked")
   public void handle(String topic, MqttMessage message, Action action) {
     if (action == null) {
       log.warn("未能解析出正确的action,data:{}", new String(message.getPayload()));
@@ -36,7 +38,7 @@ public class KlinkProcessorManager {
     }
 
     Klink klink = JsonUtil.fromBytes(message.getPayload(), action.getKlinkClass());
-    log.info("klink: {}", klink);
+    log.debug("klink: {}", klink);
     Processor processor = getProcessor(action);
     if (processor == null) {
       log.warn("未知命令: {}, data:{}", action.getAction(), new String(message.getPayload()));

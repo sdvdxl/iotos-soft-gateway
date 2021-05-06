@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.pluginAsClient.tcp;
+package me.hekr.iotos.softgateway.core.tcp;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -6,6 +6,7 @@ import org.tio.client.intf.ClientAioListener;
 import org.tio.core.ChannelContext;
 import org.tio.core.intf.Packet;
 
+/** @author iotos */
 @Slf4j
 @Service
 public class TcpClientListener implements ClientAioListener {

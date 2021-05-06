@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.pluginAsClient.tcp;
+package me.hekr.iotos.softgateway.core.tcp;
 
 import java.nio.ByteBuffer;
 import lombok.extern.slf4j.Slf4j;

@@ -57,9 +57,23 @@ public class KlinkService {
     addDev(subDevPk, subDevId, null);
   }
 
+  /** 注册设备并添加拓扑关系 */
+  @SneakyThrows
+  public void addDev(String subDevPk, String subDevId, String name) {
+    addDev(subDevPk, null, subDevId, null, name);
+  }
+
   /** 设备拓扑 */
   @SneakyThrows
-  public void addDev(String subDevPk, String subDevId, String subDevSecret) {
+  public void addTopo(String subDevPk, String subDevId) {
+    doAddTopo(subDevPk, subDevId, null);
+  }
+
+  /** 注册设备并添加拓扑关系 */
+  @SneakyThrows
+  public void addDev(
+      String subDevPk, String productSecret, String subDevId, String subDevSecret, String name) {
+    register(subDevPk, subDevId, productSecret, name);
     doAddTopo(subDevPk, subDevId, subDevSecret);
   }
 

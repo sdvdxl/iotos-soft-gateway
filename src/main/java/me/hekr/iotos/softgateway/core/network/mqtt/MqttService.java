@@ -12,6 +12,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.common.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.common.config.MqttConfig;
+import me.hekr.iotos.softgateway.core.network.mqtt.listener.MqttConnectedListener;
 import me.hekr.iotos.softgateway.core.utils.JsonUtil;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -30,15 +31,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class MqttService {
+  private static final int MAX_RETRY_COUNT = 3;
   private final IotOsConfig iotOsConfig;
   private final BlockingQueue<Object> queue = new ArrayBlockingQueue<>(1000);
   private final ExecutorService publishExecutor =
       Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("publishExecutor", false));
+  private final AtomicInteger connectConut = new AtomicInteger();
   @Autowired private List<MqttConnectedListener> mqttConnectedListeners;
   private MqttClient client;
   private MqttConnectOptions options;
   @Lazy @Autowired private MqttCallBackImpl mqttCallBackImpl;
-  private final AtomicInteger connectConut = new AtomicInteger();
 
   @Autowired
   public MqttService(IotOsConfig iotOsConfig) throws MqttException {
@@ -145,16 +147,33 @@ public class MqttService {
         } catch (InterruptedException ignored) {
         }
       }
+      Object msg = null;
       try {
-        doPublish(queue.take());
-      } catch (MqttException e) {
-        log.error("publish error, " + e.getMessage(), e);
+        msg = queue.take();
       } catch (InterruptedException ignored) {
+      }
+      trySend(msg);
+    }
+  }
+
+  private void trySend(Object msg) {
+    // 报错就重试
+    for (int i = 0; i < MAX_RETRY_COUNT; i++) {
+      try {
+        doPublish(msg);
+        break;
+      } catch (MqttException e) {
+        log.error("mqtt发布报错：" + e.getMessage() + ",第 " + (i + 1) + "次重试", e);
+        ThreadUtil.sleep(1000);
       }
     }
   }
 
   private void doPublish(Object message) throws MqttException {
+    if (log.isDebugEnabled()) {
+      log.debug("发送消息：{}", JsonUtil.toJson(message));
+    }
+
     client.publish(
         iotOsConfig.getGatewayConfig().getUpTopic(), new MqttMessage(JsonUtil.toBytes(message)));
     if (log.isInfoEnabled()) {

@@ -29,8 +29,7 @@ public class HttpController {
   @GetMapping("/register")
   public Object register(
       @RequestParam String devId, @RequestParam String pk, @RequestParam String devName) {
-    klinkService.register(pk, devId, null, devName);
-    klinkService.addDev(pk, devId, null);
+    klinkService.addDev(pk, devId, devName);
     return null;
   }
 

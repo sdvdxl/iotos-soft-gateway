@@ -2,6 +2,7 @@ package me.hekr.iotos.softgateway.core.common.config;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ConcurrentHashSet;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /** @author iotos */
 @Slf4j
-public class DeviceMapper {
+public class DeviceMapper implements Serializable {
   private static final Set<DeviceMapper> SET = new ConcurrentHashSet<>();
   private Map<String, Object> data = new HashMap<>();
 

@@ -1,7 +1,9 @@
-package me.hekr.iotos.softgateway.core.network.mqtt;
+package me.hekr.iotos.softgateway.core.network.mqtt.listener;
 
 /**
  * mqtt 连接成功后监听器
+ *
+ * <p>如果需要监听，实现一个或者多个 bean
  *
  * @author du
  */
