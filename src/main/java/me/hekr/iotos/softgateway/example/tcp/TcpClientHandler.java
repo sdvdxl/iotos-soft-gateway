@@ -1,12 +1,12 @@
-package me.hekr.iotos.softgateway.core.tcp;
+package me.hekr.iotos.softgateway.example.tcp;
 
 import java.nio.ByteBuffer;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.common.codec.DataCodec;
 import me.hekr.iotos.softgateway.core.common.klink.KlinkDev;
 import me.hekr.iotos.softgateway.core.common.klink.KlinkService;
-import me.hekr.iotos.softgateway.core.pluginAsClient.tcp.packet.LinePacketCodec;
-import me.hekr.iotos.softgateway.core.pluginAsClient.tcp.packet.TcpPacket;
+import me.hekr.iotos.softgateway.example.pluginAsClient.tcp.packet.LinePacketCodec;
+import me.hekr.iotos.softgateway.example.pluginAsClient.tcp.packet.TcpPacket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tio.client.intf.ClientAioHandler;

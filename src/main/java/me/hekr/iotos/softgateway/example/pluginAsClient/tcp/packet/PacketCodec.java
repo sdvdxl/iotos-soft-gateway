@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.pluginAsClient.tcp.packet;
+package me.hekr.iotos.softgateway.example.pluginAsClient.tcp.packet;
 
 import java.nio.ByteBuffer;
 import org.tio.core.ChannelContext;

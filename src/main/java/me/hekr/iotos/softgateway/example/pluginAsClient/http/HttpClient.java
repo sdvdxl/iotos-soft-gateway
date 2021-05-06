@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.pluginAsClient.http;
+package me.hekr.iotos.softgateway.example.pluginAsClient.http;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.HashMap;

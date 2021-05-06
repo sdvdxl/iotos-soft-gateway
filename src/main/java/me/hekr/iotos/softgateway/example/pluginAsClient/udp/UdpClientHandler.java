@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.pluginAsClient.udp;
+package me.hekr.iotos.softgateway.example.pluginAsClient.udp;
 
 import java.net.DatagramSocket;
 import java.nio.charset.StandardCharsets;

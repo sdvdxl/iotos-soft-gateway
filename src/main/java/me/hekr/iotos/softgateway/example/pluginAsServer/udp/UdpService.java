@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.pluginAsServer.udp;
+package me.hekr.iotos.softgateway.example.pluginAsServer.udp;
 
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;

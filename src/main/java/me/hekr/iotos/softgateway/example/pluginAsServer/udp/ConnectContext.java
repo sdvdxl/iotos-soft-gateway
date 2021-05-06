@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.pluginAsServer.udp;
+package me.hekr.iotos.softgateway.example.pluginAsServer.udp;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;

@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.pluginAsClient.udp;
+package me.hekr.iotos.softgateway.example.pluginAsClient.udp;
 
 import org.tio.core.udp.UdpClient;
 import org.tio.core.udp.UdpClientConf;

@@ -1,8 +1,8 @@
-package me.hekr.iotos.softgateway.core.tcp;
+package me.hekr.iotos.softgateway.example.tcp;
 
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.common.config.IotOsConfig;
-import me.hekr.iotos.softgateway.core.pluginAsClient.tcp.packet.TcpPacket;
+import me.hekr.iotos.softgateway.example.pluginAsClient.tcp.packet.TcpPacket;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tio.client.ClientChannelContext;

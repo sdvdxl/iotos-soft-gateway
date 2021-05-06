@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.pluginAsClient.http;
+package me.hekr.iotos.softgateway.example.pluginAsClient.http;
 
 import cn.hutool.http.HttpUtil;
 import java.io.ByteArrayOutputStream;

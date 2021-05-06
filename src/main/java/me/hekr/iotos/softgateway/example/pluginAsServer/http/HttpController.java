@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.pluginAsServer.http;
+package me.hekr.iotos.softgateway.example.pluginAsServer.http;
 
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.common.enums.Action;

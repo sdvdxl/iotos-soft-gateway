@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.pluginAsServer.tcp;
+package me.hekr.iotos.softgateway.example.pluginAsServer.tcp;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

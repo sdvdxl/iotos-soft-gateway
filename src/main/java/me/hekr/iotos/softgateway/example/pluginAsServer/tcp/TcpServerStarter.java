@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.pluginAsServer.tcp;
+package me.hekr.iotos.softgateway.example.pluginAsServer.tcp;
 
 import lombok.SneakyThrows;
 import me.hekr.iotos.softgateway.core.common.config.IotOsConfig;

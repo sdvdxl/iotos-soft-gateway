@@ -6,7 +6,7 @@ import me.hekr.iotos.softgateway.core.common.constant.SubKlinkAction;
 import me.hekr.iotos.softgateway.core.common.klink.DevSend;
 import me.hekr.iotos.softgateway.core.common.klink.KlinkDev;
 import me.hekr.iotos.softgateway.core.common.klink.ModelData;
-import me.hekr.iotos.softgateway.core.pluginAsClient.tcp.packet.TcpPacket;
+import me.hekr.iotos.softgateway.example.pluginAsClient.tcp.packet.TcpPacket;
 import me.hekr.iotos.softgateway.core.utils.JsonUtil;
 import org.springframework.stereotype.Service;
 
