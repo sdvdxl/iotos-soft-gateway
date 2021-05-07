@@ -4,9 +4,10 @@ import cn.hutool.core.lang.Assert;
 import cn.hutool.core.thread.ThreadUtil;
 import java.nio.charset.Charset;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
+import org.junit.Ignore;
 import org.junit.Test;
 
-// @Ignore
+@Ignore
 public class UdpClientTest {
   PacketCoder<String> packetCoder =
       new PacketCoder<String>() {
