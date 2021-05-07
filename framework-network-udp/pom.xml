@@ -19,10 +19,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty-all</artifactId>
-    </dependency>
-    <dependency>
       <groupId>me.hekr</groupId>
       <artifactId>framework-network-common</artifactId>
       <version>0.0.1</version>
