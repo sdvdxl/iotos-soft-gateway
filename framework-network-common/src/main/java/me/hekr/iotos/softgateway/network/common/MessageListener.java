@@ -1,9 +1,9 @@
-package me.hekr.iotos.softgateway.network.udp.client;
+package me.hekr.iotos.softgateway.network.common;
 
 import java.net.SocketAddress;
 
 /** @author iotos */
-public interface UdpMessageListener<T> {
+public interface MessageListener<T> {
 
   /**
    * 收到消息

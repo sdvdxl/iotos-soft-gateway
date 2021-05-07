@@ -8,6 +8,8 @@
     <module>subsystem</module>
     <module>framework-core</module>
     <module>framework-network-udp</module>
+    <module>framework-network-tcp</module>
+    <module>framework-network-common</module>
   </modules>
   <parent>
     <groupId>org.springframework.boot</groupId>

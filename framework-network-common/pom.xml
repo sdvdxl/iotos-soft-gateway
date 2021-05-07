@@ -9,24 +9,16 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>framework-network-udp</artifactId>
-  <version>0.0.1</version>
+  <artifactId>framework-network-common</artifactId>
 
   <properties>
     <maven.compiler.source>8</maven.compiler.source>
     <maven.compiler.target>8</maven.compiler.target>
   </properties>
-
   <dependencies>
     <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
     </dependency>
-    <dependency>
-      <groupId>me.hekr</groupId>
-      <artifactId>framework-network-common</artifactId>
-      <version>0.0.1</version>
-    </dependency>
   </dependencies>
-
 </project>

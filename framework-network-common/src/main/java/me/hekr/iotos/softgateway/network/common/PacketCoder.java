@@ -1,7 +1,7 @@
-package me.hekr.iotos.softgateway.network.udp.client;
+package me.hekr.iotos.softgateway.network.common;
 
 /** @author iotos */
-public interface UdpCoder<T> {
+public interface PacketCoder<T> {
 
   /**
    * 编码
