@@ -50,6 +50,11 @@ public abstract class AbstractClient<T> {
     this.channelClass = channelClass;
   }
 
+  /**
+   * 设置编解码器
+   *
+   * @param packetCoder 包编解码器
+   */
   public abstract void setPacketCoder(PacketCoder<T> packetCoder);
 
   /** 初始化工作 */
@@ -79,9 +84,9 @@ public abstract class AbstractClient<T> {
     log.info("init");
     init();
     log.info("init 结束");
-
+    log.info((sync ? "同步" : "异步") + "模式");
     if (sync) {
-      if (messageHandler != null) {
+      if (messageListener != null) {
         log.warn("sync 模式不会调用messageListener");
       }
     } else {
@@ -90,8 +95,10 @@ public abstract class AbstractClient<T> {
       }
     }
 
+    messageHandler = new MessageHandler<>(this, messageListener, sync);
+
     Bootstrap bootstrap = new Bootstrap();
-    eventLoop = new NioEventLoopGroup(4);
+    eventLoop = new NioEventLoopGroup();
     ChannelFuture future =
         bootstrap
             .group(eventLoop)
@@ -100,7 +107,7 @@ public abstract class AbstractClient<T> {
             .handler(
                 new ChannelInitializer<Channel>() {
                   @Override
-                  protected void initChannel(Channel ch) throws Exception {
+                  protected void initChannel(Channel ch) {
                     ch.pipeline()
                         .addLast(new LoggingHandler(logLevel))
                         .addLast(packetCoderHandler)
@@ -125,9 +132,10 @@ public abstract class AbstractClient<T> {
   public T send(T t) {
     if (sync) {
       synchronized (LOCK) {
+        result = null;
         channel.writeAndFlush(Packet.wrap(t)).syncUninterruptibly();
 
-        LOCK.wait(timeout);
+        await(timeout);
         if (result == null) {
           throw new TimeoutException("wait response timeout " + timeout + "ms");
         }
@@ -137,5 +145,17 @@ public abstract class AbstractClient<T> {
     }
     channel.writeAndFlush(Packet.wrap(t)).syncUninterruptibly();
     return null;
+  }
+
+  public void signalAll() {
+    synchronized (LOCK) {
+      LOCK.notifyAll();
+    }
+  }
+
+  public void await(long timeout) throws InterruptedException {
+    synchronized (LOCK) {
+      LOCK.wait(timeout);
+    }
   }
 }

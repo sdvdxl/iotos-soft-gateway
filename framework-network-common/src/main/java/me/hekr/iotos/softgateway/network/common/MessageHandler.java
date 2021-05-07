@@ -24,7 +24,7 @@ public class MessageHandler<T> extends SimpleChannelInboundHandler<Packet<T>> {
   }
 
   @Override
-  protected void channelRead0(ChannelHandlerContext ctx, Packet<T> packet) throws Exception {
+  protected void channelRead0(ChannelHandlerContext ctx, Packet<T> packet) {
     // 如果不是同步，调用消息回调接口
     if (!sync) {
       messageListener.onMessage(packet.getAddress(), packet.getMessage());
@@ -34,12 +34,12 @@ public class MessageHandler<T> extends SimpleChannelInboundHandler<Packet<T>> {
     // 同步不调用回调接口
     synchronized (client.LOCK) {
       client.result = packet.getMessage();
-      client.LOCK.notifyAll();
+      client.signalAll();
     }
   }
 
   @Override
-  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+  public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
     log.error("remote:" + ctx.channel().remoteAddress() + ",未处理的异常，" + cause.getMessage(), cause);
   }
 }

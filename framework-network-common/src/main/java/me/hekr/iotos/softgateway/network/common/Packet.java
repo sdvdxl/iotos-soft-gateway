@@ -18,8 +18,8 @@ public class Packet<T> {
     this.address = addr;
   }
 
-  public static <T> Packet<T> wrap(T hello, SocketAddress addr) {
-    return new Packet<>(hello, addr);
+  public static <T> Packet<T> wrap(T msg, SocketAddress addr) {
+    return new Packet<>(msg, addr);
   }
 
   public static <T> Packet<T> wrap(T body) {
