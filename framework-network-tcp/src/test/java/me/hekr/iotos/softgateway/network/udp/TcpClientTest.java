@@ -40,7 +40,7 @@ public class TcpClientTest {
     TcpClient<String> client = new TcpClient<>("localhost", 1024);
     client.setSync(true);
     client.setPacketCoder(packetCoder);
-    client.setTimeout(3000);
+    client.setTimeout(30000);
     client.start();
     for (int i = 0; i < 100; i++) {
       String resp = client.send("hello");

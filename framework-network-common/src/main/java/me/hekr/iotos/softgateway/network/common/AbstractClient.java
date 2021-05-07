@@ -139,7 +139,15 @@ public abstract class AbstractClient<T> {
     if (sync) {
       synchronized (LOCK) {
         result = null;
-        channel.writeAndFlush(InternalPacket.wrap(t)).syncUninterruptibly();
+        // 注意，不能使用  syncUninterruptibly，messageHandler 中也会等待，会造成一个线程的死锁
+        channel
+            .writeAndFlush(InternalPacket.wrap(t))
+            .addListener(
+                f -> {
+                  if (!f.isSuccess()) {
+                    log.error(f.cause().getMessage() + "，消息:" + t);
+                  }
+                });
 
         await(timeout);
         if (result == null) {
@@ -149,7 +157,14 @@ public abstract class AbstractClient<T> {
         return result;
       }
     }
-    channel.writeAndFlush(InternalPacket.wrap(t)).syncUninterruptibly();
+    channel
+        .writeAndFlush(InternalPacket.wrap(t))
+        .addListener(
+            f -> {
+              if (!f.isSuccess()) {
+                log.error(f.cause().getMessage() + "，消息:" + t);
+              }
+            });
     return null;
   }
 
