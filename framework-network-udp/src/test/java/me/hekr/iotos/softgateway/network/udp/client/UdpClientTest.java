@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.udp.client;
+package me.hekr.iotos.softgateway.network.udp.client;
 
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.thread.ThreadUtil;

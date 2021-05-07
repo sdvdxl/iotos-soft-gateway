@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.udp.client;
+package me.hekr.iotos.softgateway.network.udp.client;
 
 import java.net.SocketAddress;
 import lombok.Getter;

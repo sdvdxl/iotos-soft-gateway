@@ -5,9 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
   <packaging>pom</packaging>
   <modules>
-    <module>iotos-soft-gateway-subsystem</module>
-    <module>iotos-soft-gateway-framework-core</module>
-    <module>iotos-soft-gateway-framework-udp-client</module>
+    <module>subsystem</module>
+    <module>framework-core</module>
+    <module>framework-network-udp</module>
   </modules>
   <parent>
     <groupId>org.springframework.boot</groupId>

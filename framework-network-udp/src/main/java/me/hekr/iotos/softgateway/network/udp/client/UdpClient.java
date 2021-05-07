@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.udp.client;
+package me.hekr.iotos.softgateway.network.udp.client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
