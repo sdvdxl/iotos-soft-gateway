@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Sharable
 @Service
 @Slf4j
-public class MessageHandler<T> extends SimpleChannelInboundHandler<Packet<T>> {
+public class MessageHandler<T> extends SimpleChannelInboundHandler<InternalPacket<T>> {
 
   private final AbstractClient<T> client;
   private final boolean sync;
@@ -24,7 +24,7 @@ public class MessageHandler<T> extends SimpleChannelInboundHandler<Packet<T>> {
   }
 
   @Override
-  protected void channelRead0(ChannelHandlerContext ctx, Packet<T> packet) {
+  protected void channelRead0(ChannelHandlerContext ctx, InternalPacket<T> packet) {
     // 如果不是同步，调用消息回调接口
     if (!sync) {
       messageListener.onMessage(packet.getAddress(), packet.getMessage());

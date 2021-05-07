@@ -1,6 +1,6 @@
 package me.hekr.iotos.softgateway.network.udp;
 
-import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.AbstractClient;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
@@ -19,8 +19,10 @@ import me.hekr.iotos.softgateway.network.common.PacketCoder;
 @Slf4j
 public class TcpClient<T> extends AbstractClient<T> {
 
-  public TcpClient(String localhost, int port) {
-    super(NioDatagramChannel.class);
+  public TcpClient(String host, int port) {
+    super(NioSocketChannel.class);
+    this.host = host;
+    this.port = port;
   }
 
   @Override

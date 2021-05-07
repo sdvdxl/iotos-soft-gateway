@@ -8,7 +8,7 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageCodec;
 import java.net.InetSocketAddress;
 import java.util.List;
-import me.hekr.iotos.softgateway.network.common.Packet;
+import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
 
 /**
@@ -17,7 +17,7 @@ import me.hekr.iotos.softgateway.network.common.PacketCoder;
  * @author iotos
  */
 @Sharable
-class UdpCodecHandler<T> extends MessageToMessageCodec<DatagramPacket, Packet<T>> {
+class UdpCodecHandler<T> extends MessageToMessageCodec<DatagramPacket, InternalPacket<T>> {
   private final PacketCoder<T> packetCoder;
   private final String host;
   private final int port;
@@ -29,7 +29,7 @@ class UdpCodecHandler<T> extends MessageToMessageCodec<DatagramPacket, Packet<T>
   }
 
   @Override
-  protected void encode(ChannelHandlerContext ctx, Packet<T> msg, List<Object> out) {
+  protected void encode(ChannelHandlerContext ctx, InternalPacket<T> msg, List<Object> out) {
     byte[] bytes = packetCoder.encode(msg.getMessage());
     if (bytes != null) {
       DatagramPacket datagramPacket =
@@ -45,7 +45,7 @@ class UdpCodecHandler<T> extends MessageToMessageCodec<DatagramPacket, Packet<T>
     buf.readBytes(bytes);
     Object o = packetCoder.decode(bytes);
     if (o != null) {
-      out.add(Packet.wrap(o, msg.sender()));
+      out.add(InternalPacket.wrap(o, msg.sender()));
     }
   }
 }

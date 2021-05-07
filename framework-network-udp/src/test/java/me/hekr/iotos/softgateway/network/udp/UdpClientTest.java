@@ -3,6 +3,7 @@ package me.hekr.iotos.softgateway.network.udp;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.thread.ThreadUtil;
 import java.nio.charset.Charset;
+import me.hekr.iotos.softgateway.network.common.DecodePacket;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -17,8 +18,8 @@ public class UdpClientTest {
         }
 
         @Override
-        public Object decode(byte[] bytes) {
-          return new String(bytes, Charset.forName("GBK"));
+        public DecodePacket decode(byte[] bytes) {
+          return DecodePacket.wrap(new String(bytes, Charset.forName("GBK")), bytes.length);
         }
       };
 

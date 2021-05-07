@@ -14,8 +14,14 @@ public interface PacketCoder<T> {
   /**
    * 解码数据
    *
+   * <p>提示：之所以用bytes 入参，是为了减少对 netty 的依赖，使开发者直接使用熟悉的字节操作。
+   *
+   * <p>读取之后，如果解码成功，需要设置读取的字节数，用来设置内置缓冲区。
+   *
+   * <p>如果没有解码成功，可以返回 null 或者 DecodePacket.NULL
+   *
    * @param bytes 输入字节
-   * @return 解码后的对象
+   * @return 解码后的对象,和读取的字节长度
    */
-  Object decode(byte[] bytes);
+  DecodePacket decode(byte[] bytes);
 }

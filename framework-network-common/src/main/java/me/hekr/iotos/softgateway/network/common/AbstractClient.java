@@ -9,6 +9,7 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.DatagramChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import java.util.Objects;
@@ -99,24 +100,29 @@ public abstract class AbstractClient<T> {
 
     Bootstrap bootstrap = new Bootstrap();
     eventLoop = new NioEventLoopGroup();
-    ChannelFuture future =
-        bootstrap
-            .group(eventLoop)
-            .channel(channelClass)
-            .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
-            .handler(
-                new ChannelInitializer<Channel>() {
-                  @Override
-                  protected void initChannel(Channel ch) {
-                    ch.pipeline()
-                        .addLast(new LoggingHandler(logLevel))
-                        .addLast(packetCoderHandler)
-                        .addLast(messageHandler);
-                  }
-                })
-            .bind(bindPort)
-            .awaitUninterruptibly();
-    channel = future.awaitUninterruptibly().channel();
+
+    bootstrap
+        .group(eventLoop)
+        .channel(channelClass)
+        .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+        .handler(
+            new ChannelInitializer<Channel>() {
+              @Override
+              protected void initChannel(Channel ch) {
+                ch.pipeline()
+                    .addLast(new LoggingHandler(logLevel))
+                    .addLast(packetCoderHandler)
+                    .addLast(messageHandler);
+              }
+            });
+    ChannelFuture future;
+    if (channelClass == DatagramChannel.class) {
+      future = bootstrap.bind(bindPort).awaitUninterruptibly();
+    } else {
+      future = bootstrap.connect(host, port);
+    }
+
+    channel = future.syncUninterruptibly().channel();
     log.info("start 成功");
   }
 
@@ -133,7 +139,7 @@ public abstract class AbstractClient<T> {
     if (sync) {
       synchronized (LOCK) {
         result = null;
-        channel.writeAndFlush(Packet.wrap(t)).syncUninterruptibly();
+        channel.writeAndFlush(InternalPacket.wrap(t)).syncUninterruptibly();
 
         await(timeout);
         if (result == null) {
@@ -143,7 +149,7 @@ public abstract class AbstractClient<T> {
         return result;
       }
     }
-    channel.writeAndFlush(Packet.wrap(t)).syncUninterruptibly();
+    channel.writeAndFlush(InternalPacket.wrap(t)).syncUninterruptibly();
     return null;
   }
 
