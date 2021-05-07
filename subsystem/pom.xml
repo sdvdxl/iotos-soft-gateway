@@ -9,7 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <packaging>jar</packaging>
-  <artifactId>iotos-soft-gateway-subsystem</artifactId>
+  <artifactId>subsystem</artifactId>
 
   <properties>
     <maven.compiler.source>8</maven.compiler.source>
