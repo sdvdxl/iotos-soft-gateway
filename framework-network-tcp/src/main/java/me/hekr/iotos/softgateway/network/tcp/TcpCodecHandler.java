@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.network.udp;
+package me.hekr.iotos.softgateway.network.tcp;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
