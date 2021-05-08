@@ -14,7 +14,6 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.MessageListener;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
@@ -37,12 +36,17 @@ public class TcpServer<T> {
   private int port;
   private TcpCodecHandler<T> tcpCodecHandler;
   private MessageListener<T> listener;
-  @Setter private EventListener<T> eventListener;
-  @Setter private MessageListener<T> messageListener;
+  private EventListener<T> eventListener;
+  private MessageListener<T> messageListener;
   private int timeout;
 
   public TcpServer() {
     this.channelClass = NioServerSocketChannel.class;
+  }
+
+  public void setListener(MessageListener<T> listener) {
+    Objects.requireNonNull(eventListener, "messageListener 不能为 null");
+    this.listener = listener;
   }
 
   public void setPackageCoder(PacketCoder<T> packetCoder) {
@@ -68,6 +72,8 @@ public class TcpServer<T> {
   }
 
   public void start() {
+    check();
+
     boss = new NioEventLoopGroup(2, ThreadUtil.newNamedThreadFactory("netty-boss-", false));
     work = new NioEventLoopGroup(2, ThreadUtil.newNamedThreadFactory("netty-work-", false));
     if (eventListener == null) {
@@ -95,6 +101,10 @@ public class TcpServer<T> {
                 });
     bootstrap.bind(port).syncUninterruptibly();
     log.info("绑定端口：" + port + " 成功，可以接收消息了");
+  }
+
+  private void check() {
+    Objects.requireNonNull(eventListener, "eventListener 不能为 null");
   }
 
   public void close() {

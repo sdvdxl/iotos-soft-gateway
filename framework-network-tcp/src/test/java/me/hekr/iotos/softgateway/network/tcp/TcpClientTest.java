@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.network.udp;
+package me.hekr.iotos.softgateway.network.tcp;
 
 import cn.hutool.core.thread.ThreadUtil;
 import java.nio.charset.Charset;
