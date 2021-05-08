@@ -26,7 +26,8 @@ public class UdpClientTest {
   @Test
   public void testSendAsync() {
     UdpClient<String> client = new UdpClient<>("localhost", 1024, 1021);
-    client.setMessageListener((addr, msg) -> System.out.println("收到来自 " + addr + " 的消息：" + msg));
+    client.setMessageListener(
+        ctx -> System.out.println("收到来自 " + ctx.getAddress() + " 的消息：" + ctx.getMessage()));
     client.setPacketCoder(packetCoder);
     client.start();
     client.send("hello");

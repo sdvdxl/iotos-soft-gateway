@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.network.common;
+package me.hekr.iotos.softgateway.network.common.client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -18,6 +18,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import me.hekr.iotos.softgateway.network.common.InternalPacket;
+import me.hekr.iotos.softgateway.network.common.MessageListener;
+import me.hekr.iotos.softgateway.network.common.PacketCoder;
+import me.hekr.iotos.softgateway.network.common.client.ClientMessageHandler;
 
 /** @author iotos */
 @Slf4j
@@ -27,7 +31,7 @@ public abstract class AbstractClient<T> {
 
   protected EventLoopGroup eventLoop;
   @Setter protected MessageListener<T> messageListener;
-  protected MessageHandler<T> messageHandler;
+  protected ClientMessageHandler<T> clientMessageHandler;
   protected Channel channel;
   /** 命令回复超时时间，毫秒 */
   @Setter protected long timeout = 2000;
@@ -96,7 +100,7 @@ public abstract class AbstractClient<T> {
       }
     }
 
-    messageHandler = new MessageHandler<>(this, messageListener, sync);
+    clientMessageHandler = new ClientMessageHandler<>(this, messageListener, sync);
 
     Bootstrap bootstrap = new Bootstrap();
     eventLoop = new NioEventLoopGroup();
@@ -112,7 +116,7 @@ public abstract class AbstractClient<T> {
                 ch.pipeline()
                     .addLast(new LoggingHandler(logLevel))
                     .addLast(packetCoderHandler)
-                    .addLast(messageHandler);
+                    .addLast(clientMessageHandler);
               }
             });
     ChannelFuture future;

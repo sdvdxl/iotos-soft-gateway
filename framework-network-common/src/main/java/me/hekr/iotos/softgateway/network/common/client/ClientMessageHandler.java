@@ -1,22 +1,25 @@
-package me.hekr.iotos.softgateway.network.common;
+package me.hekr.iotos.softgateway.network.common.client;
 
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.extern.slf4j.Slf4j;
+import me.hekr.iotos.softgateway.network.common.InternalPacket;
+import me.hekr.iotos.softgateway.network.common.MessageListener;
+import me.hekr.iotos.softgateway.network.common.PacketContext;
 import org.springframework.stereotype.Service;
 
 /** @author iotos */
 @Sharable
 @Service
 @Slf4j
-public class MessageHandler<T> extends SimpleChannelInboundHandler<InternalPacket<T>> {
+public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<InternalPacket<T>> {
 
   private final AbstractClient<T> client;
   private final boolean sync;
   private final MessageListener<T> messageListener;
 
-  public MessageHandler(
+  public ClientMessageHandler(
       AbstractClient<T> client, MessageListener<T> messageListener, boolean sync) {
     this.client = client;
     this.messageListener = messageListener;
@@ -27,7 +30,7 @@ public class MessageHandler<T> extends SimpleChannelInboundHandler<InternalPacke
   protected void channelRead0(ChannelHandlerContext ctx, InternalPacket<T> packet) {
     // 如果不是同步，调用消息回调接口
     if (!sync) {
-      messageListener.onMessage(packet.getAddress(), packet.getMessage());
+      messageListener.onMessage(PacketContext.wrap(ctx, packet.getAddress(), packet.getMessage()));
       return;
     }
 

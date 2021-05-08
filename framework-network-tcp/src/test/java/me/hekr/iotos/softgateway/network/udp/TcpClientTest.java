@@ -27,7 +27,8 @@ public class TcpClientTest {
   public void testSendAsync() {
     TcpClient<String> client = new TcpClient<>("localhost", 1024);
 
-    client.setMessageListener((addr, msg) -> System.out.println("收到来自 " + addr + " 的消息：" + msg));
+    client.setMessageListener(
+        ctx -> System.out.println("收到来自 " + ctx.getAddress() + " 的消息：" + ctx.getMessage()));
     client.setPacketCoder(packetCoder);
     client.start();
     for (int i = 0; i < 100; i++) {

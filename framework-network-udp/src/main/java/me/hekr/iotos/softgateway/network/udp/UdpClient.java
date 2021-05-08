@@ -2,7 +2,7 @@ package me.hekr.iotos.softgateway.network.udp;
 
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.network.common.AbstractClient;
+import me.hekr.iotos.softgateway.network.common.client.AbstractClient;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
 
 /**
