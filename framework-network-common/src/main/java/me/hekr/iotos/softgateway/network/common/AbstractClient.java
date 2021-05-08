@@ -119,6 +119,7 @@ public abstract class AbstractClient<T> {
     if (channelClass == DatagramChannel.class) {
       future = bootstrap.bind(bindPort).awaitUninterruptibly();
     } else {
+      bootstrap.option(ChannelOption.TCP_NODELAY, true);
       future = bootstrap.connect(host, port);
     }
 
