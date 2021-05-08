@@ -10,6 +10,7 @@
     <module>framework-network-udp</module>
     <module>framework-network-tcp</module>
     <module>framework-network-common</module>
+    <module>example</module>
   </modules>
   <parent>
     <groupId>org.springframework.boot</groupId>

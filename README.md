@@ -1,3 +1,7 @@
+// FIXME 补充 udp，tcp 客户端使用方法，demo
+// 补充 udp server， tcp server
+// 补充mqtt server
+// 补充 mqtt client
 # 1. 背景
 
 目前有两类情况可能会导致设备或子系统无法连接至 IoTOS：
@@ -70,7 +74,18 @@ IoTOS 与软件网关交互的数据中一定包含 PK 和 devID，若存量设�
 
 # 二次开发
 
-软网关框架在一定程度上封装了交互流程，主要代码在 `core` 包中，用户如果需要自行开发，只需要在 [subsystem](src/main/java/me/hekr/iotos/softgateway/sybsystem)包中开发即可。
+软网关框架在一定程度上封装了交互流程。
+
+目录结构：
+
+- `framework-core` 和 IoTOS 平台交互的主要代码
+- `framework-network-common` 网络组件通用代码
+- `framework-network-tcp` tcp 客户端和服务器
+- `framework-network-udp` udp 客户端和服务器
+- `subsystem` 子系统自定义功能实现部分，在这里开发，并运行 IoTGatewayApplication.java
+- `example` 示例代码，包含网络组件的使用方式
+- `README.md` 即本文件，说明文档
+- `subsystem/src/main/resources/application.yml` 服务配置文件
 
 ## 功能封装
 
