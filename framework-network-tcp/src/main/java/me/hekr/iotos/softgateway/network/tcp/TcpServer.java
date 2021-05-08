@@ -44,7 +44,7 @@ public class TcpServer<T> {
     this.channelClass = NioServerSocketChannel.class;
   }
 
-  public void setListener(MessageListener<T> listener) {
+  public void setMessageListener(MessageListener<T> listener) {
     Objects.requireNonNull(eventListener, "messageListener 不能为 null");
     this.listener = listener;
   }
@@ -93,7 +93,7 @@ public class TcpServer<T> {
                   @Override
                   protected void initChannel(NioSocketChannel ch) throws Exception {
                     ch.pipeline()
-                        .addFirst("LoggingHandler", new LoggingHandler())
+                        .addFirst("loggingHandler", new LoggingHandler())
                         .addLast("", new IdleStateHandler(timeout, 0, 0, TimeUnit.MILLISECONDS))
                         .addLast("tcpCodecHandler", tcpCodecHandler)
                         .addLast("messageHandler", messageHandler);
