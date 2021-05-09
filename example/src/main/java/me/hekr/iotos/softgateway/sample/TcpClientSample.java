@@ -4,6 +4,7 @@ import cn.hutool.core.thread.ThreadUtil;
 import java.nio.charset.StandardCharsets;
 import me.hekr.iotos.softgateway.network.common.DecodePacket;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
+import me.hekr.iotos.softgateway.network.common.client.EventListenerAdapter;
 import me.hekr.iotos.softgateway.network.tcp.TcpClient;
 
 /**
@@ -27,6 +28,7 @@ public class TcpClientSample {
 
   public static void main(String[] args) {
     TcpClient<String> client = new TcpClient<>("localhost", 1024);
+    client.setEventListener(new EventListenerAdapter<>());
     client.setSync(true);
     client.setPacketCoder(packetCoder);
     client.setTimeout(30000);

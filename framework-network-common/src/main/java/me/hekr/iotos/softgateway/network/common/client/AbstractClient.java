@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.MessageListener;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
-import me.hekr.iotos.softgateway.network.common.client.ClientMessageHandler;
 
 /** @author iotos */
 @Slf4j
@@ -30,7 +29,7 @@ public abstract class AbstractClient<T> {
   public T result;
 
   protected EventLoopGroup eventLoop;
-  @Setter protected MessageListener<T> messageListener;
+  @Setter protected MessageListener messageListener;
   protected ClientMessageHandler<T> clientMessageHandler;
   protected Channel channel;
   /** 命令回复超时时间，毫秒 */
@@ -49,6 +48,7 @@ public abstract class AbstractClient<T> {
   /** 实现类传递 */
   protected ChannelDuplexHandler packetCoderHandler;
 
+  private EventListener<T> eventListener;
   @Setter private LogLevel logLevel = LogLevel.INFO;
 
   public AbstractClient(Class<? extends Channel> channelClass) {
@@ -96,11 +96,11 @@ public abstract class AbstractClient<T> {
       }
     } else {
       if (messageListener != null) {
-        Objects.requireNonNull(messageListener, "sync 模式必须设置messageListener");
+        Objects.requireNonNull(messageListener, "async 模式必须设置messageListener");
       }
     }
 
-    clientMessageHandler = new ClientMessageHandler<>(this, messageListener, sync);
+    clientMessageHandler = new ClientMessageHandler(this, messageListener, eventListener, sync);
 
     Bootstrap bootstrap = new Bootstrap();
     eventLoop = new NioEventLoopGroup();
@@ -141,16 +141,22 @@ public abstract class AbstractClient<T> {
    */
   @SneakyThrows
   public T send(T t) {
+    InternalPacket<T> internalPacket = InternalPacket.wrap(t);
+    return doSend(internalPacket);
+  }
+
+  protected T doSend(InternalPacket<T> internalPacket)
+      throws InterruptedException, TimeoutException {
     if (sync) {
       synchronized (LOCK) {
         result = null;
         // 注意，不能使用  syncUninterruptibly，messageHandler 中也会等待，会造成一个线程的死锁
         channel
-            .writeAndFlush(InternalPacket.wrap(t))
+            .writeAndFlush(internalPacket)
             .addListener(
                 f -> {
                   if (!f.isSuccess()) {
-                    log.error(f.cause().getMessage() + "，消息:" + t);
+                    log.error(f.cause().getMessage() + "，消息:" + internalPacket.getMessage());
                   }
                 });
 
@@ -163,11 +169,11 @@ public abstract class AbstractClient<T> {
       }
     }
     channel
-        .writeAndFlush(InternalPacket.wrap(t))
+        .writeAndFlush(internalPacket)
         .addListener(
             f -> {
               if (!f.isSuccess()) {
-                log.error(f.cause().getMessage() + "，消息:" + t);
+                log.error(f.cause().getMessage() + "，消息:" + internalPacket.getMessage());
               }
             });
     return null;
@@ -183,5 +189,9 @@ public abstract class AbstractClient<T> {
     synchronized (LOCK) {
       LOCK.wait(timeout);
     }
+  }
+
+  public void setEventListener(EventListener<T> eventListener) {
+    this.eventListener = eventListener;
   }
 }

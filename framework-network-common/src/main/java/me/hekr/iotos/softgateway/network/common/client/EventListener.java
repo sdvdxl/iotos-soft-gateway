@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.network.common.server;
+package me.hekr.iotos.softgateway.network.common.client;
 
 import java.time.LocalDateTime;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
@@ -23,7 +23,6 @@ public interface EventListener<T> {
    *
    * @param ctx
    * @param reason 关闭连接原因
-   * @param t 异常关闭时候的异常
    */
   void onDisconnect(PacketContext<T> ctx, CloseReason reason);
 

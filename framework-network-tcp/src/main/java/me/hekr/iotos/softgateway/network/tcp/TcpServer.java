@@ -15,11 +15,8 @@ import io.netty.handler.timeout.IdleStateHandler;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.network.common.MessageListener;
+import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
-import me.hekr.iotos.softgateway.network.common.server.EventListener;
-import me.hekr.iotos.softgateway.network.common.server.EventListenerAdapter;
-import me.hekr.iotos.softgateway.network.common.server.ServerMessageHandler;
 import me.hekr.iotos.softgateway.network.common.util.NetUtil;
 
 /**
@@ -29,24 +26,23 @@ import me.hekr.iotos.softgateway.network.common.util.NetUtil;
  */
 @Slf4j
 public class TcpServer<T> {
-  private final Class<? extends Channel> channelClass;
+
   private ServerMessageHandler<T> messageHandler;
   private EventLoopGroup boss;
   private EventLoopGroup work;
   private int port;
   private TcpCodecHandler<T> tcpCodecHandler;
-  private MessageListener<T> listener;
   private EventListener<T> eventListener;
-  private MessageListener<T> messageListener;
+  private TcpMessageListener<T> messageListener;
   private int timeout;
 
   public TcpServer() {
-    this.channelClass = NioServerSocketChannel.class;
+    Class<? extends Channel> channelClass = NioServerSocketChannel.class;
   }
 
-  public void setMessageListener(MessageListener<T> listener) {
+  public void setMessageListener(TcpMessageListener<T> messageListener) {
     Objects.requireNonNull(eventListener, "messageListener 不能为 null");
-    this.listener = listener;
+    this.messageListener = messageListener;
   }
 
   public void setPackageCoder(PacketCoder<T> packetCoder) {
@@ -79,7 +75,7 @@ public class TcpServer<T> {
     if (eventListener == null) {
       eventListener = new EventListenerAdapter<>();
     }
-    messageHandler = new ServerMessageHandler<>(messageListener, eventListener);
+    messageHandler = new ServerMessageHandler(messageListener, eventListener);
     ServerBootstrap bootstrap =
         new ServerBootstrap()
             .group(boss, work)
@@ -110,5 +106,20 @@ public class TcpServer<T> {
   public void close() {
     NetUtil.close(boss);
     NetUtil.close(work);
+  }
+
+  public void writeAndFlush(TcpServerPacketContext<T> ctx, T msg) {
+    ctx.getChannel()
+        .writeAndFlush(InternalPacket.wrap(msg))
+        .addListener(
+            f -> {
+              if (log.isDebugEnabled()) {
+                if (f.isSuccess()) {
+                  log.debug("发送： " + msg + " 成功");
+                } else {
+                  log.error("发送消息：" + msg + " 失败，" + f.cause().getMessage());
+                }
+              }
+            });
   }
 }

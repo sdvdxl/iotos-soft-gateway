@@ -1,12 +1,10 @@
 package me.hekr.iotos.softgateway.network.udp;
 
-import io.netty.channel.socket.nio.NioDatagramChannel;
 import java.net.InetSocketAddress;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
-import me.hekr.iotos.softgateway.network.common.client.AbstractClient;
 
 /**
  * UDP client
@@ -20,13 +18,10 @@ import me.hekr.iotos.softgateway.network.common.client.AbstractClient;
  * @author iotos
  */
 @Slf4j
-public class UdpClient<T> extends AbstractClient<T> {
+public class UdpServer<T> extends UdpClient<T> {
 
-  public UdpClient(String host, int port, int bindPort) {
-    super(NioDatagramChannel.class);
-    this.host = host;
-    this.port = port;
-    this.bindPort = bindPort;
+  public UdpServer(String host, int port, int bindPort) {
+    super(host, port, bindPort);
   }
 
   @Override
@@ -35,14 +30,16 @@ public class UdpClient<T> extends AbstractClient<T> {
   }
 
   /**
-   * 发送广播
+   * 发送数据
    *
-   * @param t
-   * @param port
+   * @param host 要发送的 host
+   * @param port 要发送的端口
+   * @param t 要发送的内容
    * @return
    */
   @SneakyThrows
-  public T sendBroadcast(T t, int port) {
-    return doSend(InternalPacket.wrap(t, new InetSocketAddress("255.255.255.255", port)));
+  public T send(String host, int port, T t) {
+    InternalPacket<T> internalPacket = InternalPacket.wrap(t, new InetSocketAddress(host, port));
+    return doSend(internalPacket);
   }
 }

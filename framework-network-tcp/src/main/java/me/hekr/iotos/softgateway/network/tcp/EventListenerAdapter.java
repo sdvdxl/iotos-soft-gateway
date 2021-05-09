@@ -1,9 +1,8 @@
-package me.hekr.iotos.softgateway.network.common.server;
+package me.hekr.iotos.softgateway.network.tcp;
 
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
-import me.hekr.iotos.softgateway.network.common.PacketContext;
 
 /**
  * 如果不想实现所有事件监听，可以继承这个类
@@ -14,27 +13,29 @@ import me.hekr.iotos.softgateway.network.common.PacketContext;
 public class EventListenerAdapter<T> implements EventListener<T> {
 
   @Override
-  public void onConnect(PacketContext<T> ctx) {
+  public void onConnect(TcpServerPacketContext<T> ctx) {
     log.info("onConnect, remote: {}", ctx.getAddress());
   }
 
   @Override
-  public void onDisconnect(PacketContext<T> ctx, CloseReason reason) {
+  public void onDisconnect(TcpServerPacketContext<T> ctx, CloseReason reason) {
     log.info("onDisconnect, remote: {}, reason: {}", ctx.getAddress(), reason);
   }
 
   @Override
-  public void onHeartbeatTimeout(PacketContext<T> ctx, LocalDateTime lastOccurTime, int count) {
+  public void onHeartbeatTimeout(
+      TcpServerPacketContext<T> ctx, LocalDateTime lastOccurTime, int count) {
     log.warn(
         "onHeartbeatTimeout close connection, remote: {}, lastOccurTime: {}, count: {}",
         ctx.getAddress(),
         lastOccurTime,
         count);
-    ctx.close(CloseReason.HEARTBEAT_TIMEOUT);
+    ctx.setCloseReason(CloseReason.HEARTBEAT_TIMEOUT);
+    ctx.close();
   }
 
   @Override
-  public void exceptionCaught(PacketContext<T> ctx, Throwable t) {
+  public void exceptionCaught(TcpServerPacketContext<T> ctx, Throwable t) {
     log.error("exceptionCaught, remote: " + ctx.getAddress() + ", error:" + t.getMessage(), t);
   }
 }

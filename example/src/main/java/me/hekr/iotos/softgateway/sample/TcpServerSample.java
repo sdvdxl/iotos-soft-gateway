@@ -3,9 +3,10 @@ package me.hekr.iotos.softgateway.sample;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import me.hekr.iotos.softgateway.network.common.DecodePacket;
-import me.hekr.iotos.softgateway.network.common.MessageListener;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
+import me.hekr.iotos.softgateway.network.tcp.TcpMessageListener;
 import me.hekr.iotos.softgateway.network.tcp.TcpServer;
+import me.hekr.iotos.softgateway.network.tcp.TcpServerPacketContext;
 
 /**
  * tcp 服务端
@@ -16,32 +17,39 @@ public class TcpServerSample {
   public static void main(String[] args) throws InterruptedException {
     TcpServer<String> server = new TcpServer<>();
     server.bind(1024);
-    server.setMessageListener(messageListener());
-    server.setPackageCoder(packetCoder());
+    server.setMessageListener(new MyMessageListener(server));
+    server.setPackageCoder(new MyPacketCoder());
     server.setHeartbeatTimeout(3000);
     server.start();
     new CountDownLatch(1).await();
     //  server.close()
   }
 
-  private static PacketCoder<String> packetCoder() {
-    return new PacketCoder<String>() {
-      @Override
-      public byte[] encode(String s) {
-        return s.getBytes(StandardCharsets.UTF_8);
-      }
+  static class MyPacketCoder implements PacketCoder<String> {
+    @Override
+    public byte[] encode(String s) {
+      return s.getBytes(StandardCharsets.UTF_8);
+    }
 
-      @Override
-      public DecodePacket decode(byte[] bytes) {
-        return DecodePacket.wrap(new String(bytes), bytes.length);
-      }
-    };
+    @Override
+    public DecodePacket decode(byte[] bytes) {
+      return DecodePacket.wrap(new String(bytes), bytes.length);
+    }
+    ;
   }
 
-  private static MessageListener<String> messageListener() {
-    return ctx -> {
+  static class MyMessageListener implements TcpMessageListener<String> {
+
+    private final TcpServer<String> server;
+
+    public MyMessageListener(TcpServer<String> server) {
+      this.server = server;
+    }
+
+    @Override
+    public void onMessage(TcpServerPacketContext<String> ctx) {
       System.out.println("收到来自: " + ctx.getAddress() + " 的消息，" + ctx.getMessage());
-      ctx.writeAndFlush("回复:" + ctx.getMessage());
-    };
+      server.writeAndFlush(ctx, "回复:" + ctx.getMessage());
+    }
   }
 }

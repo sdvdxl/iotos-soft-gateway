@@ -3,7 +3,9 @@ package me.hekr.iotos.softgateway.network.common.client;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.util.AttributeKey;
 import lombok.extern.slf4j.Slf4j;
+import me.hekr.iotos.softgateway.network.common.CloseReason;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.MessageListener;
 import me.hekr.iotos.softgateway.network.common.PacketContext;
@@ -14,15 +16,21 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<InternalPacket<T>> {
-
+  private static final AttributeKey<PacketContext<?>> PACKET_CONTEXT =
+      AttributeKey.valueOf("_PACKET_CONTEXT_");
   private final AbstractClient<T> client;
   private final boolean sync;
-  private final MessageListener<T> messageListener;
+  private final MessageListener messageListener;
+  private final EventListener<T> eventListener;
 
   public ClientMessageHandler(
-      AbstractClient<T> client, MessageListener<T> messageListener, boolean sync) {
+      AbstractClient<T> client,
+      MessageListener messageListener,
+      EventListener<T> eventListener,
+      boolean sync) {
     this.client = client;
     this.messageListener = messageListener;
+    this.eventListener = eventListener;
     this.sync = sync;
   }
 
@@ -30,7 +38,7 @@ public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<Interna
   protected void channelRead0(ChannelHandlerContext ctx, InternalPacket<T> packet) {
     // 如果不是同步，调用消息回调接口
     if (!sync) {
-      messageListener.onMessage(PacketContext.wrap(ctx, packet.getAddress(), packet.getMessage()));
+      messageListener.onMessage(PacketContext.wrap(packet.getAddress(), packet.getMessage()));
       return;
     }
 
@@ -44,5 +52,24 @@ public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<Interna
   @Override
   public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
     log.error("remote:" + ctx.channel().remoteAddress() + ",未处理的异常，" + cause.getMessage(), cause);
+  }
+
+  @Override
+  public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    PacketContext<T> packetContext = PacketContext.wrap(ctx.channel().remoteAddress());
+    ctx.channel().attr(PACKET_CONTEXT).set(packetContext);
+
+    eventListener.onConnect(packetContext);
+  }
+
+  @SuppressWarnings("unchecked")
+  private PacketContext<T> getPacketContext(ChannelHandlerContext ctx) {
+    return (PacketContext<T>) ctx.channel().attr(PACKET_CONTEXT).get();
+  }
+
+  @Override
+  public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    PacketContext<T> packetContext = getPacketContext(ctx);
+    eventListener.onDisconnect(packetContext, CloseReason.SERVER_CLOSED);
   }
 }
