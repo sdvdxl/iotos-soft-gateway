@@ -1,5 +1,6 @@
 package me.hekr.iotos.softgateway.network.common.client;
 
+import cn.hutool.socket.SocketRuntimeException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -95,9 +96,7 @@ public abstract class AbstractClient<T> {
         log.warn("sync 模式不会调用messageListener");
       }
     } else {
-      if (messageListener != null) {
-        Objects.requireNonNull(messageListener, "async 模式必须设置messageListener");
-      }
+      Objects.requireNonNull(messageListener, "async 模式必须设置messageListener");
     }
 
     if (eventListener == null) {
@@ -152,6 +151,10 @@ public abstract class AbstractClient<T> {
 
   protected T doSend(InternalPacket<T> internalPacket)
       throws InterruptedException, TimeoutException {
+    if (!channel.isOpen()) {
+      throw new SocketRuntimeException("closed");
+    }
+
     if (sync) {
       synchronized (LOCK) {
         result = null;

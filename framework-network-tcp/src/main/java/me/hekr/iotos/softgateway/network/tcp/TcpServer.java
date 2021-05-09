@@ -68,6 +68,8 @@ public class TcpServer<T> {
 
   public void start() {
 
+    Objects.requireNonNull(messageListener, "必须设置messageListener");
+
     boss = new NioEventLoopGroup(2, ThreadUtil.newNamedThreadFactory("netty-boss-", false));
     work = new NioEventLoopGroup(2, ThreadUtil.newNamedThreadFactory("netty-work-", false));
     if (eventListener == null) {

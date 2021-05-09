@@ -17,7 +17,7 @@ public class TcpClientSample {
       new PacketCoder<String>() {
         @Override
         public byte[] encode(String s) {
-          return s.getBytes();
+          return s.getBytes(StandardCharsets.UTF_8);
         }
 
         @Override
@@ -29,13 +29,13 @@ public class TcpClientSample {
   public static void main(String[] args) {
     TcpClient<String> client = new TcpClient<>("localhost", 1024);
     client.setEventListener(new EventListenerAdapter<>());
-    client.setSync(true);
     client.setPacketCoder(packetCoder);
+    client.setMessageListener(
+        ctx -> System.out.println("收到来自：" + ctx.getAddress() + " 的消息：" + ctx.getMessage()));
     client.setTimeout(30000);
     client.start();
-    for (int i = 0; i < 100; i++) {
-      String resp = client.send("hello");
-      System.out.println(resp);
+    while (true) {
+      client.send("hello");
       ThreadUtil.sleep(1000);
     }
   }
