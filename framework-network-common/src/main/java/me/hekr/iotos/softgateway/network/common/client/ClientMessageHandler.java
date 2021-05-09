@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.AttributeKey;
+import java.net.InetSocketAddress;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
@@ -20,12 +21,12 @@ public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<Interna
       AttributeKey.valueOf("_PACKET_CONTEXT_");
   private final AbstractClient<T> client;
   private final boolean sync;
-  private final MessageListener messageListener;
+  private final MessageListener<PacketContext<T>> messageListener;
   private final EventListener<T> eventListener;
 
   public ClientMessageHandler(
       AbstractClient<T> client,
-      MessageListener messageListener,
+      MessageListener<PacketContext<T>> messageListener,
       EventListener<T> eventListener,
       boolean sync) {
     this.client = client;
@@ -55,8 +56,9 @@ public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<Interna
   }
 
   @Override
-  public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    PacketContext<T> packetContext = PacketContext.wrap(ctx.channel().remoteAddress());
+  public void channelActive(ChannelHandlerContext ctx) {
+    PacketContext<T> packetContext =
+        PacketContext.wrap((InetSocketAddress) ctx.channel().remoteAddress());
     ctx.channel().attr(PACKET_CONTEXT).set(packetContext);
 
     eventListener.onConnect(packetContext);

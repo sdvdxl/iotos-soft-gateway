@@ -1,7 +1,7 @@
 package me.hekr.iotos.softgateway.network.common;
 
 /** @author iotos */
-public interface MessageListener<T extends PacketContext> {
+public interface MessageListener<T extends PacketContext<?>> {
 
   /**
    * 收到消息

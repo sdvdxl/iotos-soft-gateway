@@ -6,6 +6,7 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
+import java.net.InetSocketAddress;
 import java.util.List;
 import me.hekr.iotos.softgateway.network.common.DecodePacket;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
@@ -38,7 +39,8 @@ class TcpCodecHandler<T> extends MessageToMessageCodec<ByteBuf, InternalPacket<T
     DecodePacket p = packetCoder.decode(bytes);
     if (p != null && p != DecodePacket.NULL) {
       buf.readBytes(p.getReadSize());
-      out.add(InternalPacket.wrap(p.getResult(), ctx.channel().remoteAddress()));
+      out.add(
+          InternalPacket.wrap(p.getResult(), (InetSocketAddress) ctx.channel().remoteAddress()));
     }
   }
 }

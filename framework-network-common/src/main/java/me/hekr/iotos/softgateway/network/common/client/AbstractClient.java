@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.MessageListener;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
+import me.hekr.iotos.softgateway.network.common.PacketContext;
 
 /** @author iotos */
 @Slf4j
@@ -29,7 +30,7 @@ public abstract class AbstractClient<T> {
   public T result;
 
   protected EventLoopGroup eventLoop;
-  @Setter protected MessageListener messageListener;
+  @Setter protected MessageListener<PacketContext<T>> messageListener;
   protected ClientMessageHandler<T> clientMessageHandler;
   protected Channel channel;
   /** 命令回复超时时间，毫秒 */
@@ -100,7 +101,11 @@ public abstract class AbstractClient<T> {
       }
     }
 
-    clientMessageHandler = new ClientMessageHandler(this, messageListener, eventListener, sync);
+    if (eventListener ==null){
+      eventListener = new EventListenerAdapter<>();
+    }
+
+    clientMessageHandler = new ClientMessageHandler<>(this, messageListener, eventListener, sync);
 
     Bootstrap bootstrap = new Bootstrap();
     eventLoop = new NioEventLoopGroup();
@@ -120,7 +125,7 @@ public abstract class AbstractClient<T> {
               }
             });
     ChannelFuture future;
-    if (channelClass == DatagramChannel.class) {
+    if (DatagramChannel.class.isAssignableFrom(channelClass)) {
       future = bootstrap.bind(bindPort).awaitUninterruptibly();
     } else {
       bootstrap.option(ChannelOption.TCP_NODELAY, true);

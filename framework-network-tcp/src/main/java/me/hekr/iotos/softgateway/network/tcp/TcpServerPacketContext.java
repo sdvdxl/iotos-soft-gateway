@@ -1,7 +1,7 @@
 package me.hekr.iotos.softgateway.network.tcp;
 
 import io.netty.channel.ChannelHandlerContext;
-import java.net.SocketAddress;
+import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,14 +17,14 @@ public class TcpServerPacketContext<T> extends PacketContext<T> {
   @Getter @Setter protected int heartbeatTimeoutCount = 0;
   @Getter @Setter protected LocalDateTime occurTime;
 
-  TcpServerPacketContext(ChannelHandlerContext ctx, SocketAddress address, T message) {
+  TcpServerPacketContext(ChannelHandlerContext ctx, InetSocketAddress address, T message) {
     super(address, message);
     this.ctx = ctx;
     this.channel = ctx.channel();
   }
 
   public static <T> PacketContext<T> wrap(
-      ChannelHandlerContext ctx, SocketAddress address, T message) {
+      ChannelHandlerContext ctx, InetSocketAddress address, T message) {
     return new TcpServerPacketContext<>(ctx, address, message);
   }
 
@@ -33,7 +33,7 @@ public class TcpServerPacketContext<T> extends PacketContext<T> {
   }
 
   public static <T> TcpServerPacketContext<T> wrap(
-      ChannelHandlerContext ctx, SocketAddress remoteAddress) {
+      ChannelHandlerContext ctx, InetSocketAddress remoteAddress) {
     return new TcpServerPacketContext<>(ctx, remoteAddress, null);
   }
 

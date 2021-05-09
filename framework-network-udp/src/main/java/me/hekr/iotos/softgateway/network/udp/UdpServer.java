@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
+import me.hekr.iotos.softgateway.network.common.PacketContext;
 
 /**
  * UDP client
@@ -24,6 +25,10 @@ public class UdpServer<T> extends UdpClient<T> {
     super(host, port, bindPort);
   }
 
+  public UdpServer(int bindPort) {
+    super(null, 0, bindPort);
+  }
+
   @Override
   public void setPacketCoder(PacketCoder<T> packetCoder) {
     packetCoderHandler = new UdpCodecHandler<>(packetCoder, host, port);
@@ -40,6 +45,17 @@ public class UdpServer<T> extends UdpClient<T> {
   @SneakyThrows
   public T send(String host, int port, T t) {
     InternalPacket<T> internalPacket = InternalPacket.wrap(t, new InetSocketAddress(host, port));
+    return doSend(internalPacket);
+  }
+
+  @SneakyThrows
+  public T send(PacketContext<T> ctx, T t) {
+    return send(ctx.getAddress(), t);
+  }
+
+  @SneakyThrows
+  public T send(InetSocketAddress address, T t) {
+    InternalPacket<T> internalPacket = InternalPacket.wrap(t, address);
     return doSend(internalPacket);
   }
 }

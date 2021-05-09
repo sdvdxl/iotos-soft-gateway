@@ -6,6 +6,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
+import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
@@ -32,7 +33,7 @@ public class ServerMessageHandler<T> extends SimpleChannelInboundHandler<Interna
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
     TcpServerPacketContext<T> packetContext =
-        TcpServerPacketContext.wrap(ctx, ctx.channel().remoteAddress());
+        TcpServerPacketContext.wrap(ctx, (InetSocketAddress) ctx.channel().remoteAddress());
     ctx.channel().attr(PACKET_CONTEXT).set(packetContext);
 
     eventListener.onConnect(packetContext);
