@@ -11,7 +11,7 @@ import me.hekr.iotos.softgateway.network.udp.UdpClient;
  * @author iotos
  */
 public class UdpClientSample {
-  private static PacketCoder<String> packetCoder =
+  private static final PacketCoder<String> PACKET_CODER =
       new PacketCoder<String>() {
         @Override
         public byte[] encode(String s) {
@@ -29,9 +29,8 @@ public class UdpClientSample {
     client.setMessageListener(
         ctx -> {
           System.out.println("收到来自 " + ctx.getAddress() + " 的消息：" + ctx.getMessage());
-
         });
-    client.setPacketCoder(packetCoder);
+    client.setPacketCoder(PACKET_CODER);
     client.start();
     client.send("hello");
   }

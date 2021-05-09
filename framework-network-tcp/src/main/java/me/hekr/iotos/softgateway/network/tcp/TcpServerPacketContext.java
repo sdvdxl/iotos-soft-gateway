@@ -23,7 +23,8 @@ public class TcpServerPacketContext<T> extends PacketContext<T> {
     this.channel = ctx.channel();
   }
 
-  public static <T> PacketContext<T> wrap(ChannelHandlerContext ctx, SocketAddress address, T message) {
+  public static <T> PacketContext<T> wrap(
+      ChannelHandlerContext ctx, SocketAddress address, T message) {
     return new TcpServerPacketContext<>(ctx, address, message);
   }
 

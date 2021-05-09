@@ -3,7 +3,6 @@ package me.hekr.iotos.softgateway.network.tcp;
 import cn.hutool.core.thread.ThreadUtil;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -36,9 +35,7 @@ public class TcpServer<T> {
   private TcpMessageListener<T> messageListener;
   private int timeout;
 
-  public TcpServer() {
-    Class<? extends Channel> channelClass = NioServerSocketChannel.class;
-  }
+  public TcpServer() {}
 
   public void setMessageListener(TcpMessageListener<T> messageListener) {
     Objects.requireNonNull(messageListener, "messageListener 不能为 null");
@@ -74,7 +71,7 @@ public class TcpServer<T> {
     if (eventListener == null) {
       eventListener = new EventListenerAdapter<>();
     }
-    messageHandler = new ServerMessageHandler(messageListener, eventListener);
+    messageHandler = new ServerMessageHandler<>(messageListener, eventListener);
     ServerBootstrap bootstrap =
         new ServerBootstrap()
             .group(boss, work)
@@ -86,7 +83,7 @@ public class TcpServer<T> {
             .childHandler(
                 new ChannelInitializer<NioSocketChannel>() {
                   @Override
-                  protected void initChannel(NioSocketChannel ch) throws Exception {
+                  protected void initChannel(NioSocketChannel ch) {
                     ch.pipeline()
                         .addFirst("loggingHandler", new LoggingHandler())
                         .addLast("", new IdleStateHandler(timeout, 0, 0, TimeUnit.MILLISECONDS))
