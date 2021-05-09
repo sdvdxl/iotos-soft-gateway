@@ -1,5 +1,6 @@
 package me.hekr.iotos.softgateway.sample;
 
+import cn.hutool.core.thread.ThreadUtil;
 import me.hekr.iotos.softgateway.network.udp.UdpClient;
 
 /**
@@ -16,7 +17,11 @@ public class UdpClientSample {
           System.out.println("收到来自 " + ctx.getAddress() + " 的消息：" + ctx.getMessage());
         });
     client.setPacketCoder(UdpServerSample.PACKET_CODER);
+    client.setEnableNetLog(false);
     client.start();
-    client.send("hello");
+    while (true) {
+      client.send("hello");
+      ThreadUtil.sleep(1000);
+    }
   }
 }

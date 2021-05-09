@@ -10,8 +10,8 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
-import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import java.net.InetSocketAddress;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 import lombok.Getter;
@@ -28,7 +28,7 @@ import me.hekr.iotos.softgateway.network.common.PacketContext;
 public abstract class AbstractClient<T> {
   public final Object LOCK = new Object();
   public T result;
-
+  @Setter protected boolean enableNetLog;
   protected EventLoopGroup eventLoop;
   @Setter protected MessageListener<PacketContext<T>> messageListener;
   protected ClientMessageHandler<T> clientMessageHandler;
@@ -50,7 +50,6 @@ public abstract class AbstractClient<T> {
   protected ChannelDuplexHandler packetCoderHandler;
 
   private EventListener<T> eventListener;
-  @Setter private LogLevel logLevel = LogLevel.INFO;
 
   public AbstractClient(Class<? extends Channel> channelClass) {
     this.channelClass = channelClass;
@@ -101,7 +100,7 @@ public abstract class AbstractClient<T> {
       }
     }
 
-    if (eventListener ==null){
+    if (eventListener == null) {
       eventListener = new EventListenerAdapter<>();
     }
 
@@ -118,10 +117,11 @@ public abstract class AbstractClient<T> {
             new ChannelInitializer<Channel>() {
               @Override
               protected void initChannel(Channel ch) {
-                ch.pipeline()
-                    .addLast(new LoggingHandler(logLevel))
-                    .addLast(packetCoderHandler)
-                    .addLast(clientMessageHandler);
+                if (enableNetLog) {
+                  ch.pipeline().addLast(new LoggingHandler());
+                }
+
+                ch.pipeline().addLast(packetCoderHandler).addLast(clientMessageHandler);
               }
             });
     ChannelFuture future;
@@ -146,7 +146,7 @@ public abstract class AbstractClient<T> {
    */
   @SneakyThrows
   public T send(T t) {
-    InternalPacket<T> internalPacket = InternalPacket.wrap(t);
+    InternalPacket<T> internalPacket = InternalPacket.wrap(t, new InetSocketAddress(host, port));
     return doSend(internalPacket);
   }
 

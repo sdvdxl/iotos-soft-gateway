@@ -13,6 +13,7 @@ import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
@@ -34,6 +35,7 @@ public class TcpServer<T> {
   private EventListener<T> eventListener;
   private TcpMessageListener<T> messageListener;
   private int timeout;
+  @Setter private boolean enableNetLog;
 
   public TcpServer() {}
 
@@ -84,9 +86,14 @@ public class TcpServer<T> {
                 new ChannelInitializer<NioSocketChannel>() {
                   @Override
                   protected void initChannel(NioSocketChannel ch) {
+                    if (enableNetLog) {
+                      ch.pipeline().addLast(new LoggingHandler());
+                    }
+
                     ch.pipeline()
-                        .addFirst("loggingHandler", new LoggingHandler())
-                        .addLast("", new IdleStateHandler(timeout, 0, 0, TimeUnit.MILLISECONDS))
+                        .addLast(
+                            "idleStateHandler",
+                            new IdleStateHandler(timeout, 0, 0, TimeUnit.MILLISECONDS))
                         .addLast("tcpCodecHandler", tcpCodecHandler)
                         .addLast("messageHandler", messageHandler);
                   }

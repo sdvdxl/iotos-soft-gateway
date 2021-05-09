@@ -19,13 +19,9 @@ import me.hekr.iotos.softgateway.network.common.PacketCoder;
 @Sharable
 class UdpCodecHandler<T> extends MessageToMessageCodec<DatagramPacket, InternalPacket<T>> {
   private final PacketCoder<T> packetCoder;
-  private final String host;
-  private final int port;
 
-  public UdpCodecHandler(PacketCoder<T> udCoder, String host, int port) {
+  public UdpCodecHandler(PacketCoder<T> udCoder) {
     this.packetCoder = udCoder;
-    this.host = host;
-    this.port = port;
   }
 
   @Override

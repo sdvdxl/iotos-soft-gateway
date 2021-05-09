@@ -1,6 +1,6 @@
 package me.hekr.iotos.softgateway.sample;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import me.hekr.iotos.softgateway.network.common.DecodePacket;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
@@ -17,12 +17,12 @@ public class UdpServerSample {
       new PacketCoder<String>() {
         @Override
         public byte[] encode(String s) {
-          return s.getBytes();
+          return s.getBytes(StandardCharsets.UTF_8);
         }
 
         @Override
         public DecodePacket decode(byte[] bytes) {
-          return DecodePacket.wrap(new String(bytes, Charset.forName("GBK")), bytes.length);
+          return DecodePacket.wrap(new String(bytes, StandardCharsets.UTF_8), bytes.length);
         }
       };
 
