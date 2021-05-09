@@ -41,7 +41,7 @@ public class TcpServer<T> {
   }
 
   public void setMessageListener(TcpMessageListener<T> messageListener) {
-    Objects.requireNonNull(eventListener, "messageListener 不能为 null");
+    Objects.requireNonNull(messageListener, "messageListener 不能为 null");
     this.messageListener = messageListener;
   }
 
@@ -68,7 +68,6 @@ public class TcpServer<T> {
   }
 
   public void start() {
-    check();
 
     boss = new NioEventLoopGroup(2, ThreadUtil.newNamedThreadFactory("netty-boss-", false));
     work = new NioEventLoopGroup(2, ThreadUtil.newNamedThreadFactory("netty-work-", false));
@@ -97,10 +96,6 @@ public class TcpServer<T> {
                 });
     bootstrap.bind(port).syncUninterruptibly();
     log.info("绑定端口：" + port + " 成功，可以接收消息了");
-  }
-
-  private void check() {
-    Objects.requireNonNull(eventListener, "eventListener 不能为 null");
   }
 
   public void close() {
