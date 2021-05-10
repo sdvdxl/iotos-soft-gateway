@@ -6,7 +6,6 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -52,7 +51,7 @@ public abstract class AbstractClient<T> {
   protected ChannelDuplexHandler packetCoderHandler;
 
   Bootstrap bootstrap;
-  /** true 自动重连，仅针对 tcp */
+  /** true 自动重连，仅针对 tcp ，start 方法启动，会阻塞一直到连接成功 */
   @Setter private boolean autoReconnect;
 
   private EventListener<T> eventListener;
@@ -129,19 +128,17 @@ public abstract class AbstractClient<T> {
                 ch.pipeline().addLast(packetCoderHandler).addLast(clientMessageHandler);
               }
             });
-    ChannelFuture future;
     if (DatagramChannel.class.isAssignableFrom(channelClass)) {
-      future = bootstrap.bind(bindPort).awaitUninterruptibly();
+      channel = bootstrap.bind(bindPort).awaitUninterruptibly().channel();
     } else {
       bootstrap.option(ChannelOption.TCP_NODELAY, true);
-      future = bootstrap.connect(host, port);
+      if (autoReconnect) {
+        loopConnect();
+      } else {
+        connect();
+      }
     }
 
-    if (autoReconnect) {
-      loopConnect();
-    } else {
-      connect();
-    }
     log.info("start 成功");
   }
 
