@@ -161,6 +161,9 @@ public abstract class AbstractClient<T> {
 
   protected T doSend(InternalPacket<T> internalPacket)
       throws InterruptedException, TimeoutException {
+    if (log.isDebugEnabled()) {
+      log.debug("发送消息：{}", internalPacket);
+    }
     if (!channel.isActive()) {
       throw new SocketRuntimeException("closed");
     }

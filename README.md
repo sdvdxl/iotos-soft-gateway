@@ -1,12 +1,13 @@
-// FIXME 补充 udp，tcp 客户端使用方法，demo
-// 补充 udp server， tcp server
-// 补充mqtt server
-// 补充 mqtt client
+// FIXME 补充 udp，tcp 客户端使用方法，demo // 补充 udp server， tcp server // 补充mqtt server // 补充 mqtt client
+
 # 1. 背景
 
 目前有两类情况可能会导致设备或子系统无法连接至 IoTOS：
-- IoTOS 目前支持 MQTT、CoAP、LwM2M、HTTP 这四种协议，且认证方式要符合 IoTOS 的规定，但很多存量设备或者子系统使用了 TCP\UDP\WS 等协议，且认证方式多种多样，甚至连产品标识（对应 IoTOS 里的 PK）也有缺失；
-- IoTOS 作为物联网中台对南向设备只有 Server 的角色，没有 Client 的角色，但很多子系统往往提供的是 Server，因此在 IoTOS 和子系统之间必须有一个程序充当 Client 从子系统拉取数据并传到 IoTOS。
+
+- IoTOS 目前支持 MQTT、CoAP、LwM2M、HTTP 这四种协议，且认证方式要符合 IoTOS 的规定，但很多存量设备或者子系统使用了 TCP\UDP\WS
+  等协议，且认证方式多种多样，甚至连产品标识（对应 IoTOS 里的 PK）也有缺失；
+- IoTOS 作为物联网中台对南向设备只有 Server 的角色，没有 Client 的角色，但很多子系统往往提供的是 Server，因此在 IoTOS 和子系统之间必须有一个程序充当 Client
+  从子系统拉取数据并传到 IoTOS。
 
 本工程，即**软件网关**，作为 IoTOS 的配套组件，以开源形式提供，研发人员可以基于此代码进行二次开发解决以上2类问题。
 
@@ -31,34 +32,34 @@
 
 ![](pics/designInstruction.png)
 
-1. 设备接入环节
-软件网关中内置了 Server 能力，默认支持 TCP、UDP、HTTP 协议的接入。使用者需要自行实现上报数据的拆包/组包（当为 TCP 时）功能。
+1. 设备接入环节 软件网关中内置了 Server 能力，默认支持 TCP、UDP、HTTP 协议的接入。使用者需要自行实现上报数据的拆包/组包（当为 TCP 时）功能。
 
 同时软件网关也内置了 Client 能力，默认支持向子系统发起 TCP、UDP、HTTP 请求，从而实现与子系统的交互。
 
 开发者需要自行实现交互逻辑，还可以自行扩展实现更多协议的支持。
 
-2. 数据转码环节
-此环节需实现设备原始数据格式（即设备或子系统认识的数据格式）和 KLink （IoTOS 内置的标准数据格式，采用 JSON 标准）的互相转换，使用者需要自行实现 encode（原始数据转 KLink） 和 decode（KLink 转原始数据）这两个 interface。
+2. 数据转码环节 此环节需实现设备原始数据格式（即设备或子系统认识的数据格式）和 KLink （IoTOS 内置的标准数据格式，采用 JSON 标准）的互相转换，使用者需要自行实现
+   encode（原始数据转 KLink） 和 decode（KLink 转原始数据）这两个 interface。
 
-3. 与 IoTOS 交互环节
-软件网关使用 MQTT 协议实现与 IoTOS 的交互，使用者只需配置相关参数即可。
-
+3. 与 IoTOS 交互环节 软件网关使用 MQTT 协议实现与 IoTOS 的交互，使用者只需配置相关参数即可。
 
 IoTOS 与软件网关交互的数据中一定包含 PK 和 devID，若存量设备本身不含 PK 等标识信息，开发者则需自行完成映射。
 
 例如，子设备发送亮度状态值```light```为90，软件网关发送给 IoTOS 的数据格式如下：
+
 ```json
 {
   "action": "devSend",
   "msgId": 1,
-  "pk": "3276aa89d25a46b789c7987421396e05", /* 子设备PK */
-  "devId": "dev-001" /* 子设备ID */
+  "pk": "3276aa89d25a46b789c7987421396e05",
+  /* 子设备PK */
+  "devId": "dev-001"
+  /* 子设备ID */
   "data": {
     "cmd": "report",
     "params": {
-        "light":90
-        }
+      "light": 90
+    }
   }
 }
 ```
@@ -115,7 +116,8 @@ IoTOS 与软件网关交互的数据中一定包含 PK 和 devID，若存量设�
 ![](pics/operationSequence.png)
 
 **第一步：注册登录 IoTOS**
-因 IoTOS 以私有化部署为主，绝大部分情况下开发者可以 superadmin（即超级管理员）登录内网里部署的 IoTOS，本文以 [ IoTOS 体验站点](http://IoTOS-demo.hekr.me/)为例。
+因 IoTOS 以私有化部署为主，绝大部分情况下开发者可以 superadmin（即超级管理员）登录内网里部署的
+IoTOS，本文以 [ IoTOS 体验站点](http://IoTOS-demo.hekr.me/)为例。
 
 **第二步：创建软件网关产品及设备**
 进入产品中心-产品开发，点击“创建产品”，建立软件网关，“产品信息”栏目根据实际需求而定，“节点类型”和“联网与数据”栏目配置图如下：
@@ -158,7 +160,7 @@ IoTOS 与软件网关交互的数据中一定包含 PK 和 devID，若存量设�
 
 进入项目路径 `src/main/resources`，打开配置文件 `application.yml` 进行参数配置。
 
-配置文件可以参考 [application.yml](src/main/resources/application.yml) 以下配置项为软件网关配置的必填信息
+配置文件可以参考 [application.yml](subsystem/src/main/resources/application.yml) 以下配置项为软件网关配置的必填信息
 
 ```yaml
 # mqtt配置（必填）
@@ -196,8 +198,9 @@ gateway.devSecret: d10d6a46f6b5462b88f0d07207479bd2
 
 ## 业务开发
 
-上面演示中之所以子设备能够自动生成，是因为网关的远程配置功能。配置内容**每行**是一个 `json 对象`。其中 `pk` 、 `devId` 和 `devName` 分别是 IoTOS 平台上的子设备的 pk，devId 和设备名称，动态注册的时候会根据这3个属性进行注册。
-其他的属性根据子系统进行配置，比如子系统中唯一标识设备的属性叫做 `terminalId` ，则可以使用  `terminalId` 做映射；如果有其他也需要的属性可以一并添加。
+上面演示中之所以子设备能够自动生成，是因为网关的远程配置功能。配置内容**每行**是一个 `json 对象`。其中 `pk` 、 `devId` 和 `devName` 分别是 IoTOS
+平台上的子设备的 pk，devId 和设备名称，动态注册的时候会根据这3个属性进行注册。 其他的属性根据子系统进行配置，比如子系统中唯一标识设备的属性叫做 `terminalId`
+，则可以使用  `terminalId` 做映射；如果有其他也需要的属性可以一并添加。
 
 ### 子设备登录、登出
 
@@ -219,7 +222,8 @@ DeviceMapper 类做了设备映射关系；该关系是通过服务启动的时�
 主要方法有：
 
 - `public static Set<DeviceMapper> getAll()` 获取所有设备信息
-- `public static Optional<DeviceMapper> getByPkAndDevId(String pk, String devId)` 根据 pk 和 devId 获取设备信息
+- `public static Optional<DeviceMapper> getByPkAndDevId(String pk, String devId)` 根据 pk 和 devId
+  获取设备信息
 - `public static Optional<DeviceMapper> getBySubSystemProperties(Props p)` 根据子系统的设备属性获取设备信息
 - `public static String getStatus()` 获取状态信息
 - `public String getPk()` 获取设备的 pk
@@ -233,10 +237,15 @@ DeviceMapper 类做了设备映射关系；该关系是通过服务启动的时�
 
 实现类要加 `@Service("{CMD}SubsystemCommandService")`，其中 `{CMD}` 为 IoTOS 物模型命令。
 
-实现方法 `void handle(DeviceMapper deviceMapper, ModelData data)`；参数 `deviceMapper` 是控制的设备， `data` 是物模型信息，实际需要参考子产品定义的物模型。
+实现方法 `void handle(DeviceMapper deviceMapper, ModelData data)`；参数 `deviceMapper` 是控制的设备， `data`
+是物模型信息，实际需要参考子产品定义的物模型。
 
 ### 其他开发接口
 
-- `MqttDisConnectListener` mqtt 连接监听，可以参考 `CoreMqttConnectedListenerImpl` 实现；如果需要在软网关连接建立或者重连的时候进行业务处理，可以实现这个接口
-- `MqttDisConnectListener` mqtt 断开连接监听，可以参考 `CoreMqttDisConnectListenerImpl` 实现；如果需要在软网关连接断开的时候进行业务处理，可以实现这个接口
-- `TcpMessageListener` tcp server 消息处理
+- `MqttDisConnectListener` mqtt 连接监听，可以参考 `CoreMqttConnectedListenerImpl`
+  实现；如果需要在软网关连接建立或者重连的时候进行业务处理，可以实现这个接口
+- `MqttDisConnectListener` mqtt 断开连接监听，可以参考 `CoreMqttDisConnectListenerImpl`
+  实现；如果需要在软网关连接断开的时候进行业务处理，可以实现这个接口
+- `TcpMessageListener` tcp server 消息处理监听器
+- `CommonMessageListener` tcp client, udp client, udp server 消息处理监听器
+- `EventListener` 事件监听器
