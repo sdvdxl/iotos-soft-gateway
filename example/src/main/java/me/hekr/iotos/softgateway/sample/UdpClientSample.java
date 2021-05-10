@@ -9,6 +9,7 @@ import me.hekr.iotos.softgateway.network.udp.UdpClient;
  * @author iotos
  */
 public class UdpClientSample {
+  private static final boolean sync = true;
 
   public static void main(String[] args) {
     UdpClient<String> client = new UdpClient<>("localhost", UdpServerSample.BIND_PORT, 0);
@@ -18,9 +19,17 @@ public class UdpClientSample {
         });
     client.setPacketCoder(UdpServerSample.PACKET_CODER);
     client.setEnableNetLog(false);
+    client.setSync(sync);
+    // 同步模式设置超时时间
+    if (sync) {
+      client.setTimeout(3000);
+    }
     client.start();
     while (true) {
-      client.send("hello");
+      String resp = client.send("hello");
+      if (sync) {
+        System.out.println("收到回复: " + resp);
+      }
       ThreadUtil.sleep(1000);
     }
   }

@@ -13,6 +13,8 @@ import me.hekr.iotos.softgateway.network.tcp.TcpClient;
  * @author iotos
  */
 public class TcpClientSample {
+  private static final boolean sync = true;
+
   static PacketCoder<String> packetCoder =
       new PacketCoder<String>() {
         @Override
@@ -32,10 +34,19 @@ public class TcpClientSample {
     client.setPacketCoder(packetCoder);
     client.setMessageListener(
         ctx -> System.out.println("收到来自：" + ctx.getAddress() + " 的消息：" + ctx.getMessage()));
-    client.setTimeout(30000);
+    client.setSync(sync);
+    // 同步模式设置超时时间
+    if (sync) {
+      client.setTimeout(3000);
+    }
+    client.setConnectTimeout(3000);
+    client.setAutoReconnect(true);
     client.start();
     while (true) {
-      client.send("hello");
+      String resp = client.send("hello");
+      if (sync) {
+        System.out.println("收到回复: " + resp);
+      }
       ThreadUtil.sleep(1000);
     }
   }

@@ -1,5 +1,6 @@
 package me.hekr.iotos.softgateway.network.common.client;
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.socket.SocketRuntimeException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -35,11 +36,13 @@ public abstract class AbstractClient<T> {
   protected ClientMessageHandler<T> clientMessageHandler;
   protected Channel channel;
   /** 命令回复超时时间，毫秒 */
-  @Setter protected long timeout = 2000;
+  @Setter protected int timeout = 2000;
+  /** 连接超时，毫秒 */
+  @Setter protected int connectTimeout = 2000;
   /**
    * 是不是同步；true 同步模式，即发送消息后等待数据返回
    *
-   * @see #setTimeout(long) 超时时间
+   * @see #setTimeout(int) 超时时间
    */
   @Setter protected boolean sync;
 
@@ -49,6 +52,10 @@ public abstract class AbstractClient<T> {
   protected Class<? extends Channel> channelClass;
   /** 实现类传递 */
   protected ChannelDuplexHandler packetCoderHandler;
+
+  Bootstrap bootstrap;
+  /** true 自动重连，仅针对 tcp */
+  @Setter private boolean autoReconnect;
 
   private EventListener<T> eventListener;
 
@@ -105,13 +112,14 @@ public abstract class AbstractClient<T> {
 
     clientMessageHandler = new ClientMessageHandler<>(this, messageListener, eventListener, sync);
 
-    Bootstrap bootstrap = new Bootstrap();
+    bootstrap = new Bootstrap();
     eventLoop = new NioEventLoopGroup();
 
     bootstrap
         .group(eventLoop)
         .channel(channelClass)
         .option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT)
+        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, connectTimeout)
         .handler(
             new ChannelInitializer<Channel>() {
               @Override
@@ -131,7 +139,11 @@ public abstract class AbstractClient<T> {
       future = bootstrap.connect(host, port);
     }
 
-    channel = future.syncUninterruptibly().channel();
+    if (autoReconnect) {
+      loopConnect();
+    } else {
+      connect();
+    }
     log.info("start 成功");
   }
 
@@ -201,5 +213,33 @@ public abstract class AbstractClient<T> {
 
   public void setEventListener(EventListener<T> eventListener) {
     this.eventListener = eventListener;
+  }
+
+  /** 直到连接成功 */
+  protected void loopConnect() {
+    while (true) {
+      try {
+        connect();
+        return;
+      } catch (Exception e) {
+        log.error(e.getMessage(), e);
+        ThreadUtil.sleep(1000);
+      }
+    }
+  }
+
+  public boolean isConnected() {
+    return channel != null && channel.isActive();
+  }
+
+  protected synchronized void connect() {
+    log.info("尝试连接到 {}:{}", host, port);
+    if (isConnected()) {
+      log.info("已经连接成功");
+      return;
+    }
+    channel = bootstrap.connect(host, port).syncUninterruptibly().channel();
+
+    log.info("成功连接到 {}:{}", host, port);
   }
 }

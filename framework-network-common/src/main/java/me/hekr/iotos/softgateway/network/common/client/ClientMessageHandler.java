@@ -71,7 +71,13 @@ public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<Interna
 
   @Override
   public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-    PacketContext<T> packetContext = getPacketContext(ctx);
-    eventListener.onDisconnect(packetContext, CloseReason.SERVER_CLOSED);
+    try {
+      PacketContext<T> packetContext = getPacketContext(ctx);
+      eventListener.onDisconnect(packetContext, CloseReason.SERVER_CLOSED);
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    }
+
+    ctx.channel().eventLoop().execute(client::loopConnect);
   }
 }
