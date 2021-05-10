@@ -21,9 +21,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
-import me.hekr.iotos.softgateway.network.common.MessageListener;
 import me.hekr.iotos.softgateway.network.common.PacketCoder;
-import me.hekr.iotos.softgateway.network.common.PacketContext;
 
 /** @author iotos */
 @Slf4j
@@ -32,7 +30,7 @@ public abstract class AbstractClient<T> {
   public T result;
   @Setter protected boolean enableNetLog;
   protected EventLoopGroup eventLoop;
-  @Setter protected MessageListener<PacketContext<T>> messageListener;
+  @Setter protected CommonMessageListener<T> messageListener;
   protected ClientMessageHandler<T> clientMessageHandler;
   protected volatile Channel channel;
   /** 命令回复超时时间，毫秒 */

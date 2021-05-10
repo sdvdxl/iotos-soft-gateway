@@ -22,7 +22,7 @@
 
 软件网关可用于解决以下2类无法连接 IoTOS 的设备或子系统的情况：
 
-- 基于 TCP\UDP\HTTP 私有协议的设备或子系统；
+- 基于 TCP、UDP 和 HTTP 等私有协议的设备或子系统；
 - 自带上位机的软硬件一体系统，该类系统可能暴露如 HTTP、TCP、UDP、JDBC、ODBC 等各种接口对外提供数据。
 
 # 3. 简要设计说明
@@ -83,8 +83,7 @@ IoTOS 与软件网关交互的数据中一定包含 PK 和 devID，若存量设�
 - `framework-network-tcp` tcp 客户端和服务器
 - `framework-network-udp` udp 客户端和服务器
 - `subsystem` 子系统自定义功能实现部分，在这里开发，并运行 IoTGatewayApplication.java
-- `example` 示例代码，包含网络组件的使用方式
-- `README.md` 即本文件，说明文档
+- `example` 示例代码，包含网络组件的使用方式使用的时候先启动对应的 server，再启动对应的 client
 - `subsystem/src/main/resources/application.yml` 服务配置文件
 
 ## 功能封装
@@ -96,12 +95,16 @@ IoTOS 与软件网关交互的数据中一定包含 PK 和 devID，若存量设�
 - 命令发送和接收
 - 子设备注册和添加拓扑
 - 远程配置，自动更新本地映射关系
+- 简易客户端（包括 udp，tcp）
+- 简易服务端（包括 udp，tcp）
 
 ## 功能开放
 
 - IoTOS 平台交互： KlinkService 类
 - mqtt 连接监听 MqttDisConnectListener 类
 - mqtt 断开连接监听 MqttDisConnectListener 类
+- server 消息回调，事件回调
+- client 自动重连，异步、同步消息处理
 
 ## 基本使用
 
@@ -236,4 +239,4 @@ DeviceMapper 类做了设备映射关系；该关系是通过服务启动的时�
 
 - `MqttDisConnectListener` mqtt 连接监听，可以参考 `CoreMqttConnectedListenerImpl` 实现；如果需要在软网关连接建立或者重连的时候进行业务处理，可以实现这个接口
 - `MqttDisConnectListener` mqtt 断开连接监听，可以参考 `CoreMqttDisConnectListenerImpl` 实现；如果需要在软网关连接断开的时候进行业务处理，可以实现这个接口
-
+- `TcpMessageListener` tcp server 消息处理

@@ -26,7 +26,7 @@ public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<Interna
 
   public ClientMessageHandler(
       AbstractClient<T> client,
-      MessageListener<PacketContext<T>> messageListener,
+      CommonMessageListener<T> messageListener,
       EventListener<T> eventListener,
       boolean sync) {
     this.client = client;
