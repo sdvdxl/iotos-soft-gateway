@@ -249,3 +249,8 @@ DeviceMapper 类做了设备映射关系；该关系是通过服务启动的时�
 - `TcpMessageListener` tcp server 消息处理监听器
 - `CommonMessageListener` tcp client, udp client, udp server 消息处理监听器
 - `EventListener` 事件监听器
+
+### 打包
+
+开发完成后，将网关和子设备产品导出，（如果有其他文件也可以）放到 docs 文件夹下，
+执行命令 `mvn clean package -Dmaven.test.skip=true` 会打包 jar 并将 README，docs 文件夹下的文件一并打包成 zip，生产的文件在 `subsystem/target` 目录下。
