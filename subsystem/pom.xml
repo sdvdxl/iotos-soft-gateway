@@ -4,7 +4,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>iotos-soft-gateway</artifactId>
-    <groupId>me.hekr</groupId>
+    <groupId>me.hekr.iotos.softgateway</groupId>
     <version>0.0.1</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -18,8 +18,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>me.hekr</groupId>
-      <artifactId>iotos-soft-gateway-framework</artifactId>
+      <groupId>me.hekr.iotos.softgateway</groupId>
+      <artifactId>framework-core</artifactId>
       <version>0.0.1</version>
     </dependency>
   </dependencies>
