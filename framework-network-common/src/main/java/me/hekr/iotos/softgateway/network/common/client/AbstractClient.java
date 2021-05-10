@@ -34,7 +34,7 @@ public abstract class AbstractClient<T> {
   protected EventLoopGroup eventLoop;
   @Setter protected MessageListener<PacketContext<T>> messageListener;
   protected ClientMessageHandler<T> clientMessageHandler;
-  protected Channel channel;
+  protected volatile Channel channel;
   /** 命令回复超时时间，毫秒 */
   @Setter protected int timeout = 2000;
   /** 连接超时，毫秒 */
@@ -163,7 +163,7 @@ public abstract class AbstractClient<T> {
 
   protected T doSend(InternalPacket<T> internalPacket)
       throws InterruptedException, TimeoutException {
-    if (!channel.isOpen()) {
+    if (!channel.isActive()) {
       throw new SocketRuntimeException("closed");
     }
 
