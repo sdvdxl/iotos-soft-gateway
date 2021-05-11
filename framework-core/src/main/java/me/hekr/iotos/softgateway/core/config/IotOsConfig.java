@@ -6,12 +6,14 @@ import lombok.SneakyThrows;
 import me.hekr.iotos.softgateway.core.constant.Constants;
 import me.hekr.iotos.softgateway.core.utils.ParseUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * @author iotos
  * @date 2020/7/9
  */
+@ComponentScan("me.hekr.iotos.softgateway.core")
 @Configuration
 public class IotOsConfig {
   @Getter private MqttConfig mqttConfig;
@@ -34,34 +36,6 @@ public class IotOsConfig {
 
   @Value("${gateway.devSecret}")
   private String gatewayDevSecret;
-
-  @Value("${tcp.client.connect.ip}")
-  @Getter
-  private String tcpConnectIp;
-
-  @Value("${tcp.client.connect.port}")
-  @Getter
-  private int tcpConnectPort;
-
-  @Value("${tcp.server.port}")
-  @Getter
-  private int tcpServerPort;
-
-  @Value("${http.client.connect.host}")
-  @Getter
-  private String httpUrl;
-
-  @Value("${http.client.connect.aid}")
-  @Getter
-  private String aid;
-
-  @Value("${http.client.connect.key}")
-  @Getter
-  private String key;
-
-  @Value("${http.server.port}")
-  @Getter
-  private int httpPort;
 
   @PostConstruct
   public void init() {

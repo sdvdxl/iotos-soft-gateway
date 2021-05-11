@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 /** @author iotos */
 @SuppressWarnings("AlibabaClassNamingShouldBeCamel")
-@SpringBootApplication(scanBasePackages = "me.hekr.iotos.softgateway")
+@SpringBootApplication
 @EnableScheduling
 public class IoTGatewayApplication {
 
