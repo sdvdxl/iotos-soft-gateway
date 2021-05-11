@@ -1,5 +1,6 @@
 package me.hekr.iotos.softgateway.core.network.mqtt;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -72,18 +73,22 @@ public class MqttCallBackImpl implements MqttCallback {
 
   @Override
   public void deliveryComplete(IMqttDeliveryToken token) {
-    log.info("delivery Complete:" + token.isComplete());
+    if (log.isTraceEnabled()) {
+      log.trace("delivery Complete:" + token.isComplete());
+    }
   }
 
   @Override
-  public void messageArrived(String topic, MqttMessage message) throws Exception {
-    log.info("-------------------------------------------------");
-    log.info("接收消息主题 : " + topic);
-    log.info("接收消息Qos : " + message.getQos());
-    log.info("接收消息内容 : " + new String(message.getPayload()));
-    log.info("-------------------------------------------------");
-    String payload = new String(message.getPayload());
+  public void messageArrived(String topic, MqttMessage message) {
+    if (log.isDebugEnabled()) {
+      log.debug(
+          "收到 mqtt 消息,topic: {}, qos:{} ,消息: {}",
+          topic,
+          message.getQos(),
+          new String(message.getPayload(), StandardCharsets.UTF_8));
+    }
 
+    String payload = new String(message.getPayload());
     KlinkDev klinkDev = JsonUtil.fromJson(payload, KlinkDev.class);
     Action action = Action.of(klinkDev.getAction());
     klinkProcessorManager.handle(topic, message, action);
