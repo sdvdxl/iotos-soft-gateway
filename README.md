@@ -87,6 +87,8 @@ IoTOS 与软件网关交互的数据中一定包含 PK 和 devID，若存量设�
 - `example` 示例代码，包含网络组件的使用方式使用的时候先启动对应的 server，再启动对应的 client
 - `subsystem/src/main/resources/application.yml` 服务配置文件
 
+其中 core 是必须的， tcp 和 udp 模块按需加载。
+
 ## 功能封装
 
 框架封装了软网关设备和 IoTOS 平台的交互过程，包括：
@@ -255,3 +257,5 @@ DeviceMapper 类做了设备映射关系；该关系是通过服务启动的时�
 修改对应的 模块版本号，然后 执行
 
 `mvn deploy -DaltDeploymentRepository=hekr-maven::default::file:maven/repository/`
+
+执行完成后，提交到 gitee 上。

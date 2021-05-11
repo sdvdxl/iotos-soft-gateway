@@ -177,8 +177,8 @@ public class MqttService {
 
     client.publish(
         iotOsConfig.getGatewayConfig().getUpTopic(), new MqttMessage(JsonUtil.toBytes(message)));
-    if (log.isInfoEnabled()) {
-      log.info("发送消息成功：{}", JsonUtil.toJson(message));
+    if (log.isTraceEnabled()) {
+      log.trace("发送消息成功：{}", JsonUtil.toJson(message));
     }
   }
 

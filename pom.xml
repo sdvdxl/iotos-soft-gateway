@@ -5,7 +5,6 @@
   <modelVersion>4.0.0</modelVersion>
   <packaging>pom</packaging>
   <modules>
-    <module>subsystem</module>
     <module>framework-core</module>
     <module>framework-network-udp</module>
     <module>framework-network-tcp</module>
