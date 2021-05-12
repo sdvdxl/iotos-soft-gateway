@@ -18,7 +18,7 @@ import me.hekr.iotos.softgateway.core.klink.DevLogin;
 import me.hekr.iotos.softgateway.core.klink.DevLogout;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
 import me.hekr.iotos.softgateway.core.network.mqtt.listener.MqttConnectedListener;
-import me.hekr.iotos.softgateway.core.utils.JsonUtil;
+import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;

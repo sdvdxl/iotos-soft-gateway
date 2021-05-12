@@ -10,11 +10,9 @@ import me.hekr.iotos.softgateway.network.common.CloseReason;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.MessageListener;
 import me.hekr.iotos.softgateway.network.common.PacketContext;
-import org.springframework.stereotype.Service;
 
 /** @author iotos */
 @Sharable
-@Service
 @Slf4j
 public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<InternalPacket<T>> {
   private static final AttributeKey<PacketContext<?>> PACKET_CONTEXT =

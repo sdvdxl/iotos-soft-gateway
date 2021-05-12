@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.Klink;
-import me.hekr.iotos.softgateway.core.utils.JsonUtil;
+import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.stereotype.Service;
 

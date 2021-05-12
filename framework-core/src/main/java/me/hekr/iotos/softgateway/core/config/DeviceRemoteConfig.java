@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.core.utils.JsonUtil;
+import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
 
 /** @author iotos */
