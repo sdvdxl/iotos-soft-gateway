@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public class DeviceRemoteConfig implements Serializable {
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
+  private static volatile boolean init = false;
   private Map<String, Object> data = new HashMap<>();
   /** 在线状态 */
   private volatile boolean online;
@@ -123,6 +124,15 @@ public class DeviceRemoteConfig implements Serializable {
 
   public static boolean isEmpty() {
     return getAll().isEmpty();
+  }
+
+  public static void init() {
+    log.info("远程配置映射关系初始化完成");
+    init = true;
+  }
+
+  public static boolean isInit() {
+    return init;
   }
 
   public void setOnline() {

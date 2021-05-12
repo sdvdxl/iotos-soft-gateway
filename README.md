@@ -167,3 +167,14 @@ DeviceRemoteConfig 类做了设备映射关系；该关系是通过服务启动�
 `./deploy.sh`
 
 执行完成后，提交到 gitee 上。
+
+如果紧紧是提交代码，可以使用命令：
+
+```shell
+git add -A
+git reset maven
+git commi -m '提交消息'
+git push
+```
+
+或者直接使用 ide 的 git 操作。

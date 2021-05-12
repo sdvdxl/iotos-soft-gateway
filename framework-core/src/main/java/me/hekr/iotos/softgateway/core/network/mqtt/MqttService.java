@@ -176,6 +176,10 @@ public class MqttService {
       }
       KlinkDev msg;
       try {
+        if (!DeviceRemoteConfig.isInit()) {
+          log.warn("远程配置映射关系尚未初始化完成，等待初始化");
+          ThreadUtil.sleep(1000);
+        }
         msg = queue.take();
       } catch (InterruptedException ignored) {
         Thread.currentThread().interrupt();

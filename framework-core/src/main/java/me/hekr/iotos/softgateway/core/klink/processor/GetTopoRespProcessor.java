@@ -29,6 +29,7 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
   }
 
   private void handleTopo(GetTopoResp klink) {
+
     List<Dev> topoDevices = klink.getSubs();
     Set<DeviceRemoteConfig> all = DeviceRemoteConfig.getAll();
     // 查找拓扑中存在，但是配置中不存在的设备，删除拓扑关系
@@ -50,6 +51,7 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
     }
 
     log.info("设备同步完成");
+    DeviceRemoteConfig.init();
   }
 
   @Override
