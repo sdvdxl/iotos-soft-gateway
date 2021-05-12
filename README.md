@@ -162,8 +162,8 @@ DeviceRemoteConfig 类做了设备映射关系；该关系是通过服务启动�
 
 ### 发布
 
-修改对应的 模块版本号，然后 执行
+修改deploy.sh 文件中的版本号，然后 执行
 
-`mvn deploy -DaltDeploymentRepository=hekr-maven::default::file:maven/repository/`
+`./deploy.sh`
 
 执行完成后，提交到 gitee 上。

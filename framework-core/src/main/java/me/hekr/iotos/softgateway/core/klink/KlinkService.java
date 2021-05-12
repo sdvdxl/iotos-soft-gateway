@@ -171,7 +171,7 @@ public class KlinkService {
    * <p>如果找不到 mapper，则打印日志，不会真实发送数据
    */
   @SneakyThrows
-  public void sendKlink(DeviceMapper mapper, Klink klink) {
+  public void sendKlink(DeviceMapper mapper, KlinkDev klink) {
     Optional<DeviceRemoteConfig> devMapper = getDeviceMapper(mapper);
     if (!devMapper.isPresent()) {
       return;
@@ -186,7 +186,7 @@ public class KlinkService {
 
   /** 发送数据，比较底层的发送方法，需要自己构造 klink */
   @SneakyThrows
-  public void sendKlink(Klink klink) {
+  public void sendKlink(KlinkDev klink) {
     mqttService.publish(klink);
   }
 
@@ -237,6 +237,7 @@ public class KlinkService {
       return;
     }
     DeviceRemoteConfig dev = devMapper.get();
+
     devLogin(dev.getPk(), dev.getDevId());
   }
 
