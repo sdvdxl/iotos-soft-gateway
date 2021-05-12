@@ -1,5 +1,3 @@
-// FIXME 补充 udp，tcp 客户端使用方法，demo // 补充 udp server， tcp server // 补充mqtt server // 补充 mqtt client
-
 # 1. 背景
 
 目前有两类情况可能会导致设备或子系统无法连接至 IoTOS：
@@ -111,99 +109,6 @@ IoTOS 与软件网关交互的数据中一定包含 PK 和 devID，若存量设�
 
 ## 基本使用
 
-**本软网关封装功能依赖于IoTOS 平台的网关的远程配置功能。**
-
-使用者操作流程如下（黄色部分是与软件网关相关的步骤）：
-
-![](pics/operationSequence.png)
-
-**第一步：注册登录 IoTOS**
-因 IoTOS 以私有化部署为主，绝大部分情况下开发者可以 superadmin（即超级管理员）登录内网里部署的
-IoTOS，本文以 [ IoTOS 体验站点](http://IoTOS-demo.hekr.me/)为例。
-
-**第二步：创建软件网关产品及设备**
-进入产品中心-产品开发，点击“创建产品”，建立软件网关，“产品信息”栏目根据实际需求而定，“节点类型”和“联网与数据”栏目配置图如下：
-
-![](pics/addProdGateway1.png)
-
-![](pics/addProdGateway2.png)
-
-进入产品中心-设备管理，点击“创建设备”，其中设备 ID 后续会在软件网关代码里使用，取名方法根据实际需求而定。
-
-![](pics/addDevGateway.png)
-
-**第三步：创建子设备产品及设备**
-进入产品中心-产品开发，点击“创建产品”，“产品信息”栏目根据实际需求而定，“节点类型”和“联网与数据”栏目配置图如下：
-
-![](pics/addProdSub1.png)
-
-![](pics/addProdSub2.png)
-
-若使用者要求规范设备 ID，建议进入产品中心-设备管理，点击“批量添加”，使用表格模板实现批量导入。
-
-![](pics/batchImportSub.png)
-
-*注：此时软件网关的数据转码环节中子设备 ID 和表格应一一对应。*
-
-**第四步：查看并记录网关以及子设备信息**
-进入产品中心-设备管理，点击软件网关的右侧“查看”按钮。
-
-![](pics/viewGateway1.png)
-
-获取到软件网关 PK、设备 ID 和 devSecret。
-
-![](pics/viewGateway2.png)
-
-然后以相同的方式获取到子设备的产品 PK、设备 ID。
-
-**第五步：获取并配置网关设备信息**
-进入 IoTOS -产品中心-产品开发，点击上一步创建的软件网关产品，可以获取到 MQTT 接入方式信息，以此为 HOST 值。
-![](pics/getGatewayInfo.png)
-
-进入项目路径 `src/main/resources`，打开配置文件 `application.yml` 进行参数配置。
-
-配置文件可以参考 [application.yml](subsystem/src/main/resources/application.yml) 以下配置项为软件网关配置的必填信息
-
-```yaml
-# mqtt配置（必填）
-# 进入产品中心-产品开发-软件网关，"MQTT接入方式"栏目即可查询
-connect.mqtt.endpoint: 106.75.50.110:1883
-# 软件网关的产品pk，进入产品中心-设备管理-软件网关，"产品pk"栏目即可查询
-gateway.pk: fc5dbdd26fee4688a6ab35b63a294cc1
-# 软件网关的设备id，进入产品中心-设备管理-软件网关，"设备id"栏目即可查询
-gateway.devId: gatewaydemo
-# 软件网关的设备密钥，进入产品中心-设备管理-软件网关，"devSecret"栏目点击"复制"按钮即可查询
-gateway.devSecret: d10d6a46f6b5462b88f0d07207479bd2
-```
-
-**第六步：程序运行**
-
-进入项目路径并打开入口程序 [IoTGatewayApplication](src/main/java/me/hekr/iotos/softgateway/IoTGatewayApplication.java)
-
-运行成功后，打开 IoTOS 平台，查看这个网关设备，可以看到设备已经在线，查看 `上下行数据`，可以查看网关设备发送的数据。
-
-**第六步：添加子设备**
-
-打开网关产品的 `远程配置` 标签，选择该网关设备，然后添加如下内容，其中 `子设备 pk` 内容改为上面自己创建的子设备的产品 pk。
-
-```text
-{"pk":"子设备 pk","devId":"demo_subsystem_001","subsystemTerminal":"0001","devName":"demo子系统终端001"}
-{"pk":"子设备 pk","devId":"demo_subsystem_002","subsystemTerminal":"0002","devName":"demo子系统终端002"}
-```
-
-![](pics/gatewayRemoteConfig.jpg)
-
-添加成功后刷新 IoTOS 平台设备列表，可以看到添加了2个新的子设备；但是子设备没有在线，这个需要配合自己的业务进行处理，会在下面进行说明。
-
-可以尝试修改远程配置的内容，删除第一条记录，保存并启用后，查看网关设备的子设备列表，会发现设备列表中只存在一个子设备了。
-![](pics/gatewayRemoteConfigSubDevices.jpg)
-
-## 业务开发
-
-上面演示中之所以子设备能够自动生成，是因为网关的远程配置功能。配置内容**每行**是一个 `json 对象`。其中 `pk` 、 `devId` 和 `devName` 分别是 IoTOS
-平台上的子设备的 pk，devId 和设备名称，动态注册的时候会根据这3个属性进行注册。 其他的属性根据子系统进行配置，比如子系统中唯一标识设备的属性叫做 `terminalId`
-，则可以使用  `terminalId` 做映射；如果有其他也需要的属性可以一并添加。
-
 ### 子设备登录、登出
 
 调用 `KlinkService#devLogin` 方法可以使子设备在线；`devLogout` 则可以使子设备离线。
@@ -212,34 +117,37 @@ gateway.devSecret: d10d6a46f6b5462b88f0d07207479bd2
 
 发送的业务数据的字段需要在产品的[物模型](http://hy.hekr.me/iot-docs-test/web/content/%E8%AE%BE%E5%A4%87%E6%8E%A5%E5%85%A5/%E7%89%A9%E6%A8%A1%E5%9E%8B.html)中定义，并且定义相应的命令。
 
-发送数据使用方法： `KlinkService#devSend`。该方法重载了2个方法：
+发送数据使用方法： `KlinkService#devSend`。该方法重载了几个方法：
 
 - `public void devSend(String pk, String devId, String cmd)` 可以只发送命令
 - `public void devSend(String pk, String devId, String cmd, Map<String, Object> params)` 发送命令和参数
+- `public void devSend(DeviceMapper mapper, ModelData data)` 直接使用 DeviceMapper 发送数据
 
 #### 设备映射
 
-DeviceMapper 类做了设备映射关系；该关系是通过服务启动的时候自动获取远程配置或者主动更新远程配置来做映射的。
+DeviceRemoteConfig 类做了设备映射关系；该关系是通过服务启动的时候自动获取远程配置或者主动更新远程配置来做映射的。
 
 主要方法有：
 
-- `public static Set<DeviceMapper> getAll()` 获取所有设备信息
-- `public static Optional<DeviceMapper> getByPkAndDevId(String pk, String devId)` 根据 pk 和 devId
+- `public static Set<DeviceRemoteConfig> getAll()` 获取所有设备信息
+- `public static Optional<DeviceRemoteConfig> getByPkAndDevId(String pk, String devId)` 根据 pk 和 devId
   获取设备信息
-- `public static Optional<DeviceMapper> getBySubSystemProperties(Props p)` 根据子系统的设备属性获取设备信息
+- `public static Optional<DeviceRemoteConfig> getBySubSystemProperties(Props p)` 根据子系统的设备属性获取设备信息
 - `public static String getStatus()` 获取状态信息
 - `public String getPk()` 获取设备的 pk
 - `public String getDevId()` 获取设备的 devId
 - `public String getDevName()` 获取设备的名字
 - `public <T> T getProp(String prop)` 根据属性名字获取设备属性值，注意远程配置中数据类型
 
+你还可以实现 `DeviceMapper` 接口，直接将属性绑定到接口上，这样就可以用类似 `devSend(DeviceMapper mapper, ModelData data)` 的方法进行发送数据，而无需每次都要手动匹配设备。
+
 ### 下发命令处理
 
 框架封装了下发命令处理过程，只需要实现 `SubsystemCommandService` 接口并根据要求定义成 Spring 的 bean 即可，Bean要求：
 
-实现类要加 `@Service("{CMD}@SubSystemCommandService")`，其中 `{CMD}` 为 IoTOS 物模型命令。
+实现类要加 `@Service("{CMD}"+Constants.CMD_BEAN_SUFFIX)`，其中 `{CMD}` 为 IoTOS 物模型命令。
 
-实现方法 `void handle(DeviceMapper deviceRemoteConfig, ModelData data)`；参数 `deviceRemoteConfig` 是控制的设备， `data`
+实现方法 `void handle(DeviceRemoteConfig deviceRemoteConfig, ModelData data)`；参数 `deviceRemoteConfig` 是控制的设备， `data`
 是物模型信息，实际需要参考子产品定义的物模型。
 
 ### 其他开发接口
