@@ -11,9 +11,10 @@ import me.hekr.iotos.softgateway.core.config.GatewayConfig;
 import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.constant.Constants;
 import me.hekr.iotos.softgateway.core.dto.DeviceMapper;
+import me.hekr.iotos.softgateway.core.enums.Action;
+import me.hekr.iotos.softgateway.core.enums.ErrorCode;
 import me.hekr.iotos.softgateway.core.network.mqtt.MqttService;
 import me.hekr.iotos.softgateway.core.utils.ParseUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -177,10 +178,8 @@ public class KlinkService {
       return;
     }
     DeviceRemoteConfig dev = devMapper.get();
-    KlinkDev klinkDev = new KlinkDev();
-    BeanUtils.copyProperties(klink, klinkDev);
-    klinkDev.setPk(dev.getPk());
-    klinkDev.setDevId(dev.getDevId());
+    klink.setPk(dev.getPk());
+    klink.setDevId(dev.getDevId());
     mqttService.publish(klink);
   }
 
@@ -272,5 +271,17 @@ public class KlinkService {
     }
 
     return subsystemDev;
+  }
+
+  public void sendCloudSendResp(DeviceMapper mapper, int code, String desc) {
+    KlinkResp resp = new KlinkResp();
+    resp.setCode(code);
+    resp.setDesc(desc);
+    resp.setAction(Action.CLOUD_SEND_RESP.getAction());
+    sendKlink(mapper, resp);
+  }
+
+  public void sendCloudSendResp(DeviceMapper mapper, ErrorCode errorCode) {
+    sendCloudSendResp(mapper, errorCode.getCode(), errorCode.getDesc());
   }
 }

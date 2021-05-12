@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
@@ -11,6 +12,7 @@ import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.Dev;
 import me.hekr.iotos.softgateway.core.klink.GetTopoResp;
 import me.hekr.iotos.softgateway.core.klink.KlinkService;
+import me.hekr.iotos.softgateway.core.listener.DeviceRemoteConfigListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +23,13 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class GetTopoRespProcessor implements Processor<GetTopoResp> {
+  private final AtomicBoolean firstBefore = new AtomicBoolean(false);
+  private final AtomicBoolean firstAfter = new AtomicBoolean(false);
+
   @Autowired private KlinkService klinkService;
+
+  @Autowired(required = false)
+  private List<DeviceRemoteConfigListener> deviceRemoteConfigListeners;
 
   @Override
   public void handle(GetTopoResp klink) {
@@ -29,7 +37,15 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
   }
 
   private void handleTopo(GetTopoResp klink) {
-
+    if (deviceRemoteConfigListeners != null) {
+      for (DeviceRemoteConfigListener listener : deviceRemoteConfigListeners) {
+        if (!firstBefore.get()) {
+          listener.firstBefore();
+          firstBefore.set(true);
+        }
+        listener.before();
+      }
+    }
     List<Dev> topoDevices = klink.getSubs();
     Set<DeviceRemoteConfig> all = DeviceRemoteConfig.getAll();
     // 查找拓扑中存在，但是配置中不存在的设备，删除拓扑关系
@@ -51,7 +67,16 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
     }
 
     log.info("设备同步完成");
-    DeviceRemoteConfig.init();
+    if (deviceRemoteConfigListeners != null) {
+
+      for (DeviceRemoteConfigListener listener : deviceRemoteConfigListeners) {
+        if (!firstAfter.get()) {
+          listener.firstAfter();
+          firstAfter.set(true);
+        }
+        listener.after();
+      }
+    }
   }
 
   @Override

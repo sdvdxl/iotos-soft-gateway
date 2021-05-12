@@ -176,10 +176,6 @@ public class MqttService {
       }
       KlinkDev msg;
       try {
-        if (!DeviceRemoteConfig.isInit()) {
-          log.warn("远程配置映射关系尚未初始化完成，等待初始化");
-          ThreadUtil.sleep(1000);
-        }
         msg = queue.take();
       } catch (InterruptedException ignored) {
         Thread.currentThread().interrupt();
@@ -198,17 +194,21 @@ public class MqttService {
         doPublish(klink);
 
         // 发送成功，如果是发送在线，则设置为在线
-        DeviceRemoteConfig dev = DeviceRemoteConfig.getByPkAndDevId(pk, devId).get();
+        // 网关本身不做处理
+        if (!iotOsConfig.getGatewayConfig().getPk().equals(pk)) {
+          DeviceRemoteConfig dev = DeviceRemoteConfig.getByPkAndDevId(pk, devId).get();
 
-        if (klink instanceof DevLogin) {
-          dev.setOnline();
-          return;
-        }
+          if (klink instanceof DevLogin) {
+            dev.setOnline();
+            return;
+          }
 
-        if (klink instanceof DevLogout && dev.isOffline()) {
-          dev.setOffline();
-          return;
+          if (klink instanceof DevLogout && dev.isOffline()) {
+            dev.setOffline();
+            return;
+          }
         }
+        break;
       } catch (MqttException e) {
         log.error("mqtt发布报错：" + e.getMessage() + ",第 " + (i + 1) + "次重试", e);
         ThreadUtil.sleep(1000);

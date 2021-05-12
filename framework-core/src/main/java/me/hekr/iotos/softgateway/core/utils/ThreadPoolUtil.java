@@ -7,6 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor.DiscardOldestPolicy;
@@ -27,6 +28,16 @@ public class ThreadPoolUtil implements Closeable {
   private static final int CORES = Runtime.getRuntime().availableProcessors();
   private static final ConcurrentHashMap<String, ThreadPoolExecutor>
       THREAD_POOL_EXECUTOR_CONCURRENT_HASH_MAP = new ConcurrentHashMap<>();
+
+  public static final ScheduledExecutorService DEFAULT_SCHEDULED =
+      (ScheduledExecutorService)
+          new Builder()
+              .setPrefix("spring-schedule")
+              .setCore(CORES * 4)
+              .setMax(32)
+              .setQueueSize(1000)
+              .setScheduled(true)
+              .build();
 
   static {
     final StringBuilder message = new StringBuilder();
