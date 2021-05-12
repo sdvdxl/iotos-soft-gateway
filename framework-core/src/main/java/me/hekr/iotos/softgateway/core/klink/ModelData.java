@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
 
@@ -18,8 +19,26 @@ public class ModelData implements Serializable {
   @JsonInclude(Include.NON_NULL)
   private Map<String, Object> params;
 
+  public static ModelData cmd(String cmd) {
+    ModelData modelData = new ModelData();
+    modelData.setCmd(cmd);
+    return modelData;
+  }
+
   public Map<String, Object> getParams() {
     return params == null ? Collections.emptyMap() : params;
+  }
+
+  public <T> T getParam(String param) {
+    return params == null ? null : (T) params.get(param);
+  }
+
+  public ModelData param(String param, Object value) {
+    if (params == null) {
+      params = new HashMap<>(10);
+    }
+    params.put(param, value);
+    return this;
   }
 
   @Override
