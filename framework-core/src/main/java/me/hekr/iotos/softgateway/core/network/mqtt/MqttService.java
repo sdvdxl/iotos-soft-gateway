@@ -174,11 +174,12 @@ public class MqttService {
         } catch (InterruptedException ignored) {
         }
       }
-      KlinkDev msg = null;
+      KlinkDev msg;
       try {
         msg = queue.take();
       } catch (InterruptedException ignored) {
         Thread.currentThread().interrupt();
+        continue;
       }
       trySend(msg);
     }
