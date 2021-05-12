@@ -4,8 +4,8 @@
   <artifactId>framework-common-utils</artifactId>
   <versioning>
     <versions>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.1-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20210512160936</lastUpdated>
+    <lastUpdated>20210512161117</lastUpdated>
   </versioning>
 </metadata>

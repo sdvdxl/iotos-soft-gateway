@@ -4,8 +4,8 @@
   <artifactId>example</artifactId>
   <versioning>
     <versions>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.1-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20210512160940</lastUpdated>
+    <lastUpdated>20210512161120</lastUpdated>
   </versioning>
 </metadata>
