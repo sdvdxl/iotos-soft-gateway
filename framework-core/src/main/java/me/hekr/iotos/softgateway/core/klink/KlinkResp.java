@@ -12,11 +12,9 @@ import me.hekr.iotos.softgateway.core.enums.ErrorCode;
 @ToString(callSuper = true)
 @Getter
 @Setter
-public class KlinkResp extends Klink {
+public class KlinkResp extends KlinkDev {
 
   private static final long serialVersionUID = -4341021820638489039L;
-  protected String pk;
-  protected String devId;
   protected int code;
 
   @JsonInclude(Include.NON_NULL)

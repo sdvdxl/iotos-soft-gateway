@@ -20,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 public class DeviceRemoteConfig implements Serializable {
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
   private Map<String, Object> data = new HashMap<>();
+  /** 在线状态 */
+  private volatile boolean online;
 
   private DeviceRemoteConfig() {}
 
@@ -121,6 +123,22 @@ public class DeviceRemoteConfig implements Serializable {
 
   public static boolean isEmpty() {
     return getAll().isEmpty();
+  }
+
+  public void setOnline() {
+    online = true;
+  }
+
+  public void setOffline() {
+    online = false;
+  }
+
+  public boolean isOffline() {
+    return !isOnline();
+  }
+
+  public boolean isOnline() {
+    return online;
   }
 
   @Override

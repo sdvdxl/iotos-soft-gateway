@@ -2,6 +2,7 @@ package me.hekr.iotos.softgateway.core.network.mqtt;
 
 import cn.hutool.core.thread.ThreadUtil;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -10,8 +11,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.config.MqttConfig;
+import me.hekr.iotos.softgateway.core.klink.DevLogin;
+import me.hekr.iotos.softgateway.core.klink.DevLogout;
+import me.hekr.iotos.softgateway.core.klink.KlinkDev;
 import me.hekr.iotos.softgateway.core.network.mqtt.listener.MqttConnectedListener;
 import me.hekr.iotos.softgateway.core.utils.JsonUtil;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -33,7 +38,7 @@ import org.springframework.stereotype.Component;
 public class MqttService {
   private static final int MAX_RETRY_COUNT = 3;
   private final IotOsConfig iotOsConfig;
-  private final BlockingQueue<Object> queue = new ArrayBlockingQueue<>(1000);
+  private final BlockingQueue<KlinkDev> queue = new ArrayBlockingQueue<>(1000);
   private final ExecutorService publishExecutor =
       Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("publishExecutor", false));
   private final AtomicInteger connectConut = new AtomicInteger();
@@ -129,10 +134,31 @@ public class MqttService {
     }
   }
 
-  /** @param message 消息，发送的时候会被 toJson */
+  /** @param klink 消息，发送的时候会被 toJson */
   @SneakyThrows
-  public void publish(Object message) {
-    queue.add(message);
+  public void publish(KlinkDev klink) {
+    String pk = klink.getPk();
+    String devId = klink.getDevId();
+    Optional<DeviceRemoteConfig> byPkAndDevId = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
+    // 网关本身不做处理
+    if (!iotOsConfig.getGatewayConfig().getPk().equals(pk)) {
+      if (!byPkAndDevId.isPresent()) {
+        log.warn("没找到设备，pk:{}, devId:{}", pk, devId);
+        return;
+      }
+      DeviceRemoteConfig dev = byPkAndDevId.get();
+      if (klink instanceof DevLogin && dev.isOnline()) {
+        log.info("设备已经是在线状态 {}", dev);
+        return;
+      }
+
+      if (klink instanceof DevLogout && dev.isOffline()) {
+        log.info("设备已经是离线状态 {}", dev);
+        return;
+      }
+    }
+
+    queue.add(klink);
   }
 
   public boolean isDisconnected() {
@@ -148,24 +174,46 @@ public class MqttService {
         } catch (InterruptedException ignored) {
         }
       }
-      Object msg = null;
+      KlinkDev msg;
       try {
         msg = queue.take();
       } catch (InterruptedException ignored) {
+        Thread.currentThread().interrupt();
+        continue;
       }
       trySend(msg);
     }
   }
 
-  private void trySend(Object msg) {
+  private void trySend(KlinkDev klink) {
+    String pk = klink.getPk();
+    String devId = klink.getDevId();
     // 报错就重试
     for (int i = 0; i < MAX_RETRY_COUNT; i++) {
       try {
-        doPublish(msg);
+        doPublish(klink);
+
+        // 发送成功，如果是发送在线，则设置为在线
+        // 网关本身不做处理
+        if (!iotOsConfig.getGatewayConfig().getPk().equals(pk)) {
+          DeviceRemoteConfig dev = DeviceRemoteConfig.getByPkAndDevId(pk, devId).get();
+
+          if (klink instanceof DevLogin) {
+            dev.setOnline();
+            return;
+          }
+
+          if (klink instanceof DevLogout && dev.isOffline()) {
+            dev.setOffline();
+            return;
+          }
+        }
         break;
       } catch (MqttException e) {
         log.error("mqtt发布报错：" + e.getMessage() + ",第 " + (i + 1) + "次重试", e);
         ThreadUtil.sleep(1000);
+      } catch (Exception e) {
+        log.error(e.getMessage(), e);
       }
     }
   }
