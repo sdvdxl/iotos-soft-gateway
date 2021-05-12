@@ -12,4 +12,5 @@ public class Constants {
   public static final String RANDOM = "random";
 
   public static final String NONCE = "nonce";
+  public static final String CMD_BEAN_SUFFIX = "@SubSystemCommandService";
 }

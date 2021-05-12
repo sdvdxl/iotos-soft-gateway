@@ -1,13 +1,19 @@
 package me.hekr.iotos.softgateway.core.klink;
 
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
+import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig.Props;
 import me.hekr.iotos.softgateway.core.config.GatewayConfig;
 import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.constant.Constants;
+import me.hekr.iotos.softgateway.core.dto.DeviceMapper;
 import me.hekr.iotos.softgateway.core.network.mqtt.MqttService;
 import me.hekr.iotos.softgateway.core.utils.ParseUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,71 +31,70 @@ public class KlinkService {
   @Autowired private MqttService mqttService;
   /** 动态注册设备 */
   @SneakyThrows
-  public void register(String subDevPk, String subDevId, String devName) {
-    register(subDevPk, subDevId, null, devName);
+  public void register(String pk, String devId, String devName) {
+    register(pk, devId, null, devName);
   }
 
   /** 动态注册设备 */
   @SneakyThrows
-  public void register(String subDevPk, String subDevId, String productSecret, String devName) {
-    doRegister(subDevPk, subDevId, productSecret, devName);
+  public void register(String pk, String devId, String productSecret, String devName) {
+    doRegister(pk, devId, productSecret, devName);
   }
 
-  private void doRegister(String subDevPk, String subDevId, String productSecret, String devName)
+  private void doRegister(String pk, String devId, String productSecret, String devName)
       throws Exception {
     Register register = new Register();
-    register.setDevId(subDevId);
-    register.setPk(subDevPk);
+    register.setDevId(devId);
+    register.setPk(pk);
     register.setName(devName);
     if (productSecret != null) {
       register.setRandom(Constants.RANDOM);
       register.setHashMethod(Constants.HASH_METHOD);
       register.setSign(
           ParseUtil.parseByte2HexStr(
-              ParseUtil.HmacSHA1Encrypt(
-                  subDevPk + productSecret + Constants.RANDOM, productSecret)));
+              ParseUtil.HmacSHA1Encrypt(pk + productSecret + Constants.RANDOM, productSecret)));
     }
     mqttService.publish(register);
   }
 
   /** 注册设备并添加拓扑 */
   @SneakyThrows
-  public void addDev(String subDevPk, String subDevId) {
-    addDev(subDevPk, subDevId, null);
+  public void addDev(String pk, String devId) {
+    addDev(pk, devId, null);
   }
 
   /** 注册设备并添加拓扑关系 */
   @SneakyThrows
-  public void addDev(String subDevPk, String subDevId, String name) {
-    addDev(subDevPk, null, subDevId, null, name);
+  public void addDev(String pk, String devId, String name) {
+    addDev(pk, null, devId, null, name);
   }
 
   /** 添加拓扑 */
   @SneakyThrows
-  public void addTopo(String subDevPk, String subDevId) {
-    doAddTopo(subDevPk, subDevId, null);
+  public void addTopo(String pk, String devId) {
+    doAddTopo(pk, devId, null);
   }
 
   /** 注册设备并添加拓扑关系 */
   @SneakyThrows
   public void addDev(
-      String subDevPk, String productSecret, String subDevId, String subDevSecret, String name) {
-    register(subDevPk, subDevId, productSecret, name);
-    doAddTopo(subDevPk, subDevId, subDevSecret);
+      String pk, String productSecret, String devId, String subDevSecret, String name) {
+    register(pk, devId, productSecret, name);
+    doAddTopo(pk, devId, subDevSecret);
   }
 
-  private void doAddTopo(String subDevPk, String subDevId, String subDevSecret) throws Exception {
+  private void doAddTopo(String pk, String devId, String subDevSecret) throws Exception {
     AddTopo addTopo = new AddTopo();
     TopoSub topoSub = new TopoSub();
-    topoSub.setPk(subDevPk);
-    topoSub.setDevId(subDevId);
+    topoSub.setPk(pk);
+    topoSub.setDevId(devId);
     if (subDevSecret != null) {
       topoSub.setHashMethod(Constants.HASH_METHOD);
       topoSub.setRandom(Constants.RANDOM);
       topoSub.setSign(
           ParseUtil.parseByte2HexStr(
               ParseUtil.HmacSHA1Encrypt(
-                  subDevPk + subDevId + subDevSecret + Constants.RANDOM, subDevSecret)));
+                  pk + devId + subDevSecret + Constants.RANDOM, subDevSecret)));
     }
     addTopo.setSub(topoSub);
     GatewayConfig g = iotOsConfig.getGatewayConfig();
@@ -100,27 +105,27 @@ public class KlinkService {
 
   /** 设备上线 */
   @SneakyThrows
-  public void devLogin(String subDevPk, String subDevId) {
-    doDevLogin(subDevPk, subDevId);
+  public void devLogin(String pk, String devId) {
+    doDevLogin(pk, devId);
   }
 
-  private void doDevLogin(String subDevPk, String subDevId) {
+  private void doDevLogin(String pk, String devId) {
     DevLogin devLogin = new DevLogin();
-    devLogin.setDevId(subDevId);
-    devLogin.setPk(subDevPk);
+    devLogin.setDevId(devId);
+    devLogin.setPk(pk);
     mqttService.publish(devLogin);
   }
 
   /** 设备离线 */
   @SneakyThrows
-  public void devLogout(String subDevPk, String subDevId) {
-    doDevLogout(subDevPk, subDevId);
+  public void devLogout(String pk, String devId) {
+    doDevLogout(pk, devId);
   }
 
-  private void doDevLogout(String subDevPk, String subDevId) {
+  private void doDevLogout(String pk, String devId) {
     DevLogout devLogout = new DevLogout();
-    devLogout.setDevId(subDevId);
-    devLogout.setPk(subDevPk);
+    devLogout.setDevId(devId);
+    devLogout.setPk(pk);
     mqttService.publish(devLogout);
   }
 
@@ -139,11 +144,11 @@ public class KlinkService {
 
   /** 删除子设备拓扑关系 */
   @SneakyThrows
-  public void delDev(String subDevPk, String subDevId) {
+  public void delDev(String pk, String devId) {
     DelTopo delTopo = new DelTopo();
     TopoSub topoSub = new TopoSub();
-    topoSub.setPk(subDevPk);
-    topoSub.setDevId(subDevId);
+    topoSub.setPk(pk);
+    topoSub.setDevId(devId);
     delTopo.setSub(topoSub);
     GatewayConfig g = iotOsConfig.getGatewayConfig();
     delTopo.setPk(g.getPk());
@@ -154,20 +159,49 @@ public class KlinkService {
   /** 设备发送数据 */
   @SneakyThrows
   public void devSend(String pk, String devId, String cmd, Map<String, Object> params) {
-    DevSend kLink = new DevSend();
-    kLink.setPk(pk);
-    kLink.setDevId(devId);
     ModelData modelData = new ModelData();
     modelData.setCmd(cmd);
     modelData.setParams(params);
-    kLink.setData(modelData);
-    mqttService.publish(kLink);
+    devSend(pk, devId, modelData);
+  }
+
+  /**
+   * 设备发送数据
+   *
+   * <p>如果找不到 mapper，则打印日志，不会真实发送数据
+   */
+  @SneakyThrows
+  public void sendKlink(DeviceMapper mapper, Klink klink) {
+    Optional<DeviceRemoteConfig> devMapper = getDeviceMapper(mapper);
+    if (!devMapper.isPresent()) {
+      return;
+    }
+    DeviceRemoteConfig dev = devMapper.get();
+    KlinkDev klinkDev = new KlinkDev();
+    BeanUtils.copyProperties(klink, klinkDev);
+    klinkDev.setPk(dev.getPk());
+    klinkDev.setDevId(dev.getDevId());
+    mqttService.publish(klink);
+  }
+
+  /** 发送数据，比较底层的发送方法，需要自己构造 klink */
+  @SneakyThrows
+  public void sendKlink(Klink klink) {
+    mqttService.publish(klink);
   }
 
   /** 设备发送数据， 没有参数，只有命令 */
   @SneakyThrows
   public void devSend(String pk, String devId, String cmd) {
     devSend(pk, devId, cmd, null);
+  }
+
+  public void devSend(String pk, String devId, ModelData data) {
+    DevSend kLink = new DevSend();
+    kLink.setPk(pk);
+    kLink.setDevId(devId);
+    kLink.setData(data);
+    mqttService.publish(kLink);
   }
 
   /** 获取远程配置文件 */
@@ -178,5 +212,64 @@ public class KlinkService {
     getConfig.setPk(g.getPk());
     getConfig.setDevId(g.getDevId());
     mqttService.publish(getConfig);
+  }
+
+  /**
+   * 发送数据
+   *
+   * <p>如果找不到 mapper，则打印日志，不会真实发送数据
+   *
+   * @param mapper 设备映射
+   * @param data 物模型数据
+   */
+  public void devSend(DeviceMapper mapper, ModelData data) {
+    Optional<DeviceRemoteConfig> devMapper = getDeviceMapper(mapper);
+    if (!devMapper.isPresent()) {
+      return;
+    }
+    DeviceRemoteConfig dev = devMapper.get();
+    devSend(dev.getPk(), dev.getDevId(), data);
+  }
+
+  public void devLogin(DeviceMapper mapper) {
+    Optional<DeviceRemoteConfig> devMapper = getDeviceMapper(mapper);
+    if (!devMapper.isPresent()) {
+      return;
+    }
+    DeviceRemoteConfig dev = devMapper.get();
+    devLogin(dev.getPk(), dev.getDevId());
+  }
+
+  /**
+   * 设备登出
+   *
+   * <p>如果找不到 mapper，则打印日志，不会真实发送数据
+   *
+   * @param mapper
+   */
+  public void devLogout(DeviceMapper mapper) {
+    Optional<DeviceRemoteConfig> devMapper = getDeviceMapper(mapper);
+    if (!devMapper.isPresent()) {
+      return;
+    }
+    DeviceRemoteConfig dev = devMapper.get();
+    devLogout(dev.getPk(), dev.getDevId());
+  }
+
+  /**
+   * 获取设备映射
+   *
+   * @param mapper 设备关系
+   * @return
+   */
+  private Optional<DeviceRemoteConfig> getDeviceMapper(DeviceMapper mapper) {
+    Props props = mapper.getProps();
+    Objects.requireNonNull(props, "mapper.getProps 必须不为 null");
+    Optional<DeviceRemoteConfig> subsystemDev = DeviceRemoteConfig.getBySubSystemProperties(props);
+    if (!subsystemDev.isPresent()) {
+      log.warn("没有配置映射设备信息，请在远程配置中进行配置，设备信息：{}", props);
+    }
+
+    return subsystemDev;
   }
 }

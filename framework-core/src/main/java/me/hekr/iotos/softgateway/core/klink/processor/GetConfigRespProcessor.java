@@ -2,7 +2,7 @@ package me.hekr.iotos.softgateway.core.klink.processor;
 
 import cn.hutool.http.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.core.config.DeviceMapper;
+import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.GetConfigResp;
 import me.hekr.iotos.softgateway.core.klink.GetTopoResp;
@@ -36,7 +36,7 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
     }
     String content = HttpUtil.get(klink.getUrl());
     log.info("config: {}", content);
-    DeviceMapper.parseMultiLinesAndUpdateAll(content);
+    DeviceRemoteConfig.parseMultiLinesAndUpdateAll(content);
 
     // 获取拓扑关系后，再进行比对然后注册设备
     log.info("发送 getTopo，获取拓扑关系");

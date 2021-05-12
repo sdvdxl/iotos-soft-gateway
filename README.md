@@ -237,9 +237,9 @@ DeviceMapper 类做了设备映射关系；该关系是通过服务启动的时�
 
 框架封装了下发命令处理过程，只需要实现 `SubsystemCommandService` 接口并根据要求定义成 Spring 的 bean 即可，Bean要求：
 
-实现类要加 `@Service("{CMD}SubsystemCommandService")`，其中 `{CMD}` 为 IoTOS 物模型命令。
+实现类要加 `@Service("{CMD}@SubSystemCommandService")`，其中 `{CMD}` 为 IoTOS 物模型命令。
 
-实现方法 `void handle(DeviceMapper deviceMapper, ModelData data)`；参数 `deviceMapper` 是控制的设备， `data`
+实现方法 `void handle(DeviceMapper deviceRemoteConfig, ModelData data)`；参数 `deviceRemoteConfig` 是控制的设备， `data`
 是物模型信息，实际需要参考子产品定义的物模型。
 
 ### 其他开发接口

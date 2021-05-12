@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.core.config.DeviceMapper;
+import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.Dev;
 import me.hekr.iotos.softgateway.core.klink.GetTopoResp;
@@ -30,7 +30,7 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
 
   private void handleTopo(GetTopoResp klink) {
     List<Dev> topoDevices = klink.getSubs();
-    Set<DeviceMapper> all = DeviceMapper.getAll();
+    Set<DeviceRemoteConfig> all = DeviceRemoteConfig.getAll();
     // 查找拓扑中存在，但是配置中不存在的设备，删除拓扑关系
     Set<Dev> mappedDevices =
         all.stream()

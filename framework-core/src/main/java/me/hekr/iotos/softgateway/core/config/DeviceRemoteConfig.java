@@ -17,42 +17,42 @@ import org.apache.commons.lang3.StringUtils;
 
 /** @author iotos */
 @Slf4j
-public class DeviceMapper implements Serializable {
-  private static final Set<DeviceMapper> SET = new ConcurrentHashSet<>();
+public class DeviceRemoteConfig implements Serializable {
+  private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
   private Map<String, Object> data = new HashMap<>();
 
-  private DeviceMapper() {}
+  private DeviceRemoteConfig() {}
 
-  private DeviceMapper(Map<String, Object> data) {
+  private DeviceRemoteConfig(Map<String, Object> data) {
     this.data = data;
   }
 
   public static void parseAndAdd(String line) {
     @SuppressWarnings("unchecked")
     Map<String, Object> map = JsonUtil.fromJson(line, Map.class);
-    DeviceMapper m = new DeviceMapper(map);
+    DeviceRemoteConfig m = new DeviceRemoteConfig(map);
     parseAndAdd(m);
     log.info("after parseAndAdd: {}", getAll());
   }
 
   @SuppressWarnings("unchecked")
-  public static DeviceMapper parse(String line) {
-    return new DeviceMapper(JsonUtil.fromJson(line, Map.class));
+  public static DeviceRemoteConfig parse(String line) {
+    return new DeviceRemoteConfig(JsonUtil.fromJson(line, Map.class));
   }
 
-  public static Set<DeviceMapper> parseMultiLines(String remoteConfig) {
+  public static Set<DeviceRemoteConfig> parseMultiLines(String remoteConfig) {
     return Arrays.stream(remoteConfig.split("\n"))
         .filter(StringUtils::isNotBlank)
-        .map(DeviceMapper::parse)
-        .collect(Collectors.<DeviceMapper>toSet());
+        .map(DeviceRemoteConfig::parse)
+        .collect(Collectors.<DeviceRemoteConfig>toSet());
   }
 
-  public static void parseAndAdd(DeviceMapper d) {
+  public static void parseAndAdd(DeviceRemoteConfig d) {
     SET.add(d);
     log.info("after parseAndAdd: {}", getStatus());
   }
 
-  public static void remove(DeviceMapper d) {
+  public static void remove(DeviceRemoteConfig d) {
     SET.remove(d);
     log.info("after remove: {}", getStatus());
   }
@@ -62,11 +62,11 @@ public class DeviceMapper implements Serializable {
    *
    * <p>删除参数中不存在的，更新都存在的数据
    *
-   * @param deviceMappers 新的数据
+   * @param deviceRemoteConfigs 新的数据
    */
-  public static void updateAll(Collection<DeviceMapper> deviceMappers) {
-    SET.removeAll(CollectionUtil.subtract(SET, deviceMappers));
-    addAll(deviceMappers);
+  public static void updateAll(Collection<DeviceRemoteConfig> deviceRemoteConfigs) {
+    SET.removeAll(CollectionUtil.subtract(SET, deviceRemoteConfigs));
+    addAll(deviceRemoteConfigs);
     log.info("after updateAll, {}", getStatus());
   }
 
@@ -77,14 +77,14 @@ public class DeviceMapper implements Serializable {
   /**
    * 添加新的集合数据
    *
-   * @param deviceMappers 新的数据
+   * @param deviceRemoteConfigs 新的数据
    */
-  private static void addAll(Collection<DeviceMapper> deviceMappers) {
-    SET.addAll(deviceMappers);
+  private static void addAll(Collection<DeviceRemoteConfig> deviceRemoteConfigs) {
+    SET.addAll(deviceRemoteConfigs);
     log.info("after addAll: {}", getStatus());
   }
 
-  public static Set<DeviceMapper> getAll() {
+  public static Set<DeviceRemoteConfig> getAll() {
     return SET;
   }
 
@@ -94,7 +94,7 @@ public class DeviceMapper implements Serializable {
    * @param p 属性
    * @return 匹配属性的一个设备
    */
-  public static Optional<DeviceMapper> getBySubSystemProperties(Props p) {
+  public static Optional<DeviceRemoteConfig> getBySubSystemProperties(Props p) {
     return getAll().stream().filter(d -> dataEq(d.data, p.data)).findAny();
   }
 
@@ -106,7 +106,7 @@ public class DeviceMapper implements Serializable {
     return getAll().size();
   }
 
-  public static Optional<DeviceMapper> getByPkAndDevId(String pk, String devId) {
+  public static Optional<DeviceRemoteConfig> getByPkAndDevId(String pk, String devId) {
     return getAll().stream()
         .filter(d -> d.getPk().equals(pk))
         .filter(e -> e.getDevId().equals(devId))
@@ -114,8 +114,8 @@ public class DeviceMapper implements Serializable {
   }
 
   public static void parseMultiLinesAndUpdateAll(String content) {
-    Set<DeviceMapper> deviceMappers = DeviceMapper.parseMultiLines(content);
-    DeviceMapper.updateAll(deviceMappers);
+    Set<DeviceRemoteConfig> deviceRemoteConfigs = DeviceRemoteConfig.parseMultiLines(content);
+    DeviceRemoteConfig.updateAll(deviceRemoteConfigs);
     log.info("after parseMultiLinesAndUpdateAll: {}", getStatus());
   }
 
@@ -138,10 +138,10 @@ public class DeviceMapper implements Serializable {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof DeviceMapper)) {
+    if (!(o instanceof DeviceRemoteConfig)) {
       return false;
     }
-    DeviceMapper that = (DeviceMapper) o;
+    DeviceRemoteConfig that = (DeviceRemoteConfig) o;
     return getPk().equals(that.getPk()) && getDevId().equals(that.getDevId());
   }
 
@@ -162,7 +162,7 @@ public class DeviceMapper implements Serializable {
     return getProp("devName");
   }
 
-  public static class Props {
+  public static class Props implements Serializable {
     private final Map<String, Object> data = new HashMap<>();
 
     public static PropsBuilder p(String prop, Object value) {

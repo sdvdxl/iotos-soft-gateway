@@ -1,13 +1,16 @@
 package me.hekr.iotos.softgateway.core.klink.processor;
 
+import static me.hekr.iotos.softgateway.core.constant.Constants.CMD_BEAN_SUFFIX;
+
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.core.config.DeviceMapper;
+import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.CloudSend;
 import me.hekr.iotos.softgateway.core.subsystem.SubsystemCommandService;
 import me.hekr.iotos.softgateway.core.utils.JsonUtil;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -21,13 +24,20 @@ public class CloudSendProcessor implements Processor<CloudSend> {
 
   @Override
   public void handle(CloudSend klink) {
-    // * <p>实现类要加 @Service("XXSubsystemCommandService")，其中 xx 为 iotos 命令
-    SubsystemCommandService subsystemCommandService =
-        context.getBean(
-            klink.getData().getCmd() + "SubsystemCommandService", SubsystemCommandService.class);
+    // * <p>实现类要加 @Service(xx+CMD_BEAN_SUFFIX)，其中 xx 为 iotos 命令
+    SubsystemCommandService subsystemCommandService;
+    try {
+      subsystemCommandService =
+          context.getBean(
+              klink.getData().getCmd() + CMD_BEAN_SUFFIX, SubsystemCommandService.class);
+    } catch (BeansException e) {
+      log.warn("没有配置命令处理器，命令：{}", klink.getData().getCmd());
+      return;
+    }
+
     String pk = klink.getPk();
     String devId = klink.getDevId();
-    Optional<DeviceMapper> dev = DeviceMapper.getByPkAndDevId(pk, devId);
+    Optional<DeviceRemoteConfig> dev = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
     if (!dev.isPresent()) {
       log.warn(
           "not found mapped device, pk: {}, devId:{}, will not handle this iot cloud send command: {}",
