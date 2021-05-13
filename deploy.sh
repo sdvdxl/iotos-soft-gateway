@@ -15,7 +15,7 @@ act=$1
 deploy() {
   updateVersion
   rm -rf maven
-  mvn deploy -DskipTests=true -DaltDeploymentRepository=hekr-maven::default::file:maven/repository/
+  mvn clean deploy -DskipTests=true -DaltDeploymentRepository=hekr-maven::default::file:maven/repository/
 
   echo "发布位置：maven/repository"
 }
