@@ -3,8 +3,8 @@ package me.hekr.iotos.softgateway.sample;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import me.hekr.iotos.softgateway.network.common.DecodePacket;
-import me.hekr.iotos.softgateway.network.common.PacketCoder;
-import me.hekr.iotos.softgateway.network.tcp.TcpMessageListener;
+import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
+import me.hekr.iotos.softgateway.network.tcp.listener.TcpMessageListener;
 import me.hekr.iotos.softgateway.network.tcp.TcpServer;
 import me.hekr.iotos.softgateway.network.tcp.TcpServerPacketContext;
 

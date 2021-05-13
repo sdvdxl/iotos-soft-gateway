@@ -3,7 +3,7 @@ package me.hekr.iotos.softgateway.network.tcp;
 import cn.hutool.core.thread.ThreadUtil;
 import java.nio.charset.Charset;
 import me.hekr.iotos.softgateway.network.common.DecodePacket;
-import me.hekr.iotos.softgateway.network.common.PacketCoder;
+import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 import org.junit.Ignore;
 import org.junit.Test;
 

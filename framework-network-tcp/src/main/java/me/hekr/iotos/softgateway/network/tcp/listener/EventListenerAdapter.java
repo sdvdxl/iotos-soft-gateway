@@ -1,8 +1,9 @@
-package me.hekr.iotos.softgateway.network.tcp;
+package me.hekr.iotos.softgateway.network.tcp.listener;
 
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
+import me.hekr.iotos.softgateway.network.tcp.TcpServerPacketContext;
 
 /**
  * 如果不想实现所有事件监听，可以继承这个类

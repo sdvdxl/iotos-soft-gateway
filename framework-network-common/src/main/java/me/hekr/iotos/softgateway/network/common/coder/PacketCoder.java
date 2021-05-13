@@ -1,4 +1,6 @@
-package me.hekr.iotos.softgateway.network.common;
+package me.hekr.iotos.softgateway.network.common.coder;
+
+import me.hekr.iotos.softgateway.network.common.DecodePacket;
 
 /** @author iotos */
 public interface PacketCoder<T> {

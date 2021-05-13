@@ -8,7 +8,7 @@ import java.net.InetSocketAddress;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
-import me.hekr.iotos.softgateway.network.common.MessageListener;
+import me.hekr.iotos.softgateway.network.common.listener.MessageListener;
 import me.hekr.iotos.softgateway.network.common.PacketContext;
 
 /** @author iotos */

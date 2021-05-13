@@ -1,7 +1,8 @@
-package me.hekr.iotos.softgateway.core.network.mqtt.listener;
+package me.hekr.iotos.softgateway.core.network.mqtt;
 
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.klink.KlinkService;
+import me.hekr.iotos.softgateway.core.listener.MqttConnectedListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

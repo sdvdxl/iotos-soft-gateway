@@ -1,7 +1,8 @@
-package me.hekr.iotos.softgateway.network.tcp;
+package me.hekr.iotos.softgateway.network.tcp.listener;
 
 import java.time.LocalDateTime;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
+import me.hekr.iotos.softgateway.network.tcp.TcpServerPacketContext;
 
 /**
  * 新的客户端连接上来监听

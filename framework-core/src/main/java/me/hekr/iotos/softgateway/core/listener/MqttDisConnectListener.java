@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.core.network.mqtt.listener;
+package me.hekr.iotos.softgateway.core.listener;
 
 /**
  * mqtt 连接成功后监听器

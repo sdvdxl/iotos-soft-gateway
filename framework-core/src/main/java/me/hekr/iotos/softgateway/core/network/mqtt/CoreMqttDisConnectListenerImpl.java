@@ -1,6 +1,7 @@
-package me.hekr.iotos.softgateway.core.network.mqtt.listener;
+package me.hekr.iotos.softgateway.core.network.mqtt;
 
 import lombok.extern.slf4j.Slf4j;
+import me.hekr.iotos.softgateway.core.listener.MqttDisConnectListener;
 import org.springframework.stereotype.Service;
 
 /**
