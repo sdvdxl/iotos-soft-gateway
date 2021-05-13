@@ -3,7 +3,7 @@ package me.hekr.iotos.softgateway.sample;
 import cn.hutool.core.thread.ThreadUtil;
 import java.nio.charset.StandardCharsets;
 import me.hekr.iotos.softgateway.network.common.DecodePacket;
-import me.hekr.iotos.softgateway.network.common.PacketCoder;
+import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 import me.hekr.iotos.softgateway.network.common.client.EventListenerAdapter;
 import me.hekr.iotos.softgateway.network.tcp.TcpClient;
 

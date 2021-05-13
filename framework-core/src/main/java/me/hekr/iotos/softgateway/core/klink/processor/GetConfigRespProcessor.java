@@ -7,7 +7,7 @@ import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.GetConfigResp;
 import me.hekr.iotos.softgateway.core.klink.GetTopoResp;
 import me.hekr.iotos.softgateway.core.klink.KlinkService;
-import me.hekr.iotos.softgateway.core.network.mqtt.listener.CoreMqttConnectedListenerImpl;
+import me.hekr.iotos.softgateway.core.network.mqtt.CoreMqttConnectedListenerImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

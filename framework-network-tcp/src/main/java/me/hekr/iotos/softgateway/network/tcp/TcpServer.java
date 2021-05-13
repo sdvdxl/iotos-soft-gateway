@@ -16,8 +16,11 @@ import java.util.concurrent.TimeUnit;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
-import me.hekr.iotos.softgateway.network.common.PacketCoder;
+import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 import me.hekr.iotos.softgateway.network.common.util.NetUtil;
+import me.hekr.iotos.softgateway.network.tcp.listener.EventListener;
+import me.hekr.iotos.softgateway.network.tcp.listener.EventListenerAdapter;
+import me.hekr.iotos.softgateway.network.tcp.listener.TcpMessageListener;
 
 /**
  * tcp 服务端

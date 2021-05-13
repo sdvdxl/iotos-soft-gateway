@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
 import me.hekr.iotos.softgateway.core.klink.processor.KlinkProcessorManager;
-import me.hekr.iotos.softgateway.core.network.mqtt.listener.MqttDisConnectListener;
+import me.hekr.iotos.softgateway.core.listener.MqttDisConnectListener;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;

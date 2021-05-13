@@ -4,7 +4,7 @@ import java.net.InetSocketAddress;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
-import me.hekr.iotos.softgateway.network.common.PacketCoder;
+import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 import me.hekr.iotos.softgateway.network.common.PacketContext;
 
 /**

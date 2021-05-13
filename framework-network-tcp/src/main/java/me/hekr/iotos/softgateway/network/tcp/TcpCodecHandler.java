@@ -10,7 +10,7 @@ import java.net.InetSocketAddress;
 import java.util.List;
 import me.hekr.iotos.softgateway.network.common.DecodePacket;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
-import me.hekr.iotos.softgateway.network.common.PacketCoder;
+import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 
 /**
  * 编解码
