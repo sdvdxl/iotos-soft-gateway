@@ -9,7 +9,7 @@ import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.CloudSend;
 import me.hekr.iotos.softgateway.core.subsystem.SubsystemCommandService;
-import me.hekr.iotos.softgateway.core.utils.JsonUtil;
+import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;

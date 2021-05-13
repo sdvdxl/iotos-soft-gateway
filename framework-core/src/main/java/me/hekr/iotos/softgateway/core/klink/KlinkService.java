@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Optional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import me.hekr.iotos.softgateway.common.utils.ParseUtil;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig.Props;
 import me.hekr.iotos.softgateway.core.config.GatewayConfig;
@@ -14,7 +15,6 @@ import me.hekr.iotos.softgateway.core.dto.DeviceMapper;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.enums.ErrorCode;
 import me.hekr.iotos.softgateway.core.network.mqtt.MqttService;
-import me.hekr.iotos.softgateway.core.utils.ParseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +50,7 @@ public class KlinkService {
     register.setName(devName);
     if (productSecret != null) {
       register.setRandom(Constants.RANDOM);
-      register.setHashMethod(Constants.HASH_METHOD);
+      register.setHashMethod(ParseUtil.HASH_METHOD);
       register.setSign(
           ParseUtil.parseByte2HexStr(
               ParseUtil.HmacSHA1Encrypt(pk + productSecret + Constants.RANDOM, productSecret)));
@@ -90,7 +90,7 @@ public class KlinkService {
     topoSub.setPk(pk);
     topoSub.setDevId(devId);
     if (subDevSecret != null) {
-      topoSub.setHashMethod(Constants.HASH_METHOD);
+      topoSub.setHashMethod(ParseUtil.HASH_METHOD);
       topoSub.setRandom(Constants.RANDOM);
       topoSub.setSign(
           ParseUtil.parseByte2HexStr(

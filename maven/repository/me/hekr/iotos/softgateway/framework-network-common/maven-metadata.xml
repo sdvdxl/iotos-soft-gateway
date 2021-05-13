@@ -4,8 +4,8 @@
   <artifactId>framework-network-common</artifactId>
   <versioning>
     <versions>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.1-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20210512083007</lastUpdated>
+    <lastUpdated>20210512161119</lastUpdated>
   </versioning>
 </metadata>

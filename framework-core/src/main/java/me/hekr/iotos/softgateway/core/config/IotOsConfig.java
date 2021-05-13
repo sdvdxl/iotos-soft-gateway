@@ -3,8 +3,8 @@ package me.hekr.iotos.softgateway.core.config;
 import javax.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import me.hekr.iotos.softgateway.common.utils.ParseUtil;
 import me.hekr.iotos.softgateway.core.constant.Constants;
-import me.hekr.iotos.softgateway.core.utils.ParseUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -49,7 +49,7 @@ public class IotOsConfig {
     GatewayConfig gw = gatewayConfig;
     mq.endpoint = endpoint;
     mq.clientId = "dev:" + gw.pk + ":" + gw.devId;
-    mq.username = Constants.HASH_METHOD + ":" + Constants.RANDOM;
+    mq.username = ParseUtil.HASH_METHOD + ":" + Constants.RANDOM;
     mq.password = getPassword(gw.pk, gw.devId, gw.devSecret, Constants.RANDOM).toCharArray();
     mq.connectTimeout = connectionTimeout;
     mq.keepAliveTime = keepAliveTime;

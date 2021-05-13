@@ -4,8 +4,8 @@
   <artifactId>iotos-soft-gateway</artifactId>
   <versioning>
     <versions>
-      <version>3.0.0-SNAPSHOT</version>
+      <version>3.0.1-SNAPSHOT</version>
     </versions>
-    <lastUpdated>20210512083002</lastUpdated>
+    <lastUpdated>20210512161115</lastUpdated>
   </versioning>
 </metadata>

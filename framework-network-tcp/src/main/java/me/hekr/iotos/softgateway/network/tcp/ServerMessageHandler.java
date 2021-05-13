@@ -12,11 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.PacketContext;
-import org.springframework.stereotype.Service;
 
 /** @author iotos */
 @Sharable
-@Service
 @Slf4j
 public class ServerMessageHandler<T> extends SimpleChannelInboundHandler<InternalPacket<T>> {
   private static final AttributeKey<PacketContext<?>> PACKET_CONTEXT =
