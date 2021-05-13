@@ -26,6 +26,7 @@ install() {
 }
 
 upload(){
+  deploy
   git add -A
   git commit -m "update version to: $VERSION"
   git push
