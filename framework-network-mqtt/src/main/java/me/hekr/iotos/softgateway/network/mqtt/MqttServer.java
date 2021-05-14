@@ -1,13 +1,15 @@
 package me.hekr.iotos.softgateway.network.mqtt;
 
 import io.netty.handler.codec.mqtt.MqttConnectReturnCode;
+import io.netty.handler.codec.mqtt.MqttQoS;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.mqtt.MqttAuth;
 import io.vertx.mqtt.MqttEndpoint;
+import io.vertx.mqtt.MqttTopicSubscription;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
@@ -31,7 +33,7 @@ public class MqttServer<T> {
     this(1883);
   }
 
-  public void start() throws ExecutionException, InterruptedException {
+  public void start() {
     Objects.requireNonNull(packetCoder, "packetCoder 必填");
     Objects.requireNonNull(listener, "listener 必填");
     VertxOptions options = new VertxOptions();
@@ -50,6 +52,7 @@ public class MqttServer<T> {
           handlePublishMessage(endpoint);
           handleAuth(endpoint);
           handleException(endpoint);
+          handleSubscribe(endpoint);
         });
     server
         .listen(1883, "localhost")
@@ -63,17 +66,44 @@ public class MqttServer<T> {
             });
   }
 
-  private void handleException(MqttEndpoint endpoint) {
-    endpoint.exceptionHandler(
-        t -> {
-          log.error(t.getMessage(), t);
+  /**
+   * 订阅 topic 认证
+   *
+   * @param endpoint 连接信息
+   */
+  private void handleSubscribe(MqttEndpoint endpoint) {
+    endpoint.subscribeHandler(
+        m -> {
+          ConnectionContext<T> context = MqttConnections.get(endpoint);
+          List<MqttQoS> qosList = listener.aclSubTopic(context, m.topicSubscriptions());
+          if (log.isDebugEnabled()) {
+            for (int i = 0; i < m.topicSubscriptions().size(); i++) {
+              MqttTopicSubscription topic = m.topicSubscriptions().get(i);
+              MqttQoS qos = qosList.get(i);
+              log.debug(
+                  (qos == MqttQoS.FAILURE ? "不允许 " : "允许 ")
+                      + context.getClientId()
+                      + " 订阅 "
+                      + topic.topicName()
+                      + " qos:"
+                      + topic.qualityOfService()
+                      + " 协商 qos:"
+                      + qos);
+            }
+          }
+
+          endpoint.subscribeAcknowledge(m.messageId(), qosList);
         });
+  }
+
+  private void handleException(MqttEndpoint endpoint) {
+    endpoint.exceptionHandler(t -> log.error(t.getMessage(), t));
   }
 
   /**
    * 处理关闭连接
    *
-   * @param endpoint
+   * @param endpoint 连接信息
    */
   private void handleClose(MqttEndpoint endpoint) {
     endpoint.closeHandler(v -> listener.onClose(MqttConnections.remove(endpoint)));
@@ -82,13 +112,27 @@ public class MqttServer<T> {
   /**
    * 处理客户端发布的消息
    *
-   * @param endpoint
+   * @param endpoint 连接信息
    */
+  @SuppressWarnings("unchecked")
   private void handlePublishMessage(MqttEndpoint endpoint) {
     endpoint.publishHandler(
         m -> {
+          ConnectionContext<T> context = MqttConnections.get(endpoint);
+          boolean pass = listener.aclPubTopic(context, m.topicName(), m.qosLevel());
+          if (!pass) {
+            if (log.isDebugEnabled()) {
+              log.debug(
+                  "publish topic 拒绝，丢弃消息, clientId: {}, username: {}, topic: {}, qos:{}",
+                  context.getClientId(),
+                  context.getUsername(),
+                  m.topicName(),
+                  m.qosLevel());
+              return;
+            }
+          }
           listener.onMessage(
-              MqttConnections.get(endpoint),
+              context,
               m.topicName(),
               m.qosLevel(),
               (T) packetCoder.decode(m.payload().getBytes()).getResult());
@@ -98,7 +142,7 @@ public class MqttServer<T> {
   /**
    * 处理鉴权
    *
-   * @param endpoint
+   * @param endpoint 连接信息
    */
   private void handleAuth(MqttEndpoint endpoint) {
     MqttAuth auth = endpoint.auth();

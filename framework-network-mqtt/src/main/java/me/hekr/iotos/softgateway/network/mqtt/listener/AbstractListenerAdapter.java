@@ -1,6 +1,9 @@
 package me.hekr.iotos.softgateway.network.mqtt.listener;
 
 import io.netty.handler.codec.mqtt.MqttQoS;
+import io.vertx.mqtt.MqttTopicSubscription;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.mqtt.ConnectionContext;
 
@@ -28,5 +31,22 @@ public abstract class AbstractListenerAdapter<T> implements Listener<T> {
   @Override
   public void onClose(ConnectionContext<T> context) {
     log.info("关闭连接，clientId:{}", context.getClientId());
+  }
+
+  @Override
+  public boolean aclPubTopic(ConnectionContext<T> context, String topicName, MqttQoS qosLevel) {
+    if (log.isDebugEnabled()) {
+      log.debug("publish acl，clientId:{}", context.getClientId());
+    }
+    return true;
+  }
+
+  @Override
+  public List<MqttQoS> aclSubTopic(
+      ConnectionContext<T> context, List<MqttTopicSubscription> topicSubscriptions) {
+    // 默认允许所有订阅
+    return topicSubscriptions.stream()
+        .map(MqttTopicSubscription::qualityOfService)
+        .collect(Collectors.toList());
   }
 }

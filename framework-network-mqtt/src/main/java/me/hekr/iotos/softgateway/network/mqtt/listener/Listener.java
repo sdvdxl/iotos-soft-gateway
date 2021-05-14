@@ -1,6 +1,8 @@
 package me.hekr.iotos.softgateway.network.mqtt.listener;
 
 import io.netty.handler.codec.mqtt.MqttQoS;
+import io.vertx.mqtt.MqttTopicSubscription;
+import java.util.List;
 import me.hekr.iotos.softgateway.network.mqtt.ConnectionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,4 +52,26 @@ public interface Listener<T> {
    * @return
    */
   boolean auth(ConnectionContext<T> context);
+
+  /**
+   * publish topic acl
+   *
+   * @param context
+   * @param topicName
+   * @param qosLevel
+   * @return true 允许发布，会进入消息回调；false 不会进入消息回调
+   */
+  boolean aclPubTopic(ConnectionContext<T> context, String topicName, MqttQoS qosLevel);
+
+  /**
+   * 客户端订阅 topic 权限
+   *
+   * <p>返回的 topic 列表个数要一致，可以根据 clientId 等信息进行判断，赋予不同的 client 不同订阅权限。如果拒绝返回 FAILURE
+   *
+   * @param context
+   * @param topicSubscriptions 订阅的 topic
+   * @return 对应的订阅的 topic 信息
+   */
+  List<MqttQoS> aclSubTopic(
+      ConnectionContext<T> context, List<MqttTopicSubscription> topicSubscriptions);
 }

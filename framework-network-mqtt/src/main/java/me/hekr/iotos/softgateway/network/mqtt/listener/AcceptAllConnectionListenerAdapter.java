@@ -5,11 +5,11 @@ import me.hekr.iotos.softgateway.network.mqtt.ConnectionContext;
 
 /** @author iotos */
 @Slf4j
-public class RejectAllListenerAdapter<T> extends AbstractListenerAdapter<T> {
+public class AcceptAllConnectionListenerAdapter<T> extends AbstractListenerAdapter<T> {
 
   @Override
   public boolean auth(ConnectionContext<T> context) {
-    log.info("（默认实现）拒绝（所有）连接，clientId：{}，address:{}", context.getClientId(), context.getAddress());
-    return false;
+    log.info("接受连接，clientId：{}，address:{}", context.getClientId(), context.getAddress());
+    return true;
   }
 }
