@@ -1,10 +1,25 @@
 package me.hekr.iotos.softgateway.network.common.coder;
 
+import java.nio.charset.StandardCharsets;
 import me.hekr.iotos.softgateway.network.common.DecodePacket;
 
 /** @author iotos */
 public interface PacketCoder<T> {
 
+  /** 如果传输数据是 String，可以使用这个编解码实现 */
+  PacketCoder<String> STRING_CODER =
+      new PacketCoder<String>() {
+
+        @Override
+        public byte[] encode(String s) {
+          return s.getBytes(StandardCharsets.UTF_8);
+        }
+
+        @Override
+        public DecodePacket decode(byte[] bytes) {
+          return DecodePacket.wrap(new String(bytes, StandardCharsets.UTF_8), bytes.length);
+        }
+      };
   /**
    * 编码
    *

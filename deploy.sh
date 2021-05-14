@@ -3,22 +3,20 @@
 # ./deploy deploy 生成 maven jar包
 # ./deploy upload 生成 maven jar 包并 commit
 
-VERSION="3.0.2"
+VERSION="3.1.0"
 echo "版本号：$VERSION"
 
 updateVersion(){
-  mvn versions:set -DnewVersion=$VERSION versions:update-child-modules
+  mvn versions:set -DnewVersion=$VERSION versions:update-child-modules versions:update-properties
 }
 
 act=$1
 
 deploy() {
   updateVersion
-  rm -rf maven
-  mvn clean deploy -DskipTests=true -DaltDeploymentRepository=hekr-maven::default::file:maven/repository/
-
-  echo "发布位置：maven/repository"
+  mvn deploy
 }
+
 
 install() {
   updateVersion

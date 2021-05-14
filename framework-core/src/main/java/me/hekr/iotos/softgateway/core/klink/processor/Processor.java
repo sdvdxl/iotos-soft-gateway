@@ -14,8 +14,6 @@ public interface Processor<T extends Klink> {
    * <p>如果处理成功，并且klinkResp，主动设置了pk和devId，则不会被重置为req信息，并且 deviceRequest 的 pk和devId也会设置为klinkResp中的信息。
    *
    * @param klink klink json object 格式数据 如：{"action":"devSend","msgId":1,xx:xx}
-   * @return 如果没有特殊返回消息，可以返回null； 如果要自定义返回消息，则需要返回不为null的实体；其中返回值 outMessage
-   *     中的的pk，devId，action，msgId不受自定义返回影响，都是processManager统一处理。
    */
   void handle(T klink);
 

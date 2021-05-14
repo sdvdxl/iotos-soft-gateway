@@ -128,7 +128,7 @@ public enum Action {
   /**
    * 返回相对应的action
    *
-   * @return
+   * @return 返回对应的配对，如果是请求，则返回 Resp；如果是 Resp，则返回请求。找不到返回自身
    */
   public Action getPair() {
     if (isResp()) {
