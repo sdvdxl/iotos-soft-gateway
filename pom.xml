@@ -17,15 +17,42 @@
 
   <groupId>me.hekr.iotos.softgateway</groupId>
   <artifactId>iotos-soft-gateway</artifactId>
-  <version>3.1.0-SNAPSHOT</version>
-  <name>iotos-soft-gateway</name>
+  <version>3.1.0</version>
+  <name>${project.groupId}:${project.artifactId}</name>
   <description>IoTOS 软网关</description>
+  <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
 
   <properties>
     <java.version>1.8</java.version>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+    <iotos.softgateway.version>3.1.0</iotos.softgateway.version>
   </properties>
+
+  <licenses>
+    <license>
+      <name>木兰宽松许可证, 第2版</name>
+      <url>https://license.coscl.org.cn/MulanPSL2/</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>sdvdxl</name>
+      <email>sdvdxl@163.com</email>
+      <organization>hekr</organization>
+      <organizationUrl>https://hekr.me</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://https://gitee.com/geekhekr/iotos-soft-gateway.git</connection>
+    <developerConnection>scm:git:ssh://gitee.com:geekhekr/iotos-soft-gateway.git</developerConnection>
+    <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
+  </scm>
 
   <dependencyManagement>
     <dependencies>
@@ -33,6 +60,36 @@
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
         <version>4.1.60.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-core</artifactId>
+        <version>${iotos.softgateway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-common-utils</artifactId>
+        <version>${iotos.softgateway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-network-udp</artifactId>
+        <version>${iotos.softgateway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-network-tcp</artifactId>
+        <version>${iotos.softgateway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-network-mqtt</artifactId>
+        <version>${iotos.softgateway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-network-common</artifactId>
+        <version>${iotos.softgateway.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -91,19 +148,22 @@
           </execution>
         </executions>
       </plugin>
-<!--      <plugin>-->
-<!--        <groupId>org.apache.maven.plugins</groupId>-->
-<!--        <artifactId>maven-javadoc-plugin</artifactId>-->
-<!--        <version>2.9.1</version>-->
-<!--        <executions>-->
-<!--          <execution>-->
-<!--            <id>attach-javadocs</id>-->
-<!--            <goals>-->
-<!--              <goal>jar</goal>-->
-<!--            </goals>-->
-<!--          </execution>-->
-<!--        </executions>-->
-<!--      </plugin>-->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>2.9.1</version>
+              <executions>
+                <execution>
+                  <id>attach-javadocs</id>
+                  <goals>
+                    <goal>jar</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <configuration>
+                <useStandardDocletOptions>false</useStandardDocletOptions>
+              </configuration>
+            </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>

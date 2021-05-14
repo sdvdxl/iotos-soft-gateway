@@ -6,7 +6,6 @@ import me.hekr.iotos.softgateway.core.enums.Action;
  * 设备发送回复 <br>
  *
  * @author iotos <br>
- * @date 2020/7/21 16:08 <br>
  */
 public class DevSendResp extends KlinkResp {
 

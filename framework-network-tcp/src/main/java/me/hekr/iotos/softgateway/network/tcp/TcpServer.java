@@ -63,7 +63,7 @@ public class TcpServer<T> {
   /**
    * 设置心跳超时时间，毫秒
    *
-   * @param timeout
+   * @param timeout 时间，毫秒
    */
   public void setHeartbeatTimeout(int timeout) {
     this.timeout = timeout;
