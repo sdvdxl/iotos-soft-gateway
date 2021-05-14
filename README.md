@@ -164,17 +164,32 @@ DeviceRemoteConfig 类做了设备映射关系；该关系是通过服务启动�
 
 修改deploy.sh 文件中的版本号，然后 执行
 
-`./deploy.sh`
+`./deploy.sh install` 安装到本地
 
-执行完成后，提交到 gitee 上。
+`./deploy.sh deploy` 发布到中央仓库（需要10分钟-2小时同步到中央仓库）（需要管理员执行）
 
-如果紧紧是提交代码，可以使用命令：
+[中央仓库地址](https://repo1.maven.org/maven2/me/hekr/iotos/softgateway/)
 
-```shell
-git add -A
-git reset maven
-git commi -m '提交消息'
-git push
+然后提交到 gitee 上，打上 tag。
+
+依赖配置：
+
+```xml
+<dependency>
+  <groupId>me.hekr.iotos.softgateway</groupId>
+  <artifactId>${artifactId}</artifactId>
+  <version>${version}</version>;
+</dependency>
 ```
 
-或者直接使用 ide 的 git 操作。
+snapshot 版本 需要添加仓库：
+
+```xml
+<repositories>
+  <repository>
+    <id>hekr-iotos-soft-gateway-snapshot</id>
+    <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+  </repository>
+</repositories>
+```
+
