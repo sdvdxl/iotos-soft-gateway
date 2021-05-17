@@ -2,6 +2,8 @@
 
 本项目是 [氦氪](https://hekr.me/) [IoTOS](https://hekr.me/p-iotos.html) 的配套**专用**软网关开发 Java SDK，用来进行二次开发对接 IoTOS 平台的一套工具集合。
 
+本 SDK 托管在 [gitee](https://gitee.com/geekhekr/iotos-soft-gateway) 以开源的方式提供给客户使用，使用 [MulanPSL-2.0](https://gitee.com/geekhekr/iotos-soft-gateway/blob/master/LICENSE) 方式授权。
+
 # 背景
 
 IoTOS 是一套先进的企业级物联网解决方案平台，提供了广泛的设备接入方式，但是因为设备的多样性，无法做到一一兼容，虽然提供了硬件 [边缘网关](https://hekr.me/p-edgeos.html) ，但是也无法满足多样的设备连接方式和多样复杂的协议的要求，所以IoTOS 平台提供了软网关的方式，方便用户自己快速接入设备。
