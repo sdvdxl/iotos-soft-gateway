@@ -1,30 +1,38 @@
-# 1. 背景
+# 说明
+
+本项目是 [氦氪](https://hekr.me/) [IoTOS](https://hekr.me/p-iotos.html) 的配套**专用**软网关开发 Java SDK，用来进行二次开发对接 IoTOS 平台的一套工具集合。
+
+本 SDK 托管在 [gitee](https://gitee.com/geekhekr/iotos-soft-gateway) 以开源的方式提供给客户使用，使用 [MulanPSL-2.0](https://gitee.com/geekhekr/iotos-soft-gateway/blob/master/LICENSE) 方式授权。
+
+# 背景
+
+IoTOS 是一套先进的企业级物联网解决方案平台，提供了广泛的设备接入方式，但是因为设备的多样性，无法做到一一兼容，虽然提供了硬件 [边缘网关](https://hekr.me/p-edgeos.html) ，但是也无法满足多样的设备连接方式和多样复杂的协议的要求，所以IoTOS 平台提供了软网关的方式，方便用户自己快速接入设备。
 
 目前有两类情况可能会导致设备或子系统无法连接至 IoTOS：
 
-- IoTOS 目前支持 MQTT、CoAP、LwM2M、HTTP 这四种协议，且认证方式要符合 IoTOS 的规定，但很多存量设备或者子系统使用了 TCP\UDP\WS
+- IoTOS 目前支持 MQTT、CoAP、LwM2M、HTTP 这四种协议，且认证方式要符合 IoTOS 的规定，但很多存量设备或者子系统使用了 TCP、UDP 和 WS
   等协议，且认证方式多种多样，甚至连产品标识（对应 IoTOS 里的 PK）也有缺失；
 - IoTOS 作为物联网中台对南向设备只有 Server 的角色，没有 Client 的角色，但很多子系统往往提供的是 Server，因此在 IoTOS 和子系统之间必须有一个程序充当 Client
   从子系统拉取数据并传到 IoTOS。
+  
+# 适用场景
 
-本工程，即**软件网关**，作为 IoTOS 的配套组件，以开源形式提供，研发人员可以基于此代码进行二次开发解决以上2类问题。
-
-# 2. 使用须知
-
-## 2.1 环境要求
-
-* JDK 1.8及以上版本
-* Maven
-* Git
-
-## 2.2 适用场景
+本项目是一个快速开发软网关的**SDK**，作为 IoTOS 的配套组件，用户需要集成本 SDK 进行二次开发才能完成完整的设备接入流程。
 
 软件网关可用于解决以下2类无法连接 IoTOS 的设备或子系统的情况：
 
 - 基于 TCP、UDP 和 HTTP 等私有协议的设备或子系统；
 - 自带上位机的软硬件一体系统，该类系统可能暴露如 HTTP、TCP、UDP、JDBC、ODBC 等各种接口对外提供数据。
 
-# 3. 简要设计说明
+
+## 环境要求
+
+> 本项目所提供的 SDK 是基于 Java 开发，如果用户有其他语言要求，可以参考 [IoTOS平台文档](http://hy.hekr.me/iot-docs-test/web/index.html) 自行实现
+
+- JDK 1.8及以上版本
+- Maven（或者 Gradle）
+
+# 简要设计说明
 
 下图是软件网关的基本工作原理，包含三个主要环节：
 
@@ -43,16 +51,14 @@
 
 IoTOS 与软件网关交互的数据中一定包含 PK 和 devID，若存量设备本身不含 PK 等标识信息，开发者则需自行完成映射。
 
-例如，子设备发送亮度状态值```light```为90，软件网关发送给 IoTOS 的数据格式如下：
+例如，子设备发送亮度状态值 `light` 为90，软件网关发送给 IoTOS 的数据格式如下：
 
 ```json
 {
   "action": "devSend",
   "msgId": 1,
-  "pk": "3276aa89d25a46b789c7987421396e05",
-  /* 子设备PK */
-  "devId": "dev-001"
-  /* 子设备ID */
+  "pk": "3276aa89d25a46b789c7987421396e05",  // 子设备PK 
+  "devId": "dev-001",//子设备ID
   "data": {
     "cmd": "report",
     "params": {
@@ -62,50 +68,38 @@ IoTOS 与软件网关交互的数据中一定包含 PK 和 devID，若存量设�
 }
 ```
 
-|参数|必填|类型|说明|
-|---|---|---|---|
-|action|是|string|动作，固定为 devSend|
-|pk|否|string|要发送数据的设备产品PK|
-|devId|否|string|要发送数据的设备ID|
-|data|是|object|上报的指令和参数数据|
-|data.cmd|是|string|标识符|
-|data.params|否|object|参数|
+更详细的设备通信协议参考 [网关介绍](http://hy.hekr.me/iot-docs-test/web/content/%E8%AE%BE%E5%A4%87%E7%AE%A1%E7%90%86/%E7%BD%91%E5%85%B3%E4%B8%8E%E5%AD%90%E8%AE%BE%E5%A4%87.html) 和 [Klink 协议](http://hy.hekr.me/iot-docs-test/web/content/%E8%AE%BE%E5%A4%87%E7%AE%A1%E7%90%86/KLink.html)
 
 # 二次开发
 
-软网关框架在一定程度上封装了交互流程。
-
-目录结构：
+## 项目结构
 
 - `framework-core` 和 IoTOS 平台交互的主要代码
 - `framework-network-common` 网络组件通用代码
-- `framework-network-tcp` tcp 客户端和服务器
-- `framework-network-udp` udp 客户端和服务器
-- `subsystem` 子系统自定义功能实现部分，在这里开发，并运行 IoTGatewayApplication.java
+- `framework-network-XX` 网络组件具体实现，比如 TCP，UDP 服务端和客户端，随着优化，会丰富网络组件
 - `example` 示例代码，包含网络组件的使用方式使用的时候先启动对应的 server，再启动对应的 client
-- `subsystem/src/main/resources/application.yml` 服务配置文件
 
-其中 core 是必须的， tcp 和 udp 模块按需加载。
+其中 core 是必须的， `framework-network-XX` 模块按需加载。
 
 ## 功能封装
 
-框架封装了软网关设备和 IoTOS 平台的交互过程，包括：
+框架(core 部分)封装了软网关设备和 IoTOS 平台的交互过程，包括：
 
 - 网关登录
-- 自动重连
-- 命令发送和接收
+- 掉线自动重连
 - 子设备注册和添加拓扑
+- 命令发送和接收
 - 远程配置，自动更新本地映射关系
-- 简易客户端（包括 udp，tcp）
-- 简易服务端（包括 udp，tcp）
+
+如果用户需要详细了解交互机制，可以查阅 `framework-core` 部分的代码，同时可以参考 [IoTOS文档](http://hy.hekr.me/iot-docs-test/web/content/%E8%AE%BE%E5%A4%87%E7%AE%A1%E7%90%86/%E7%BD%91%E5%85%B3%E4%B8%8E%E5%AD%90%E8%AE%BE%E5%A4%87.html) 
 
 ## 功能开放
 
 - IoTOS 平台交互： KlinkService 类
 - mqtt 连接监听 MqttDisConnectListener 类
 - mqtt 断开连接监听 MqttDisConnectListener 类
-- server 消息回调，事件回调
-- client 自动重连，异步、同步消息处理
+- server 消息回调，事件回调 *Listener
+- client 自动重连，异步、同步消息处理 *Listener
 
 ## 基本使用
 
@@ -160,19 +154,11 @@ DeviceRemoteConfig 类做了设备映射关系；该关系是通过服务启动�
 - `CommonMessageListener` tcp client, udp client, udp server 消息处理监听器
 - `EventListener` 事件监听器
 
-### 发布
+### 开发
 
-修改deploy.sh 文件中的版本号，然后 执行
+SDK 已经发布到 maven 仓库中，https://mvnrepository.com/artifact/me.hekr.iotos.softgateway
 
-`./deploy.sh install` 安装到本地
-
-`./deploy.sh deploy` 发布到中央仓库（需要10分钟-2小时同步到中央仓库）（需要管理员执行）
-
-[中央仓库地址](https://repo1.maven.org/maven2/me/hekr/iotos/softgateway/)
-
-然后提交到 gitee 上，打上 tag。
-
-依赖配置：
+添加必须依赖：
 
 ```xml
 <dependency>
@@ -193,3 +179,16 @@ snapshot 版本 需要添加仓库：
 </repositories>
 ```
 
+示例 demo 可以参考 [iotos-soft-gateway-demo](https://gitee.com/geekhekr/iotos-soft-gateway-demo) 项目。
+
+### 发布
+
+修改deploy.sh 文件中的版本号，然后 执行
+
+`./deploy.sh install` 安装到本地
+
+`./deploy.sh deploy` 发布到中央仓库（需要10分钟-2小时同步到中央仓库）（需要管理员执行）
+
+[中央仓库地址](https://repo1.maven.org/maven2/me/hekr/iotos/softgateway/)
+
+然后提交到 gitee 上，打上 tag。
