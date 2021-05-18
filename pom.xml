@@ -18,7 +18,7 @@
 
   <groupId>me.hekr.iotos.softgateway</groupId>
   <artifactId>iotos-soft-gateway</artifactId>
-  <version>3.1.0</version>
+  <version>3.2.0-SNAPSHOT</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>IoTOS 软网关</description>
   <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
@@ -30,7 +30,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-    <iotos.softgateway.version>3.1.0</iotos.softgateway.version>
+    <iotos.softgateway.version>3.2.0-SNAPSHOT</iotos.softgateway.version>
   </properties>
 
   <licenses>
