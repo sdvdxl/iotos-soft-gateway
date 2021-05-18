@@ -12,6 +12,7 @@
     <module>example</module>
     <module>framework-common-utils</module>
     <module>framework-network-mqtt</module>
+    <module>framework-network-http</module>
   </modules>
 
 
