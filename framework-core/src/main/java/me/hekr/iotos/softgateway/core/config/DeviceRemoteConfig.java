@@ -39,15 +39,15 @@ public class DeviceRemoteConfig implements Serializable {
     log.info("after parseAndAdd: {}", getAll());
   }
 
-  public Object put(Object key, Object val){
+  public Object putCustom(Object key, Object val){
     return this.customData.put(key,val);
   }
 
-  public Object get(Object key){
+  public Object getCustom(Object key){
     return this.customData.get(key);
   }
 
-  public Object remove(Object key){
+  public Object removeCustom(Object key){
     return this.customData.remove(key);
   }
 
