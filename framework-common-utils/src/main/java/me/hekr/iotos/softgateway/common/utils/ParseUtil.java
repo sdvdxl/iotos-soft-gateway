@@ -8,8 +8,16 @@ import javax.crypto.spec.SecretKeySpec;
 public class ParseUtil {
   /** hash加密方法 */
   public static final String HASH_METHOD = "HmacSHA1";
-  /** sign值计算 */
-  public static byte[] HmacSHA1Encrypt(String encryptText, String encryptKey) throws Exception {
+
+  /**
+   * sign值计算
+   *
+   * @param encryptText 要哈希的值
+   * @param encryptKey key
+   * @return 哈希后的字节数组
+   * @throws Exception 异常
+   */
+  public static byte[] hmacSHA1Encrypt(String encryptText, String encryptKey) throws Exception {
     byte[] data = encryptKey.getBytes();
     // 根据给定的字节数组构造一个密钥,第二参数指定一个密钥算法的名称
     SecretKey secretKey = new SecretKeySpec(data, HASH_METHOD);
@@ -29,9 +37,9 @@ public class ParseUtil {
       return null;
     }
 
-    StringBuffer sb = new StringBuffer();
-    for (int i = 0; i < buf.length; i++) {
-      String hex = Integer.toHexString(buf[i] & 0xFF);
+    StringBuilder sb = new StringBuilder();
+    for (byte b : buf) {
+      String hex = Integer.toHexString(b & 0xFF);
       if (hex.length() == 1) {
         hex = '0' + hex;
       }

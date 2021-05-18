@@ -15,28 +15,43 @@ import me.hekr.iotos.softgateway.core.dto.DeviceMapper;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.enums.ErrorCode;
 import me.hekr.iotos.softgateway.core.network.mqtt.MqttService;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Title:Server 这是发送消息的服务端 配置数据平台相关参数，可执行设备上报数据至平台以及平台下发数据至设备 Description:
- * 服务器向多个客户端推送主题，即不同客户端可向服务器订阅相同主题 此为模拟烟雾传感器连接至智慧消防平台，并且其与IoTOS平台进行交互的代码
- * 添加设备和配置流程详情请见《设备连接软网关数据上报说明书》
+ * 这是发送消息的服务端 配置数据平台相关参数，可执行设备上报数据至平台以及平台下发数据至设备 Description: 服务器向多个客户端推送主题，即不同客户端可向服务器订阅相同主题
+ * 此为模拟烟雾传感器连接至智慧消防平台，并且其与IoTOS平台进行交互的代码 添加设备和配置流程详情请见《设备连接软网关数据上报说明书》
  *
  * @author iotos
  */
+@SuppressWarnings("ALL")
 @Slf4j
 @Service
 public class KlinkService {
   @Autowired private IotOsConfig iotOsConfig;
   @Autowired private MqttService mqttService;
-  /** 动态注册设备 */
+
+  /**
+   * 动态注册设备
+   *
+   * @param pk pk
+   * @param devId devId
+   * @param devName 设备名字 可以为空
+   */
   @SneakyThrows
   public void register(String pk, String devId, String devName) {
     register(pk, devId, null, devName);
   }
 
-  /** 动态注册设备 */
+  /**
+   * 动态注册设备
+   *
+   * @param pk pk
+   * @param devId pk
+   * @param productSecret 产品密钥
+   * @param devName 设备名字 可以为空
+   */
   @SneakyThrows
   public void register(String pk, String devId, String productSecret, String devName) {
     doRegister(pk, devId, productSecret, devName);
@@ -52,36 +67,62 @@ public class KlinkService {
       register.setRandom(Constants.RANDOM);
       register.setHashMethod(ParseUtil.HASH_METHOD);
       register.setSign(
-          ParseUtil.parseByte2HexStr(
-              ParseUtil.HmacSHA1Encrypt(pk + productSecret + Constants.RANDOM, productSecret)));
+          Hex.encodeHexString(
+              ParseUtil.hmacSHA1Encrypt(pk + productSecret + Constants.RANDOM, productSecret)));
     }
     mqttService.publish(register);
   }
 
-  /** 注册设备并添加拓扑 */
+  /**
+   * 注册设备并添加拓扑
+   *
+   * <p>设备名字默认为空
+   *
+   * @param pk pk
+   * @param devId devId
+   */
   @SneakyThrows
   public void addDev(String pk, String devId) {
     addDev(pk, devId, null);
   }
 
-  /** 注册设备并添加拓扑关系 */
+  /**
+   * 注册设备并添加拓扑关系
+   *
+   * @param pk pk
+   * @param devId devId
+   * @param devName 设备名字，可以为空
+   */
   @SneakyThrows
-  public void addDev(String pk, String devId, String name) {
-    addDev(pk, null, devId, null, name);
+  public void addDev(String pk, String devId, String devName) {
+    addDev(pk, null, devId, null, devName);
   }
 
-  /** 添加拓扑 */
+  /**
+   * 添加拓扑
+   *
+   * @param pk pk
+   * @param devId devId
+   */
   @SneakyThrows
   public void addTopo(String pk, String devId) {
     doAddTopo(pk, devId, null);
   }
 
-  /** 注册设备并添加拓扑关系 */
+  /**
+   * 注册设备并添加拓扑关系
+   *
+   * @param pk pk
+   * @param productSecret 产品密钥
+   * @param devId devId
+   * @param devSecret 设备密钥
+   * @param devName 设备名字
+   */
   @SneakyThrows
   public void addDev(
-      String pk, String productSecret, String devId, String subDevSecret, String name) {
-    register(pk, devId, productSecret, name);
-    doAddTopo(pk, devId, subDevSecret);
+      String pk, String productSecret, String devId, String devSecret, String devName) {
+    register(pk, devId, productSecret, devName);
+    doAddTopo(pk, devId, devSecret);
   }
 
   private void doAddTopo(String pk, String devId, String subDevSecret) throws Exception {
@@ -93,8 +134,8 @@ public class KlinkService {
       topoSub.setHashMethod(ParseUtil.HASH_METHOD);
       topoSub.setRandom(Constants.RANDOM);
       topoSub.setSign(
-          ParseUtil.parseByte2HexStr(
-              ParseUtil.HmacSHA1Encrypt(
+          Hex.encodeHexString(
+              ParseUtil.hmacSHA1Encrypt(
                   pk + devId + subDevSecret + Constants.RANDOM, subDevSecret)));
     }
     addTopo.setSub(topoSub);
@@ -104,7 +145,12 @@ public class KlinkService {
     mqttService.publish(addTopo);
   }
 
-  /** 设备上线 */
+  /**
+   * 设备上线
+   *
+   * @param pk pk
+   * @param devId devId
+   */
   @SneakyThrows
   public void devLogin(String pk, String devId) {
     doDevLogin(pk, devId);
@@ -117,7 +163,12 @@ public class KlinkService {
     mqttService.publish(devLogin);
   }
 
-  /** 设备离线 */
+  /**
+   * 设备离线
+   *
+   * @param pk pk
+   * @param devId devId
+   */
   @SneakyThrows
   public void devLogout(String pk, String devId) {
     doDevLogout(pk, devId);
@@ -143,7 +194,12 @@ public class KlinkService {
     mqttService.publish(getTopo);
   }
 
-  /** 删除子设备拓扑关系 */
+  /**
+   * 删除子设备拓扑关系
+   *
+   * @param pk pk
+   * @param devId devId
+   */
   @SneakyThrows
   public void delDev(String pk, String devId) {
     DelTopo delTopo = new DelTopo();
@@ -157,7 +213,14 @@ public class KlinkService {
     mqttService.publish(delTopo);
   }
 
-  /** 设备发送数据 */
+  /**
+   * 设备发送数据
+   *
+   * @param pk pk
+   * @param devId devId
+   * @param cmd 命令
+   * @param params 参数
+   */
   @SneakyThrows
   public void devSend(String pk, String devId, String cmd, Map<String, Object> params) {
     ModelData modelData = new ModelData();
@@ -170,6 +233,9 @@ public class KlinkService {
    * 设备发送数据
    *
    * <p>如果找不到 mapper，则打印日志，不会真实发送数据
+   *
+   * @param mapper 设备
+   * @param klink klink
    */
   @SneakyThrows
   public void sendKlink(DeviceMapper mapper, KlinkDev klink) {
@@ -183,18 +249,35 @@ public class KlinkService {
     mqttService.publish(klink);
   }
 
-  /** 发送数据，比较底层的发送方法，需要自己构造 klink */
+  /**
+   * 发送数据，比较底层的发送方法，需要自己构造 klink
+   *
+   * @param klink klink
+   */
   @SneakyThrows
   public void sendKlink(KlinkDev klink) {
     mqttService.publish(klink);
   }
 
-  /** 设备发送数据， 没有参数，只有命令 */
+  /**
+   * 设备发送数据， 没有参数，只有命令
+   *
+   * @param pk pk
+   * @param devId devId
+   * @param cmd 命令
+   */
   @SneakyThrows
   public void devSend(String pk, String devId, String cmd) {
     devSend(pk, devId, cmd, null);
   }
 
+  /**
+   * 设备发送数据
+   *
+   * @param pk pk
+   * @param devId devId
+   * @param data 物模型数据
+   */
   public void devSend(String pk, String devId, ModelData data) {
     DevSend kLink = new DevSend();
     kLink.setPk(pk);
@@ -230,6 +313,11 @@ public class KlinkService {
     devSend(dev.getPk(), dev.getDevId(), data);
   }
 
+  /**
+   * 设备登录
+   *
+   * @param mapper 设备
+   */
   public void devLogin(DeviceMapper mapper) {
     Optional<DeviceRemoteConfig> devMapper = getDeviceMapper(mapper);
     if (!devMapper.isPresent()) {
@@ -245,7 +333,7 @@ public class KlinkService {
    *
    * <p>如果找不到 mapper，则打印日志，不会真实发送数据
    *
-   * @param mapper
+   * @param mapper 设备
    */
   public void devLogout(DeviceMapper mapper) {
     Optional<DeviceRemoteConfig> devMapper = getDeviceMapper(mapper);
@@ -260,7 +348,7 @@ public class KlinkService {
    * 获取设备映射
    *
    * @param mapper 设备关系
-   * @return
+   * @return 设备配置
    */
   private Optional<DeviceRemoteConfig> getDeviceMapper(DeviceMapper mapper) {
     Props props = mapper.getProps();
@@ -273,6 +361,13 @@ public class KlinkService {
     return subsystemDev;
   }
 
+  /**
+   * 发送控制设备回复
+   *
+   * @param mapper 设备
+   * @param code 错误码 0 成功； 错误定义其他，1000以上
+   * @param desc 错误描述
+   */
   public void sendCloudSendResp(DeviceMapper mapper, int code, String desc) {
     KlinkResp resp = new KlinkResp();
     resp.setCode(code);
@@ -281,6 +376,12 @@ public class KlinkService {
     sendKlink(mapper, resp);
   }
 
+  /**
+   * 发送控制设备回复
+   *
+   * @param mapper 设备
+   * @param errorCode 错误码
+   */
   public void sendCloudSendResp(DeviceMapper mapper, ErrorCode errorCode) {
     sendCloudSendResp(mapper, errorCode.getCode(), errorCode.getDesc());
   }

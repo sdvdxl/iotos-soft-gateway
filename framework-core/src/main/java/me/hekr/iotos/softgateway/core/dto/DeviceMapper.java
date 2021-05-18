@@ -10,7 +10,7 @@ public interface DeviceMapper {
   /**
    * 获取映射关系的属性
    *
-   * @return
+   * @return 自定义属性
    */
   @Transient
   @JsonIgnore

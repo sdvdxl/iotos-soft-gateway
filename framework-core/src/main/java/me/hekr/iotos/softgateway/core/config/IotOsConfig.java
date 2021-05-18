@@ -5,14 +5,12 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import me.hekr.iotos.softgateway.common.utils.ParseUtil;
 import me.hekr.iotos.softgateway.core.constant.Constants;
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * @author iotos
- * @date 2020/7/9
- */
+/** @author iotos */
 @ComponentScan("me.hekr.iotos.softgateway.core")
 @Configuration
 public class IotOsConfig {
@@ -57,7 +55,6 @@ public class IotOsConfig {
 
   @SneakyThrows
   private String getPassword(String pk, String devId, String devSecret, String random) {
-    return ParseUtil.parseByte2HexStr(
-        (ParseUtil.HmacSHA1Encrypt(pk + devId + devId + random, devSecret)));
+    return Hex.encodeHexString((ParseUtil.hmacSHA1Encrypt(pk + devId + devId + random, devSecret)));
   }
 }

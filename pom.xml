@@ -11,46 +11,174 @@
     <module>framework-network-common</module>
     <module>example</module>
     <module>framework-common-utils</module>
+    <module>framework-network-mqtt</module>
   </modules>
-  <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.1.6.RELEASE</version>
-    <relativePath/> <!-- lookup parent from repository -->
-  </parent>
+
 
   <groupId>me.hekr.iotos.softgateway</groupId>
   <artifactId>iotos-soft-gateway</artifactId>
-  <version>3.0.2</version>
-  <name>iotos-soft-gateway</name>
+  <version>3.1.0</version>
+  <name>${project.groupId}:${project.artifactId}</name>
   <description>IoTOS 软网关</description>
+  <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
 
   <properties>
-    <java.version>1.8</java.version>
-    <maven.compiler.target>1.8</maven.compiler.target>
-    <maven.compiler.source>1.8</maven.compiler.source>
+    <java.version>8</java.version>
+    <maven.compiler.target>8</maven.compiler.target>
+    <maven.compiler.source>8</maven.compiler.source>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+    <iotos.softgateway.version>3.1.0</iotos.softgateway.version>
   </properties>
 
+  <licenses>
+    <license>
+      <name>木兰宽松许可证, 第2版</name>
+      <url>https://license.coscl.org.cn/MulanPSL2/</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>sdvdxl</name>
+      <email>sdvdxl@163.com</email>
+      <organization>hekr</organization>
+      <organizationUrl>https://hekr.me</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://https://gitee.com/geekhekr/iotos-soft-gateway.git</connection>
+    <developerConnection>scm:git:ssh://gitee.com:geekhekr/iotos-soft-gateway.git</developerConnection>
+    <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
+  </scm>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-all</artifactId>
+        <version>4.1.60.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-core</artifactId>
+        <version>${iotos.softgateway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-common-utils</artifactId>
+        <version>${iotos.softgateway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-network-udp</artifactId>
+        <version>${iotos.softgateway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-network-tcp</artifactId>
+        <version>${iotos.softgateway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-network-mqtt</artifactId>
+        <version>${iotos.softgateway.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-network-common</artifactId>
+        <version>${iotos.softgateway.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
+      <version>1.18.8</version>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+      <version>1.7.26</version>
     </dependency>
 
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <version>4.12</version>
       <scope>test</scope>
     </dependency>
 
   </dependencies>
-
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>2.9.1</version>
+              <executions>
+                <execution>
+                  <id>attach-javadocs</id>
+                  <goals>
+                    <goal>jar</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <configuration>
+                <useStandardDocletOptions>false</useStandardDocletOptions>
+              </configuration>
+            </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>

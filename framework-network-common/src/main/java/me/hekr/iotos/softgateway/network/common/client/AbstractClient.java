@@ -39,7 +39,7 @@ public abstract class AbstractClient<T> {
   /**
    * 是不是同步；true 同步模式，即发送消息后等待数据返回
    *
-   * @see #setTimeout(int) 超时时间
+   * <p>参考 {@code AbstractClient#setTimeout(int) } 超时时间
    */
   @Setter protected boolean sync;
 
@@ -147,7 +147,8 @@ public abstract class AbstractClient<T> {
    *
    * <p>如果设置sync 为 true，会等待返回数据
    *
-   * @throws TimeoutException sync 为 true，等待超时
+   * @param t 消息
+   *     <p>sync 为 true，等待超时，超时会抛出 {@code TimeoutException}
    * @return sync 为 true 返回 response 数据，否则 null
    */
   @SneakyThrows

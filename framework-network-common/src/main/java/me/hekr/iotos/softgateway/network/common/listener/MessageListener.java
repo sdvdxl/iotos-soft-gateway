@@ -8,7 +8,7 @@ public interface MessageListener<T extends PacketContext<?>> {
   /**
    * 收到消息
    *
-   * @param ctx
+   * @param ctx 上下文
    */
   void onMessage(T ctx);
 }
