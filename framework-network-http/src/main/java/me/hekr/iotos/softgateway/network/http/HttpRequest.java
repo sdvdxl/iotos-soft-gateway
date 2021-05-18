@@ -45,7 +45,6 @@ public class HttpRequest {
     private final Map<String, Object> queryParams = new HashMap<>(10);
     private final Headers.Builder headerBuilder = new Headers.Builder();
     Request.Builder okHttpRequestBuilder;
-    HttpUrl.Builder httpUrlBuilder = new HttpUrl.Builder();
     private byte[] body;
     private HttpMethod method = HttpMethod.GET;
     private MediaType mediaType = MediaType.APPLICATION_JSON;
