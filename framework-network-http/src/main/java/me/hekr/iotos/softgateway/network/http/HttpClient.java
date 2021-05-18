@@ -75,10 +75,15 @@ public class HttpClient {
       ResponseBody body = response.body();
       byte[] bytes = body == null ? null : body.bytes();
       httpResponse = new HttpResponse(response, bytes);
-      httpResponse.success = httpResponseChecker.isSuccess(httpResponse);
     } catch (Exception e) {
       throw new HttpException(request, e);
     }
+
+    boolean success = httpResponseChecker.isSuccess(httpResponse);
+    if (!success) {
+      throw new HttpException(request, httpResponse, httpResponseChecker.desc());
+    }
+
     return httpResponse;
   }
 

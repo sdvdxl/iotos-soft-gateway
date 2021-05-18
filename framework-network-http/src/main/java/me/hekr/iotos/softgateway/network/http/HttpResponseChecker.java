@@ -14,6 +14,11 @@ public interface HttpResponseChecker {
         public boolean isSuccess(HttpResponse response) {
           return response.response.isSuccessful();
         }
+
+        @Override
+        public String desc() {
+          return "status code 不是2xx";
+        }
       };
   /**
    * 是否成功
@@ -22,4 +27,14 @@ public interface HttpResponseChecker {
    * @return 成功 true，否则 false
    */
   boolean isSuccess(HttpResponse response);
+
+  /**
+   * 校验失败描述
+   *
+   * @return 描述
+   */
+  default String desc() {
+    return "response 校验失败";
+  }
+  ;
 }

@@ -29,4 +29,8 @@ public class HttpException extends RuntimeException {
   public HttpException(HttpRequest request, HttpResponse response, Throwable throwable) {
     super("request:" + request + ", response:" + response, throwable);
   }
+
+  public HttpException(HttpRequest request, HttpResponse response, String desc) {
+    super(desc + ", request:" + request + ", response:" + response);
+  }
 }

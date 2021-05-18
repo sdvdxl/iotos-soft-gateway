@@ -7,6 +7,8 @@ import me.hekr.iotos.softgateway.network.http.HttpClient;
 import me.hekr.iotos.softgateway.network.http.HttpPageResponse;
 import me.hekr.iotos.softgateway.network.http.HttpRequest;
 import me.hekr.iotos.softgateway.network.http.HttpRequestPageable;
+import me.hekr.iotos.softgateway.network.http.HttpResponse;
+import me.hekr.iotos.softgateway.network.http.HttpResponseChecker;
 import me.hekr.iotos.softgateway.network.http.PageableResponseParser;
 
 /**
@@ -18,11 +20,17 @@ public class HttpClientSample {
   public static void main(String[] args) {
     testRequestPageable();
     testRequestPageableItems();
+    testChecker();
   }
 
   /** 测试分页 */
   public static void testRequestPageable() {
     HttpClient client = HttpClient.newInstance("http://localhost:8080/");
+    client.setHttpResponseChecker(
+        response -> {
+          // 200才算成功
+          return response.getStatusCode() == 200;
+        });
     HttpRequestPageable<DeviceResponse> request =
         new HttpRequestPageable<DeviceResponse>(0, 10) {
           @Override
@@ -71,5 +79,23 @@ public class HttpClientSample {
         };
     List<Device> list = client.exec(request, parser, 0, 1);
     System.out.println(list);
+  }
+
+  /** 测试自定义校验 */
+  public static void testChecker() {
+    HttpClient client = HttpClient.newInstance("http://localhost:8080/");
+    client.setHttpResponseChecker(
+        new HttpResponseChecker() {
+          @Override
+          public boolean isSuccess(HttpResponse response) {
+            return response.getStatusCode() == 201;
+          }
+
+          @Override
+          public String desc() {
+            return "不是201！！";
+          }
+        });
+    client.exec(HttpRequest.builder().path("").build());
   }
 }

@@ -41,6 +41,11 @@ public class HttpRequest {
     return requestBuilder.okHttpRequestBuilder.url(httpUrlBuilder.build()).build();
   }
 
+  @Override
+  public String toString() {
+    return "HttpRequest{" + "request=" + getOkHttpRequest() + '}';
+  }
+
   public static class Builder {
     private final Map<String, Object> queryParams = new HashMap<>(10);
     private final Headers.Builder headerBuilder = new Headers.Builder();
