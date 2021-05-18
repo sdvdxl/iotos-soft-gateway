@@ -66,7 +66,7 @@ public class HttpClient {
   @SneakyThrows
   public HttpResponse exec(HttpRequest request) {
     HttpResponse httpResponse;
-      request.baseUrl = baseUrl;
+    request.baseUrl = baseUrl;
     try {
       Response response = okHttpClient.newCall(request.getOkHttpRequest()).execute();
       ResponseBody body = response.body();
@@ -80,10 +80,23 @@ public class HttpClient {
     return httpResponse;
   }
 
+  /**
+   * 执行请求，并自动从 json 对象解析成对象
+   *
+   * @param request 请求
+   * @param clazz 映射的对象
+   * @param <T> 参数类型
+   * @return 结果
+   */
   @SneakyThrows
   public <T> T exec(HttpRequest request, Class<T> clazz) {
+    return exec(request, response -> JsonUtil.fromBytes(response.bytes, clazz));
+  }
+
+  @SneakyThrows
+  public <T> T exec(HttpRequest request, ResponseParser<T> parser) {
     HttpResponse response = exec(request);
-    return JsonUtil.fromBytes(response.bytes, clazz);
+    return parser.parse(response);
   }
 
   /**
@@ -95,13 +108,16 @@ public class HttpClient {
    * @param <T> response 中的元素
    * @return 元素列表
    */
-  public <R, T> List<T> exec(
-      HttpRequestPageable<R> request, ResponseParser parser, int curPage, int pageSize) {
+  public <R extends PageableResponse<T>, T> List<T> exec(
+      HttpRequestPageable<R> request,
+      PageableResponseParser<R, T> parser,
+      int curPage,
+      int pageSize) {
     List<T> resultList = new ArrayList<>();
     boolean hasMore = true;
     int page = curPage;
     while (hasMore) {
-      HttpResponse resp = exec(request.buildPageRequest(page, pageSize));
+      HttpResponse resp = exec(request.buildRequest(page, pageSize));
       HttpPageResponse<R, T> parse = parser.parse(resp);
       resultList.addAll(parse.getItems());
       hasMore = request.hasMore(parse.getResult());

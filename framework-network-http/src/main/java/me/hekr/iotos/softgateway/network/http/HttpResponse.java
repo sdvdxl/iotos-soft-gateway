@@ -14,6 +14,7 @@ public class HttpResponse {
     this.response = response;
     this.statusCode = response.code();
     this.bytes = bytes;
+    success = true;
   }
 
   public HttpResponse() {}

@@ -1,13 +1,13 @@
 package me.hekr.iotos.softgateway.network.http;
 
 /** @author iotos */
-public interface ResponseParser {
+public interface ResponseParser<T> {
 
   /**
-   * 解析 response
+   * 从 response 解析成对象
    *
-   * @param response 请求结果
-   * @return 请求结果
+   * @param response response
+   * @return 解析结果
    */
-  HttpPageResponse parse(HttpResponse response);
+  T parse(HttpResponse response);
 }

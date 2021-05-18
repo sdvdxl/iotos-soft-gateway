@@ -4,10 +4,15 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class DeviceResponse {
+public class DeviceResponse implements PageableResponse<Device> {
   List<Device> devices;
 
   public boolean hasMore() {
     return devices != null && !devices.isEmpty();
+  }
+
+  @Override
+  public List<Device> getItems() {
+    return devices;
   }
 }

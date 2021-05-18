@@ -7,7 +7,7 @@ package me.hekr.iotos.softgateway.network.http;
  */
 public interface HttpResponseChecker {
 
-  /** 默认实现， http status 200<=code<300 */
+  /** 默认实现， http status 200 &lt;=code&lt;300 */
   HttpResponseChecker DEFAULT =
       new HttpResponseChecker() {
         @Override

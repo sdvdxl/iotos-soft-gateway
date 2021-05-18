@@ -9,11 +9,10 @@ public class HttpClientTest {
   public void testRequestPageable() {
     HttpClient client = HttpClient.newInstance("http://localhost:8080/");
     HttpRequestPageable<DeviceResponse> request =
-        new HttpRequestPageable<DeviceResponse>() {
+        new HttpRequestPageable<DeviceResponse>(0, 10) {
           @Override
-          public HttpRequest buildPageRequest(int curPage, int pageSize) {
+          public HttpRequest buildRequest(int curPage, int pageSize) {
             return HttpRequest.builder()
-                .path("")
                 .addParam("curPage", curPage)
                 .addParam("pageSize", pageSize)
                 .build();
@@ -24,12 +23,8 @@ public class HttpClientTest {
             return resp.hasMore();
           }
         };
-    ResponseParser parser =
-        response -> {
-          DeviceResponse fromBytes;
-          fromBytes = JsonUtil.fromBytes(response.bytes, DeviceResponse.class);
-          return HttpPageResponse.wrap(fromBytes, fromBytes.devices);
-        };
+    PageableResponseParser<DeviceResponse, Device> parser =
+        r -> HttpPageResponse.wrap(JsonUtil.fromBytes(r.bytes, DeviceResponse.class));
     List<Device> list = client.exec(request, parser, 0, 1);
     System.out.println(list);
   }

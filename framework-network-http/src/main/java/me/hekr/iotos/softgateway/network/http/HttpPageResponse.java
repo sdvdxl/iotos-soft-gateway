@@ -10,21 +10,22 @@ import lombok.Setter;
  *
  * @author iotos
  */
-public class HttpPageResponse<P, T> {
+public class HttpPageResponse<R extends PageableResponse<T>, T> {
 
   /** 分页元素 */
   @Setter private List<T> items;
   /** response 整体结果 */
-  @Setter @Getter private P result;
+  @Setter @Getter private R result;
+
   public HttpPageResponse() {}
 
-  public HttpPageResponse(P p, List<T> t) {
-    this.result = p;
+  public HttpPageResponse(R r, List<T> t) {
+    this.result = r;
     this.items = t;
   }
 
-  public static <P, T> HttpPageResponse<P, T> wrap(P p, List<T> t) {
-    return new HttpPageResponse<>(p, t);
+  public static <R extends PageableResponse<T>, T> HttpPageResponse<R, T> wrap(R r) {
+    return new HttpPageResponse<>(r, r.getItems());
   }
 
   public List<T> getItems() {
