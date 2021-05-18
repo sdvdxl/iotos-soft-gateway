@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 public class DeviceRemoteConfig implements Serializable {
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
   private Map<String, Object> data = new HashMap<>();
+  /** 自定义属性  */
   private Map<Object, Object> customData = new HashMap<>();
 
   /** 在线状态 */
@@ -39,14 +40,30 @@ public class DeviceRemoteConfig implements Serializable {
     log.info("after parseAndAdd: {}", getAll());
   }
 
+  /**
+   * 增加自定义属性信息
+   * @param key
+   * @param val
+   * @return
+   */
   public Object putCustom(Object key, Object val){
     return this.customData.put(key,val);
   }
 
+  /**
+   * 获取自定义信息
+   * @param key
+   * @return
+   */
   public Object getCustom(Object key){
     return this.customData.get(key);
   }
 
+  /**
+   * 删除自定义信息
+   * @param key
+   * @return
+   */
   public Object removeCustom(Object key){
     return this.customData.remove(key);
   }
