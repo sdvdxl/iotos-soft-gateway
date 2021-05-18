@@ -7,6 +7,12 @@ import lombok.Data;
 public class DeviceResponse implements PageableResponse<Device> {
   List<Device> devices;
 
+  public DeviceResponse() {}
+
+  public DeviceResponse(List<Device> devices) {
+    this.devices = devices;
+  }
+
   public boolean hasMore() {
     return devices != null && !devices.isEmpty();
   }

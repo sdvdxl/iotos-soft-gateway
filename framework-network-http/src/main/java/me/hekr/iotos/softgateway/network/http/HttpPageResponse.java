@@ -1,7 +1,7 @@
 package me.hekr.iotos.softgateway.network.http;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,23 +12,20 @@ import lombok.Setter;
  */
 public class HttpPageResponse<R extends PageableResponse<T>, T> {
 
-  /** 分页元素 */
-  @Setter private List<T> items;
   /** response 整体结果 */
   @Setter @Getter private R result;
 
   public HttpPageResponse() {}
 
-  public HttpPageResponse(R r, List<T> t) {
+  public HttpPageResponse(R r) {
     this.result = r;
-    this.items = t;
   }
 
   public static <R extends PageableResponse<T>, T> HttpPageResponse<R, T> wrap(R r) {
-    return new HttpPageResponse<>(r, r.getItems());
+    return new HttpPageResponse<>(r);
   }
 
-  public List<T> getItems() {
-    return items == null ? Collections.emptyList() : items;
+  public Collection<T> getItems() {
+    return result == null ? Collections.emptyList() : result.getItems();
   }
 }

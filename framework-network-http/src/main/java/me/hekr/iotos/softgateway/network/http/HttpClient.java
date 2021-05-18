@@ -26,8 +26,6 @@ public class HttpClient {
   /** http response 结果校验，如果不通过则抛出异常 */
   @Setter private HttpResponseChecker httpResponseChecker = HttpResponseChecker.DEFAULT;
 
-  @Setter private HttpExceptionHandler httpExceptionHandler = HttpExceptionHandler.THROW_HANDLER;
-
   private HttpClient() {}
 
   @SneakyThrows
@@ -47,7 +45,7 @@ public class HttpClient {
             // 连接池
             .connectionPool(connectionPool)
             // 连接超时
-            .connectTimeout(Duration.ofSeconds(3))
+            .connectTimeout(Duration.ofSeconds(timeoutOfSecs))
             // 不重试
             .retryOnConnectionFailure(false)
             .addInterceptor(interceptor)
@@ -64,6 +62,11 @@ public class HttpClient {
   }
 
   @SneakyThrows
+  public static HttpClient newInstance(String url, Level level) {
+    return newInstance(url, 3, level);
+  }
+
+  @SneakyThrows
   public HttpResponse exec(HttpRequest request) {
     HttpResponse httpResponse;
     request.baseUrl = baseUrl;
@@ -74,8 +77,7 @@ public class HttpClient {
       httpResponse = new HttpResponse(response, bytes);
       httpResponse.success = httpResponseChecker.isSuccess(httpResponse);
     } catch (Exception e) {
-      httpResponse = new HttpResponse();
-      httpExceptionHandler.onException(request, e);
+      throw new HttpException(request, e);
     }
     return httpResponse;
   }

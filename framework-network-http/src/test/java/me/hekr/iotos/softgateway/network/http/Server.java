@@ -24,4 +24,12 @@ public class Server {
     }
     return response;
   }
+
+  @GetMapping("/items")
+  public Object items(Integer curPage, Integer pageSize) {
+    if (curPage >= 3) {
+      return Collections.emptyList();
+    }
+    return Collections.singletonList(new Device());
+  }
 }

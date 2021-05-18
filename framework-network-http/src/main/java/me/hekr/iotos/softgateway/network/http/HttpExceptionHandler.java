@@ -20,12 +20,14 @@ public interface HttpExceptionHandler {
   HttpExceptionHandler LOG_HANDLER =
       (request, t) -> {
         log.error("request:" + request + ", error:" + t.getMessage(), t);
+        return new HttpResponse();
       };
   /**
    * 异常发生的时候
    *
    * @param request 请求
    * @param t 异常
+   * @return 自定义 response
    */
-  void onException(HttpRequest request, Throwable t);
+  HttpResponse onException(HttpRequest request, Throwable t);
 }
