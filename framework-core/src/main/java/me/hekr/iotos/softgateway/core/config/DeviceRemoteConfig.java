@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 public class DeviceRemoteConfig implements Serializable {
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
   private Map<String, Object> data = new HashMap<>();
+  /** 自定义属性  */
   private Map<Object, Object> customData = new HashMap<>();
 
   /** 在线状态 */
