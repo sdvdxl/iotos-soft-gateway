@@ -20,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 public class DeviceRemoteConfig implements Serializable {
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
   private Map<String, Object> data = new HashMap<>();
+  private Map<Object, Object> customData = new HashMap<>();
+
   /** 在线状态 */
   private volatile boolean online;
 
@@ -35,6 +37,18 @@ public class DeviceRemoteConfig implements Serializable {
     DeviceRemoteConfig m = new DeviceRemoteConfig(map);
     parseAndAdd(m);
     log.info("after parseAndAdd: {}", getAll());
+  }
+
+  public Object put(Object key, Object val){
+    return this.customData.put(key,val);
+  }
+
+  public Object get(Object key){
+    return this.customData.get(key);
+  }
+
+  public Object remove(Object key){
+    return this.customData.remove(key);
   }
 
   @SuppressWarnings("unchecked")
