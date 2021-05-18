@@ -179,6 +179,8 @@ snapshot 版本 需要添加仓库：
 </repositories>
 ```
 
+最新版本： 3.2.0-SNAPSHOT
+
 示例 demo 可以参考 [iotos-soft-gateway-demo](https://gitee.com/geekhekr/iotos-soft-gateway-demo) 项目。
 
 ### 发布
