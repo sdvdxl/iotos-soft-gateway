@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
@@ -21,7 +22,7 @@ public class DeviceRemoteConfig implements Serializable {
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
   private Map<String, Object> data = new HashMap<>();
   /** 自定义属性  */
-  private Map<Object, Object> customData = new HashMap<>();
+  private Map<Object, Object> customData = new ConcurrentHashMap<>();
 
   /** 在线状态 */
   private volatile boolean online;
