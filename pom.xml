@@ -12,6 +12,7 @@
     <module>example</module>
     <module>framework-common-utils</module>
     <module>framework-network-mqtt</module>
+    <module>framework-network-http</module>
   </modules>
 
 
@@ -50,7 +51,8 @@
 
   <scm>
     <connection>scm:git:git://https://gitee.com/geekhekr/iotos-soft-gateway.git</connection>
-    <developerConnection>scm:git:ssh://gitee.com:geekhekr/iotos-soft-gateway.git</developerConnection>
+    <developerConnection>scm:git:ssh://gitee.com:geekhekr/iotos-soft-gateway.git
+    </developerConnection>
     <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
   </scm>
 
@@ -60,6 +62,11 @@
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
         <version>4.1.60.Final</version>
+      </dependency>
+      <dependency>
+        <groupId>me.hekr.iotos.softgateway</groupId>
+        <artifactId>framework-network-common</artifactId>
+        <version>${iotos.softgateway.version}</version>
       </dependency>
       <dependency>
         <groupId>me.hekr.iotos.softgateway</groupId>
@@ -88,7 +95,7 @@
       </dependency>
       <dependency>
         <groupId>me.hekr.iotos.softgateway</groupId>
-        <artifactId>framework-network-common</artifactId>
+        <artifactId>framework-network-http</artifactId>
         <version>${iotos.softgateway.version}</version>
       </dependency>
     </dependencies>
@@ -148,22 +155,22 @@
           </execution>
         </executions>
       </plugin>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-javadoc-plugin</artifactId>
-              <version>2.9.1</version>
-              <executions>
-                <execution>
-                  <id>attach-javadocs</id>
-                  <goals>
-                    <goal>jar</goal>
-                  </goals>
-                </execution>
-              </executions>
-              <configuration>
-                <useStandardDocletOptions>false</useStandardDocletOptions>
-              </configuration>
-            </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.9.1</version>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <useStandardDocletOptions>false</useStandardDocletOptions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-gpg-plugin</artifactId>
