@@ -1,4 +1,4 @@
-package me.hekr.iotos.softgateway.network.http;
+package me.hekr.iotos.softgateway.sample;
 
 import lombok.Data;
 

@@ -1,18 +1,27 @@
-package me.hekr.iotos.softgateway.network.http;
+package me.hekr.iotos.softgateway.sample;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
-import okhttp3.logging.HttpLoggingInterceptor.Level;
-import org.junit.Ignore;
-import org.junit.Test;
+import me.hekr.iotos.softgateway.network.http.HttpClient;
+import me.hekr.iotos.softgateway.network.http.HttpPageResponse;
+import me.hekr.iotos.softgateway.network.http.HttpRequest;
+import me.hekr.iotos.softgateway.network.http.HttpRequestPageable;
+import me.hekr.iotos.softgateway.network.http.PageableResponseParser;
 
-@Ignore
-public class HttpClientTest {
+/**
+ * 运行前先启动 HttpServerSample
+ *
+ * @author iotos
+ */
+public class HttpClientSample {
+  public static void main(String[] args) {
+    testRequestPageable();
+    testRequestPageableItems();
+  }
 
   /** 测试分页 */
-  @Test
-  public void testRequestPageable() {
+  public static void testRequestPageable() {
     HttpClient client = HttpClient.newInstance("http://localhost:8080/");
     HttpRequestPageable<DeviceResponse> request =
         new HttpRequestPageable<DeviceResponse>(0, 10) {
@@ -30,14 +39,13 @@ public class HttpClientTest {
           }
         };
     PageableResponseParser<DeviceResponse, Device> parser =
-        r -> HttpPageResponse.wrap(JsonUtil.fromBytes(r.bytes, DeviceResponse.class));
+        r -> HttpPageResponse.wrap(JsonUtil.fromBytes(r.getBytes(), DeviceResponse.class));
     List<Device> list = client.exec(request, parser, 0, 1);
     System.out.println(list);
   }
 
   /** 测试分页 ，紧紧返回列表的情况 */
-  @Test
-  public void testRequestPageableItems() {
+  public static void testRequestPageableItems() {
     HttpClient client = HttpClient.newInstance("http://localhost:8080/");
     HttpRequestPageable<DeviceResponse> request =
         new HttpRequestPageable<DeviceResponse>(0, 10) {
@@ -63,17 +71,5 @@ public class HttpClientTest {
         };
     List<Device> list = client.exec(request, parser, 0, 1);
     System.out.println(list);
-  }
-
-  @Test(expected = HttpException.class)
-  public void testHttpException() {
-    HttpClient client = HttpClient.newInstance("http://localhost:1234/");
-    client.exec(HttpRequest.builder().build(), DeviceResponse.class);
-  }
-
-  @Test
-  public void testHttpExceptionLog() {
-    HttpClient client = HttpClient.newInstance("http://localhost:8080/", Level.BODY);
-    System.out.println(client.exec(HttpRequest.builder().build(), DeviceResponse.class));
   }
 }

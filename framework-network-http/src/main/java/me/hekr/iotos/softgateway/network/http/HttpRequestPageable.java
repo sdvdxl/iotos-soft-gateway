@@ -32,5 +32,5 @@ public abstract class HttpRequestPageable<R> {
    * @param resp 结果
    * @return true 还有剩余分页数据；false 没有分页数据
    */
-  abstract boolean hasMore(R resp);
+  public abstract boolean hasMore(R resp);
 }
