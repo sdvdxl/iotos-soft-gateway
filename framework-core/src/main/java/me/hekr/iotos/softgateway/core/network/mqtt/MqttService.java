@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import me.hekr.iotos.softgateway.common.utils.JsonUtil;
+import me.hekr.iotos.softgateway.common.utils.ThreadPoolUtil;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.config.MqttConfig;
@@ -18,7 +20,6 @@ import me.hekr.iotos.softgateway.core.klink.DevLogin;
 import me.hekr.iotos.softgateway.core.klink.DevLogout;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
 import me.hekr.iotos.softgateway.core.listener.MqttConnectedListener;
-import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -52,6 +53,20 @@ public class MqttService {
     this.iotOsConfig = iotOsConfig;
     initConfig(iotOsConfig);
     publishExecutor.execute(this::startPublishTask);
+    ThreadPoolUtil.DEFAULT_SCHEDULED.scheduleAtFixedRate(
+        () -> {
+          int size = queue.size();
+          if (log.isDebugEnabled()) {
+            log.debug("klink 队列还有 {} 个", size);
+          }
+
+          if (size > iotOsConfig.getKlinkQueueSize()) {
+            log.warn("Klink 队列未及时消费，还有: {} 个记录", size);
+          }
+        },
+        0,
+        3,
+        TimeUnit.SECONDS);
   }
 
   private void initConfig(IotOsConfig iotOsConfig) throws MqttException {
@@ -137,6 +152,10 @@ public class MqttService {
   /** @param klink 消息，发送的时候会被 toJson */
   @SneakyThrows
   public void publish(KlinkDev klink) {
+    if (log.isDebugEnabled()) {
+      log.debug("发送 klink: {}", JsonUtil.toJson(klink));
+    }
+
     String pk = klink.getPk();
     String devId = klink.getDevId();
     Optional<DeviceRemoteConfig> byPkAndDevId = DeviceRemoteConfig.getByPkAndDevId(pk, devId);

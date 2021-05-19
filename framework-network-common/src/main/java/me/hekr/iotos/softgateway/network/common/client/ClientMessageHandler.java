@@ -8,8 +8,8 @@ import java.net.InetSocketAddress;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
-import me.hekr.iotos.softgateway.network.common.listener.MessageListener;
 import me.hekr.iotos.softgateway.network.common.PacketContext;
+import me.hekr.iotos.softgateway.network.common.listener.MessageListener;
 
 /** @author iotos */
 @Sharable
@@ -35,6 +35,10 @@ public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<Interna
 
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, InternalPacket<T> packet) {
+    if (log.isDebugEnabled()) {
+      log.debug("收到消息：{}", packet);
+    }
+
     // 如果不是同步，调用消息回调接口
     if (!sync) {
       messageListener.onMessage(PacketContext.wrap(packet.getAddress(), packet.getMessage()));

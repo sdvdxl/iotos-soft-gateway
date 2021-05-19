@@ -28,6 +28,10 @@ public class IotOsConfig {
   @Value("${connect.mqtt.keepAliveTime}")
   private int keepAliveTime;
 
+  @Value("${connect.mqtt.klink.queue.size:10}")
+  @Getter
+  private int klinkQueueSize;
+
   @Value("${gateway.pk}")
   private String gatewayPk;
 
