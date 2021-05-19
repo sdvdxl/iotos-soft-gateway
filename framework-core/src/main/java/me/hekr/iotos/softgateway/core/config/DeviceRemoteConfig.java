@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
@@ -20,6 +21,9 @@ import org.apache.commons.lang3.StringUtils;
 public class DeviceRemoteConfig implements Serializable {
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
   private Map<String, Object> data = new HashMap<>();
+  /** 自定义属性  */
+  private final Map<Object, Object> customData = new ConcurrentHashMap<>();
+
   /** 在线状态 */
   private volatile boolean online;
 
@@ -35,6 +39,34 @@ public class DeviceRemoteConfig implements Serializable {
     DeviceRemoteConfig m = new DeviceRemoteConfig(map);
     parseAndAdd(m);
     log.info("after parseAndAdd: {}", getAll());
+  }
+
+  /**
+   * 增加自定义属性信息
+   * @param key key
+   * @param val val
+   * @return val
+   */
+  public Object putCustom(Object key, Object val){
+    return this.customData.put(key,val);
+  }
+
+  /**
+   * 获取自定义信息
+   * @param key key
+   * @return val
+   */
+  public Object getCustom(Object key){
+    return this.customData.get(key);
+  }
+
+  /**
+   * 删除自定义信息
+   * @param key key
+   * @return 删除的值
+   */
+  public Object removeCustom(Object key){
+    return this.customData.remove(key);
   }
 
   @SuppressWarnings("unchecked")
