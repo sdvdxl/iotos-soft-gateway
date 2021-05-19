@@ -22,7 +22,7 @@ public class DeviceRemoteConfig implements Serializable {
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
   private Map<String, Object> data = new HashMap<>();
   /** 自定义属性  */
-  private Map<Object, Object> customData = new ConcurrentHashMap<>();
+  private final Map<Object, Object> customData = new ConcurrentHashMap<>();
 
   /** 在线状态 */
   private volatile boolean online;
@@ -43,9 +43,9 @@ public class DeviceRemoteConfig implements Serializable {
 
   /**
    * 增加自定义属性信息
-   * @param key
-   * @param val
-   * @return
+   * @param key key
+   * @param val val
+   * @return val
    */
   public Object putCustom(Object key, Object val){
     return this.customData.put(key,val);
@@ -53,8 +53,8 @@ public class DeviceRemoteConfig implements Serializable {
 
   /**
    * 获取自定义信息
-   * @param key
-   * @return
+   * @param key key
+   * @return val
    */
   public Object getCustom(Object key){
     return this.customData.get(key);
@@ -62,8 +62,8 @@ public class DeviceRemoteConfig implements Serializable {
 
   /**
    * 删除自定义信息
-   * @param key
-   * @return
+   * @param key key
+   * @return 删除的值
    */
   public Object removeCustom(Object key){
     return this.customData.remove(key);
