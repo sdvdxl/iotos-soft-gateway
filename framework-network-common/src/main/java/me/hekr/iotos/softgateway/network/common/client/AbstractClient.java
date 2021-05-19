@@ -14,6 +14,7 @@ import io.netty.channel.socket.DatagramChannel;
 import io.netty.handler.logging.LoggingHandler;
 import java.net.InetSocketAddress;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import lombok.Getter;
 import lombok.Setter;
@@ -71,6 +72,7 @@ public abstract class AbstractClient<T> {
   protected void init() {}
 
   public void close() {
+    log.info("准备关闭服务 " + this.getClass().getName());
     try {
       preDestroy();
     } catch (Exception e) {
@@ -78,7 +80,8 @@ public abstract class AbstractClient<T> {
     }
     if (eventLoop != null) {
       try {
-        eventLoop.shutdownGracefully().syncUninterruptibly();
+        log.info("关闭 eventLoop");
+        eventLoop.shutdownGracefully(0, 10, TimeUnit.SECONDS);
         log.info(" 成功关闭 client");
       } catch (Exception e) {
         log.error(e.getMessage(), e);
@@ -216,6 +219,10 @@ public abstract class AbstractClient<T> {
 
   /** 直到连接成功 */
   protected void loopConnect() {
+    if (eventLoop.isShuttingDown() || eventLoop.isShutdown() || eventLoop.isTerminated()) {
+      log.error("服务关闭，不能重连");
+      return;
+    }
     while (true) {
       try {
         connect();

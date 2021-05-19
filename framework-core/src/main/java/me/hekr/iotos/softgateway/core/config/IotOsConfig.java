@@ -17,14 +17,20 @@ public class IotOsConfig {
   @Getter private MqttConfig mqttConfig;
   @Getter private GatewayConfig gatewayConfig;
 
+  /** mqtt 连接地址 */
   @Value("${connect.mqtt.endpoint}")
   private String endpoint;
 
-  @Value("${connect.mqtt.connectionTimeout}")
+  /** mqtt 连接超时时间 秒 */
+  @Value("${connect.mqtt.connectionTimeout:10}")
   private int connectionTimeout;
 
   @Value("${connect.mqtt.keepAliveTime}")
   private int keepAliveTime;
+
+  @Value("${connect.mqtt.klink.queue.size:10}")
+  @Getter
+  private int klinkQueueSize;
 
   @Value("${gateway.pk}")
   private String gatewayPk;

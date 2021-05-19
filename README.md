@@ -158,6 +158,8 @@ DeviceRemoteConfig 类做了设备映射关系；该关系是通过服务启动�
 
 SDK 已经发布到 maven 仓库中，https://mvnrepository.com/artifact/me.hekr.iotos.softgateway
 
+[API 文档](https://apidoc.gitee.com/geekhekr/iotos-soft-gateway/)
+
 添加必须依赖：
 
 ```xml
@@ -178,6 +180,8 @@ snapshot 版本 需要添加仓库：
   </repository>
 </repositories>
 ```
+
+最新版本： 3.2.1-SNAPSHOT
 
 示例 demo 可以参考 [iotos-soft-gateway-demo](https://gitee.com/geekhekr/iotos-soft-gateway-demo) 项目。
 
