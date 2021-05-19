@@ -32,7 +32,7 @@ public class ThreadPoolUtil implements Closeable {
   public static final ScheduledExecutorService DEFAULT_SCHEDULED =
       (ScheduledExecutorService)
           new Builder()
-              .setPrefix("spring-schedule")
+              .setPrefix("default-scheduled")
               .setCore(CORES * 4)
               .setMax(32)
               .setQueueSize(1000)
