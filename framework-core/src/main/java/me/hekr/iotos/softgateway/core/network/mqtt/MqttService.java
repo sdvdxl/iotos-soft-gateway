@@ -42,7 +42,7 @@ public class MqttService {
   private final BlockingQueue<KlinkDev> queue = new ArrayBlockingQueue<>(1000);
   private final ExecutorService publishExecutor =
       Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("publishExecutor", false));
-  private final AtomicInteger connectConut = new AtomicInteger();
+  private final AtomicInteger connectCount = new AtomicInteger();
   @Autowired private List<MqttConnectedListener> mqttConnectedListeners;
   private MqttClient client;
   private MqttConnectOptions options;
@@ -90,7 +90,7 @@ public class MqttService {
       client.setCallback(mqttCallBackImpl);
       client.connect(options);
       log.info("软件网关开始连接连接成功！");
-      connectConut.incrementAndGet();
+      connectCount.incrementAndGet();
 
       triggerConnectedListeners();
       // 订阅
@@ -102,7 +102,7 @@ public class MqttService {
   }
 
   private void triggerConnectedListeners() {
-    boolean firstConnected = connectConut.get() == 1;
+    boolean firstConnected = connectCount.get() == 1;
     if (mqttConnectedListeners != null) {
       for (MqttConnectedListener listener : mqttConnectedListeners) {
         if (firstConnected) {
