@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 import me.hekr.iotos.softgateway.network.mqtt.ConnectionContext;
 import me.hekr.iotos.softgateway.network.mqtt.MqttServer;
+import me.hekr.iotos.softgateway.network.mqtt.PacketCoder;
 import me.hekr.iotos.softgateway.network.mqtt.listener.AcceptAllConnectionListenerAdapter;
 
 /** @author iotos */
@@ -22,10 +22,10 @@ public class MqttServerSample {
           new AcceptAllConnectionListenerAdapter<String>() {
             @Override
             public boolean aclPubTopic(
-                ConnectionContext<String> context, String topicName, MqttQoS qosLevel) {
+                ConnectionContext<String> context, String topic, MqttQoS qoS) {
               // 自定义 publish acl
               // 如果是 admin/# 只允许 username 是 admin 的发布，否则不允许
-              if (topicName.startsWith("admin")) {
+              if (topic.startsWith("admin")) {
                 return "admin".equals(context.getUsername());
               }
 

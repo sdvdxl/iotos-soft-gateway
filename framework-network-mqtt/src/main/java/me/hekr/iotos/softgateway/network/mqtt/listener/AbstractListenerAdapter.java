@@ -34,7 +34,7 @@ public abstract class AbstractListenerAdapter<T> implements Listener<T> {
   }
 
   @Override
-  public boolean aclPubTopic(ConnectionContext<T> context, String topicName, MqttQoS qosLevel) {
+  public boolean aclPubTopic(ConnectionContext<T> context, String topic, MqttQoS qoS) {
     if (log.isDebugEnabled()) {
       log.debug("publish acl，clientId:{}", context.getClientId());
     }
