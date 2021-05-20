@@ -22,10 +22,12 @@ public class MqttConnections {
     return context;
   }
 
+  @SuppressWarnings("all")
   public static <T> ConnectionContext<T> remove(MqttEndpoint endpoint) {
     return (ConnectionContext<T>) CONTEXTS.remove(endpoint);
   }
 
+  @SuppressWarnings("all")
   public static <T> ConnectionContext<T> get(MqttEndpoint endpoint) {
     return (ConnectionContext<T>) CONTEXTS.get(endpoint);
   }

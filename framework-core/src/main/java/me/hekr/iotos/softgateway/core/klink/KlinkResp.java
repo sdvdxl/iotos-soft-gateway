@@ -38,7 +38,8 @@ public class KlinkResp extends KlinkDev {
 
   /**
    * @param errorCode 错误码
-   * @param desc 1. 不为空，使用参数 desc；2. 为空：如果 errorCode 不成功，则使用 errorCode的desc，否则保持desc为null
+   * @param desc 1. 不为空，使用参数 desc；2. 为空：如果 errorCode 不成功，则使用 * errorCode的desc，否则保持desc为null
+   * @param params 其他参数
    */
   public KlinkResp(ErrorCode errorCode, String desc, Map<String, Object> params) {
     this.code = errorCode.getCode();

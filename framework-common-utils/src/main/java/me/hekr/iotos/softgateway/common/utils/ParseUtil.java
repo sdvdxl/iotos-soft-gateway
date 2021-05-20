@@ -3,8 +3,13 @@ package me.hekr.iotos.softgateway.common.utils;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import org.apache.commons.codec.binary.Hex;
 
-/** 用于格式转换以及hash加密算法 */
+/**
+ * 用于格式转换以及hash加密算法
+ *
+ * @author iotos
+ */
 public class ParseUtil {
   /** hash加密方法 */
   public static final String HASH_METHOD = "HmacSHA1";
@@ -31,24 +36,26 @@ public class ParseUtil {
     return mac.doFinal(text);
   }
 
-  /** 数据格式转为string */
+  /**
+   * 数据格式转为string
+   *
+   * @param buf 字节数组
+   * @return hex string
+   */
   public static String parseByte2HexStr(byte[] buf) {
     if (null == buf) {
       return null;
     }
 
-    StringBuilder sb = new StringBuilder();
-    for (byte b : buf) {
-      String hex = Integer.toHexString(b & 0xFF);
-      if (hex.length() == 1) {
-        hex = '0' + hex;
-      }
-      sb.append(hex);
-    }
-    return sb.toString();
+    return Hex.encodeHexString(buf);
   }
 
-  /** byte转为十进制int */
+  /**
+   * byte转为十进制int
+   *
+   * @param bytes 字节数组
+   * @return int
+   */
   public static int byte2int(byte bytes) {
     // 将byte转换为8位二进制字符串 依赖 commons-lang-x.x.jar包
     String binaryString =

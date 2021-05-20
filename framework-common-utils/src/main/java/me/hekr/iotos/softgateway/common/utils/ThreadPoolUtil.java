@@ -159,12 +159,19 @@ public class ThreadPoolUtil implements Closeable {
      * 设置core和max根据cpu核数根据cpu核数设置
      *
      * @param dynamic 当大于等于该值的时候生效，如果小于等于0不生效
+     * @return builder
      */
     public Builder setCoresDynamic(int dynamic) {
       this.dynamicCount = dynamic;
       return this;
     }
 
+    /**
+     * 设置异常处理
+     *
+     * @param uncaughtExceptionHandler 处理器
+     * @return builder
+     */
     public Builder setUncaughtExceptionHandler(UncaughtExceptionHandler uncaughtExceptionHandler) {
       this.uncaughtExceptionHandler = uncaughtExceptionHandler;
       return this;

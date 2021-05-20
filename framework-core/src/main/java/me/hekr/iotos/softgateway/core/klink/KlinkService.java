@@ -379,9 +379,8 @@ public class KlinkService {
   /**
    * 发送控制设备回复Success
    *
-   * @param pk pk * @param devId devId
-   * @param code 错误码 0 成功； 错误定义其他，200以上
-   * @param desc 错误描述
+   * @param pk pk
+   * @param devId devId
    */
   public void sendCloudSendRespOK(String pk, String devId) {
     KlinkResp resp = new KlinkResp();

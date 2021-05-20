@@ -23,19 +23,10 @@ install() {
   mvn clean install -DskipTests=true
 }
 
-upload(){
+if [[ "deploy" == "$act" ]] ; then
   deploy
-  git add -A
-  git commit -m "update version to: $VERSION"
-  git push
-}
-
-if [[ "deploy" = "$act" ]] ; then
-  deploy
-elif [[ "install" = "$act" ]] ; then
+elif [[ "install" == "$act" || "" == "$act" ]] ; then
   install
-elif [[ "upload" = "$act" ]] ; then
-  upload
 else
   echo 'deploy 或者 install'
 fi

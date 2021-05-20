@@ -5,8 +5,8 @@ import java.net.InetSocketAddress;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
-import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 import me.hekr.iotos.softgateway.network.common.client.AbstractClient;
+import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 
 /**
  * UDP client
@@ -37,9 +37,9 @@ public class UdpClient<T> extends AbstractClient<T> {
   /**
    * 发送广播
    *
-   * @param t
-   * @param port
-   * @return
+   * @param t message
+   * @param port 端口
+   * @return 回复消息
    */
   @SneakyThrows
   public T sendBroadcast(T t, int port) {
