@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Objects;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 import me.hekr.iotos.softgateway.network.mqtt.listener.Listener;
 
 /** @author iotos */
@@ -55,7 +54,7 @@ public class MqttServer<T> {
           handleSubscribe(endpoint);
         });
     server
-        .listen(1883, "localhost")
+        .listen(port)
         .onComplete(
             ar -> {
               if (ar.succeeded()) {
@@ -114,7 +113,6 @@ public class MqttServer<T> {
    *
    * @param endpoint 连接信息
    */
-  @SuppressWarnings("unchecked")
   private void handlePublishMessage(MqttEndpoint endpoint) {
     endpoint.publishHandler(
         m -> {
@@ -132,10 +130,7 @@ public class MqttServer<T> {
             }
           }
           listener.onMessage(
-              context,
-              m.topicName(),
-              m.qosLevel(),
-              (T) packetCoder.decode(m.payload().getBytes()).getResult());
+              context, m.topicName(), m.qosLevel(), packetCoder.decode(m.payload().getBytes()));
         });
   }
 

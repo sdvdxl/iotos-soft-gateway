@@ -365,7 +365,7 @@ public class KlinkService {
    * 发送控制设备回复
    *
    * @param mapper 设备
-   * @param code 错误码 0 成功； 错误定义其他，1000以上
+   * @param code 错误码 0 成功； 错误定义其他，200以上
    * @param desc 错误描述
    */
   public void sendCloudSendResp(DeviceMapper mapper, int code, String desc) {
@@ -374,6 +374,39 @@ public class KlinkService {
     resp.setDesc(desc);
     resp.setAction(Action.CLOUD_SEND_RESP.getAction());
     sendKlink(mapper, resp);
+  }
+
+  /**
+   * 发送控制设备回复Success
+   *
+   * @param pk pk
+   * @param devId devId
+   */
+  public void sendCloudSendRespOK(String pk, String devId) {
+    KlinkResp resp = new KlinkResp();
+    resp.setPk(pk);
+    resp.setDevId(devId);
+    resp.setErrorCode(ErrorCode.SUCCESS);
+    resp.setAction(Action.CLOUD_SEND_RESP.getAction());
+    sendKlink(resp);
+  }
+
+  /**
+   * 发送控制设备回复
+   *
+   * @param pk pk
+   * @param devId devId
+   * @param code 错误码 0 成功； 错误定义其他，200以上
+   * @param desc 错误描述
+   */
+  public void sendCloudSendResp(String pk, String devId, int code, String desc) {
+    KlinkResp resp = new KlinkResp();
+    resp.setPk(pk);
+    resp.setDevId(devId);
+    resp.setCode(code);
+    resp.setDesc(desc);
+    resp.setAction(Action.CLOUD_SEND_RESP.getAction());
+    sendKlink(resp);
   }
 
   /**

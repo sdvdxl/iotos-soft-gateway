@@ -40,9 +40,17 @@ public class MqttService {
   private static final int MAX_RETRY_COUNT = 3;
   private final IotOsConfig iotOsConfig;
   private final BlockingQueue<KlinkDev> queue = new ArrayBlockingQueue<>(1000);
+
+  @SuppressWarnings("all")
   private final ExecutorService publishExecutor =
       Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("publishExecutor", false));
-  private final AtomicInteger connectConut = new AtomicInteger();
+
+  @SuppressWarnings("all")
+  private final ExecutorService connectExecutor =
+      Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("connectExecutor", false));
+
+  private final AtomicInteger connectCount = new AtomicInteger();
+  private volatile long lastConnectTime = System.currentTimeMillis();
   @Autowired private List<MqttConnectedListener> mqttConnectedListeners;
   private MqttClient client;
   private MqttConnectOptions options;
@@ -90,7 +98,7 @@ public class MqttService {
       client.setCallback(mqttCallBackImpl);
       client.connect(options);
       log.info("软件网关开始连接连接成功！");
-      connectConut.incrementAndGet();
+      connectCount.incrementAndGet();
 
       triggerConnectedListeners();
       // 订阅
@@ -102,7 +110,7 @@ public class MqttService {
   }
 
   private void triggerConnectedListeners() {
-    boolean firstConnected = connectConut.get() == 1;
+    boolean firstConnected = connectCount.get() == 1;
     if (mqttConnectedListeners != null) {
       for (MqttConnectedListener listener : mqttConnectedListeners) {
         if (firstConnected) {
@@ -134,9 +142,26 @@ public class MqttService {
   }
 
   public void init() {
+    connectExecutor.execute(this::loopConnect);
+  }
+
+  private void loopConnect() {
     while (isDisconnected()) {
+      long diff = System.currentTimeMillis() - lastConnectTime;
+      long millis = TimeUnit.SECONDS.toMillis(iotOsConfig.getMqttConfig().getConnectTimeout() + 3);
+      long rest = millis - diff;
+      if (rest > 0) {
+        log.warn("连接频繁，等待 {}s 后重连", TimeUnit.MILLISECONDS.toSeconds(rest));
+        try {
+          TimeUnit.SECONDS.sleep(1);
+        } catch (InterruptedException ignored) {
+        }
+        continue;
+      }
       log.info("正在链接...");
+      lastConnectTime = System.currentTimeMillis();
       connect();
+
       if (!isDisconnected()) {
         return;
       }
