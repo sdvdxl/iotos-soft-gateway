@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 
 /** @author iotos */
 @Slf4j
@@ -44,5 +43,4 @@ public class ConnectionContext<T> {
               }
             });
   }
-  ;
 }
