@@ -35,7 +35,7 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
       return;
     }
     String content = HttpUtil.get(klink.getUrl());
-    log.info("config: {}", content);
+    log.info("config: -------------------\n{}\n-------------------\n", content);
     DeviceRemoteConfig.parseMultiLinesAndUpdateAll(content);
 
     // 获取拓扑关系后，再进行比对然后注册设备
