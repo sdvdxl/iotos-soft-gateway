@@ -3,11 +3,14 @@
 # ./deploy deploy 生成 maven jar包
 # ./deploy upload 生成 maven jar 包并 commit
 
-VERSION="3.2.2-SNAPSHOT"
+VERSION="3.2.3-SNAPSHOT"
 echo "版本号：$VERSION"
 
 updateVersion(){
-  mvn versions:set -DnewVersion=$VERSION versions:update-child-modules versions:update-properties
+  mvn clean
+  mvn versions:set -DnewVersion=$VERSION
+  mvn versions:update-properties
+  mvn versions:update-child-modules
 }
 
 act=$1
@@ -25,6 +28,8 @@ install() {
 
 if [[ "deploy" == "$act" ]] ; then
   deploy
+elif [[ "version" == "$act" ]] ; then
+  updateVersion
 elif [[ "install" == "$act" || "" == "$act" ]] ; then
   install
 else

@@ -50,7 +50,7 @@ public class MqttService {
       Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("connectExecutor", false));
 
   private final AtomicInteger connectCount = new AtomicInteger();
-  private volatile long lastConnectTime = System.currentTimeMillis();
+  private volatile long lastConnectTime = 0;
   @Autowired private List<MqttConnectedListener> mqttConnectedListeners;
   private MqttClient client;
   private MqttConnectOptions options;
