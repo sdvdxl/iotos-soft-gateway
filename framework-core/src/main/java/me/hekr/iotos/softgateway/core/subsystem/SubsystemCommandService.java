@@ -10,7 +10,9 @@ import me.hekr.iotos.softgateway.core.klink.ModelData;
  *
  * <p>不抛出异常视为成功，错误码为0
  *
- * <p>实现类要加 @Service("XX@SubSystemCommandService")，其中 xx 为 IoTOS 平台物模型 命令
+ * <p>实现类要加 @Service("XX{#deviceType}@SubSystemCommandService")，其中 xx 为 IoTOS 平台物模型 命令
+ *
+ * <p>{#deviceType} 是对应的远程配置中的 deviceType 的值，注意只能使用英文，可以不填。
  *
  * @author iotos
  */

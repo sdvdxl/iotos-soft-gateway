@@ -20,10 +20,10 @@ import org.apache.commons.lang3.StringUtils;
 @Slf4j
 public class DeviceRemoteConfig implements Serializable {
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
-  private Map<String, Object> data = new HashMap<>();
-  /** 自定义属性  */
+  /** 自定义属性 */
   private final Map<Object, Object> customData = new ConcurrentHashMap<>();
 
+  private Map<String, Object> data = new HashMap<>();
   /** 在线状态 */
   private volatile boolean online;
 
@@ -39,34 +39,6 @@ public class DeviceRemoteConfig implements Serializable {
     DeviceRemoteConfig m = new DeviceRemoteConfig(map);
     parseAndAdd(m);
     log.info("after parseAndAdd: {}", getAll());
-  }
-
-  /**
-   * 增加自定义属性信息
-   * @param key key
-   * @param val val
-   * @return val
-   */
-  public Object putCustom(Object key, Object val){
-    return this.customData.put(key,val);
-  }
-
-  /**
-   * 获取自定义信息
-   * @param key key
-   * @return val
-   */
-  public Object getCustom(Object key){
-    return this.customData.get(key);
-  }
-
-  /**
-   * 删除自定义信息
-   * @param key key
-   * @return 删除的值
-   */
-  public Object removeCustom(Object key){
-    return this.customData.remove(key);
   }
 
   @SuppressWarnings("unchecked")
@@ -157,6 +129,37 @@ public class DeviceRemoteConfig implements Serializable {
     return getAll().isEmpty();
   }
 
+  /**
+   * 增加自定义属性信息
+   *
+   * @param key key
+   * @param val val
+   * @return val
+   */
+  public Object putCustom(Object key, Object val) {
+    return this.customData.put(key, val);
+  }
+
+  /**
+   * 获取自定义信息
+   *
+   * @param key key
+   * @return val
+   */
+  public Object getCustom(Object key) {
+    return this.customData.get(key);
+  }
+
+  /**
+   * 删除自定义信息
+   *
+   * @param key key
+   * @return 删除的值
+   */
+  public Object removeCustom(Object key) {
+    return this.customData.remove(key);
+  }
+
   public void setOnline() {
     online = true;
   }
@@ -200,16 +203,40 @@ public class DeviceRemoteConfig implements Serializable {
     return Objects.hash(getPk(), getDevId());
   }
 
+  /**
+   * 获取 pk
+   *
+   * @return pk
+   */
   public String getPk() {
     return getProp("pk");
   }
 
+  /**
+   * 获取 devId
+   *
+   * @return devId
+   */
   public String getDevId() {
     return getProp("devId");
   }
 
+  /**
+   * 获取设备名字 devName
+   *
+   * @return 设备名字
+   */
   public String getDevName() {
     return getProp("devName");
+  }
+
+  /**
+   * 获取设备类型，可以为 null
+   *
+   * @return 设备类型
+   */
+  public String getDeviceType() {
+    return getProp("deiceType");
   }
 
   public static class Props implements Serializable {

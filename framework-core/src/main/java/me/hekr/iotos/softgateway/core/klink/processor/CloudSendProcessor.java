@@ -60,22 +60,27 @@ public class CloudSendProcessor implements Processor<CloudSend> {
   private void doHandleCloudSend(CloudSend klink) {
     String pk = klink.getPk();
     String devId = klink.getDevId();
-    // * <p>实现类要加 @Service(xx+CMD_BEAN_SUFFIX)，其中 xx 为 iotos 命令
-    SubsystemCommandService subsystemCommandService;
-    try {
-      subsystemCommandService =
-          context.getBean(
-              klink.getData().getCmd() + CMD_BEAN_SUFFIX, SubsystemCommandService.class);
-    } catch (BeansException e) {
-      throw new CloudSendException(pk, devId, klink.getData(), "没有配置命令处理器");
-    }
-
     Optional<DeviceRemoteConfig> dev = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
     if (!dev.isPresent()) {
       throw new CloudSendException(pk, devId, klink.getData(), "没找到对应的子系统设备");
     }
 
-    subsystemCommandService.handle(dev.get(), klink.getData());
+    DeviceRemoteConfig deviceRemoteConfig = dev.get();
+    String beanName = klink.getData().getCmd();
+    if (deviceRemoteConfig.getDeviceType() != null) {
+      beanName = beanName + "#" + deviceRemoteConfig.getDeviceType();
+    }
+    beanName += CMD_BEAN_SUFFIX;
+
+    // * <p>实现类要加 @Service(xx+CMD_BEAN_SUFFIX)，其中 xx 为 iotos 命令
+    SubsystemCommandService subsystemCommandService;
+    try {
+      subsystemCommandService = context.getBean(beanName, SubsystemCommandService.class);
+    } catch (BeansException e) {
+      throw new CloudSendException(pk, devId, klink.getData(), "没有配置命令处理器");
+    }
+
+    subsystemCommandService.handle(deviceRemoteConfig, klink.getData());
   }
 
   @Override
