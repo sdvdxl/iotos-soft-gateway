@@ -3,6 +3,8 @@ package me.hekr.iotos.softgateway.core.config;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig.Props;
 import org.junit.Test;
 
@@ -42,7 +44,8 @@ public class DeviceRemoteConfigTest {
   public void testUpdateAll() {
     DeviceRemoteConfig.updateAll(
         Collections.singletonList(
-            DeviceRemoteConfig.parse("{\"pk\":\"pk_test\",\"devId\":\"1000004\",\"devName\":\"人脸识别\"}")));
+            DeviceRemoteConfig.parse(
+                "{\"pk\":\"pk_test\",\"devId\":\"1000004\",\"devName\":\"人脸识别\"}")));
     assertEquals(1, DeviceRemoteConfig.size());
     assertEquals("pk_test", DeviceRemoteConfig.getByPkAndDevId("pk_test", "1000004").get().getPk());
   }
@@ -55,5 +58,19 @@ public class DeviceRemoteConfigTest {
         DeviceRemoteConfig.getBySubSystemProperties(Props.p("devName", "devName003").get())
             .get()
             .getDevId());
+  }
+
+  @Test
+  public void testUpdate() {
+    DeviceRemoteConfig d = new DeviceRemoteConfig();
+    d.setPk("pk");
+    d.setDevId("devId");
+    DeviceRemoteConfig.add(d);
+    Map<String, Object> map = new HashMap<>();
+    map.put("pk", "pk");
+    map.put("devId", "devId");
+    map.put("deviceType", "A");
+    DeviceRemoteConfig.update(new DeviceRemoteConfig(map));
+    assertEquals("A", DeviceRemoteConfig.getByPkAndDevId("pk", "devId").get().getDeviceType());
   }
 }

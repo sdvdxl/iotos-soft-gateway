@@ -1,6 +1,5 @@
 package me.hekr.iotos.softgateway.core.config;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ConcurrentHashSet;
 import java.io.Serializable;
 import java.util.Arrays;
@@ -27,9 +26,9 @@ public class DeviceRemoteConfig implements Serializable {
   /** 在线状态 */
   private volatile boolean online;
 
-  private DeviceRemoteConfig() {}
+  public DeviceRemoteConfig() {}
 
-  private DeviceRemoteConfig(Map<String, Object> data) {
+  public DeviceRemoteConfig(Map<String, Object> data) {
     this.data = data;
   }
 
@@ -74,14 +73,16 @@ public class DeviceRemoteConfig implements Serializable {
   /**
    * 更新所有数据。
    *
-   * <p>删除参数中不存在的，更新都存在的数据
+   * <p>清空原来所有数据，添加新的数据
    *
    * @param deviceRemoteConfigs 新的数据
    */
   public static void updateAll(Collection<DeviceRemoteConfig> deviceRemoteConfigs) {
-    SET.removeAll(CollectionUtil.subtract(SET, deviceRemoteConfigs));
-    addAll(deviceRemoteConfigs);
-    log.info("after updateAll, {}", getStatus());
+    synchronized (SET) {
+      SET.clear();
+      addAll(deviceRemoteConfigs);
+      log.info("after updateAll, {}", getStatus());
+    }
   }
 
   public static String getStatus() {
@@ -221,12 +222,34 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   /**
+   * 设置 pk
+   *
+   * @param pk pk
+   * @return DeviceRemoteConfig
+   */
+  public DeviceRemoteConfig setPk(String pk) {
+    data.put("pk", pk);
+    return this;
+  }
+
+  /**
    * 获取 devId
    *
    * @return devId
    */
   public String getDevId() {
     return getProp("devId");
+  }
+
+  /**
+   * 设置 devId
+   *
+   * @param devId devId
+   * @return DeviceRemoteConfig
+   */
+  public DeviceRemoteConfig setDevId(String devId) {
+    data.put("devId", devId);
+    return this;
   }
 
   /**
@@ -244,7 +267,7 @@ public class DeviceRemoteConfig implements Serializable {
    * @return 设备类型
    */
   public String getDeviceType() {
-    return getProp("deiceType");
+    return getProp("deviceType");
   }
 
   public static class Props implements Serializable {
