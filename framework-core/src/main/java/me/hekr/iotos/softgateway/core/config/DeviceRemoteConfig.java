@@ -33,11 +33,11 @@ public class DeviceRemoteConfig implements Serializable {
     this.data = data;
   }
 
-  public static void parseAndAdd(String line) {
+  public static void parseAndUpdate(String line) {
     @SuppressWarnings("unchecked")
     Map<String, Object> map = JsonUtil.fromJson(line, Map.class);
     DeviceRemoteConfig m = new DeviceRemoteConfig(map);
-    parseAndAdd(m);
+    update(m);
     log.info("after parseAndAdd: {}", getAll());
   }
 
@@ -53,9 +53,17 @@ public class DeviceRemoteConfig implements Serializable {
         .collect(Collectors.<DeviceRemoteConfig>toSet());
   }
 
-  public static void parseAndAdd(DeviceRemoteConfig d) {
+  public static void update(DeviceRemoteConfig d) {
+    synchronized (SET) {
+      remove(d);
+      add(d);
+      log.info("after update: {}", getStatus());
+    }
+  }
+
+  public static void add(DeviceRemoteConfig d) {
     SET.add(d);
-    log.info("after parseAndAdd: {}", getStatus());
+    log.info("after add: {}", getStatus());
   }
 
   public static void remove(DeviceRemoteConfig d) {
