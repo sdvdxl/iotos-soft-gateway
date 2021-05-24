@@ -4,11 +4,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
 import me.hekr.iotos.softgateway.core.klink.processor.KlinkProcessorManager;
 import me.hekr.iotos.softgateway.core.listener.MqttDisConnectListener;
-import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -42,7 +42,7 @@ public class MqttCallBackImpl implements MqttCallback {
   @SneakyThrows
   public void connectionLost(Throwable cause) {
     // 连接丢失后，一般在这里面进行重连
-    log.warn("软网关已经连接断开,准备开始重连");
+    log.warn("软网关已经连接断开,准备开始重连, cause: {}", cause.getCause());
     triggerConnectionLost();
     mqttService.init();
   }

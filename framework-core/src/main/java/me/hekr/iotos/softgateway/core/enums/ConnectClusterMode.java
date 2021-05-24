@@ -1,6 +1,6 @@
 package me.hekr.iotos.softgateway.core.enums;
 
-import cn.hutool.core.util.EnumUtil;
+import java.util.Arrays;
 import lombok.Getter;
 
 /**
@@ -13,7 +13,7 @@ import lombok.Getter;
  *
  * @author iot
  */
-public enum GatewayClusterMode {
+public enum ConnectClusterMode {
   /** 单机模式 */
   STANDALONE("standalone", "单机模式"),
   /** 集群模式 */
@@ -25,7 +25,7 @@ public enum GatewayClusterMode {
   @Getter private final String mode;
   @Getter private final String desc;
 
-  GatewayClusterMode(String mode, String desc) {
+  ConnectClusterMode(String mode, String desc) {
     this.mode = mode;
     this.desc = desc;
   }
@@ -36,8 +36,11 @@ public enum GatewayClusterMode {
    * @param mode standalone, cluster, broadcast
    * @return GatewayClusterMode，没有关系返回 默认 STANDALONE
    */
-  public static GatewayClusterMode of(String mode) {
-    return EnumUtil.fromString(GatewayClusterMode.class, mode, GatewayClusterMode.STANDALONE);
+  public static ConnectClusterMode of(String mode) {
+    return Arrays.stream(ConnectClusterMode.values())
+        .filter(v -> v.mode.equalsIgnoreCase(mode))
+        .findAny()
+        .orElse(STANDALONE);
   }
 
   public boolean isCluster() {

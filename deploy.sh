@@ -3,7 +3,7 @@
 # ./deploy deploy 生成 maven jar包
 # ./deploy upload 生成 maven jar 包并 commit
 
-VERSION="3.2.4"
+VERSION="3.3.0-SNAPSHOT"
 echo "版本号：$VERSION"
 
 updateVersion(){
@@ -17,7 +17,7 @@ act=$1
 
 deploy() {
   updateVersion
-  mvn deploy
+  mvn deploy -P deploy
 }
 
 

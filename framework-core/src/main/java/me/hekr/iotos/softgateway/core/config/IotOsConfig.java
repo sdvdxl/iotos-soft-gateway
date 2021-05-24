@@ -6,7 +6,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.ParseUtil;
 import me.hekr.iotos.softgateway.core.constant.Constants;
-import me.hekr.iotos.softgateway.core.enums.GatewayClusterMode;
+import me.hekr.iotos.softgateway.core.enums.ConnectClusterMode;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
@@ -37,6 +37,14 @@ public class IotOsConfig {
   @Getter
   private int klinkQueueSize;
 
+  /**
+   * 集群模式，默认单机模式
+   *
+   * @see MqttConfig#clusterMode
+   */
+  @Value("${connect.mqtt.cluster.mode:standalone}")
+  private String connectClusterMode;
+
   /** 网关 pk */
   @Value("${gateway.pk}")
   private String gatewayPk;
@@ -49,30 +57,25 @@ public class IotOsConfig {
   @Value("${gateway.devSecret}")
   private String gatewayDevSecret;
 
-  /**
-   * 集群模式，默认单机模式
-   *
-   * @see GatewayConfig#
-   */
-  @Value("${gateway.cluster.mode:standalone}")
-  private String gatewayClusterMode;
-
   @PostConstruct
   public void init() {
     gatewayConfig = new GatewayConfig();
     gatewayConfig.pk = gatewayPk;
     gatewayConfig.devId = gatewayDevId;
     gatewayConfig.devSecret = gatewayDevSecret;
-    gatewayConfig.clusterMode = GatewayClusterMode.of(gatewayClusterMode);
 
     mqttConfig = new MqttConfig();
     MqttConfig mq = mqttConfig;
     GatewayConfig gw = gatewayConfig;
     mq.endpoint = endpoint;
+    mq.subscribeTopic = gw.getSubscribeTopic();
+    mq.publishTopic = gw.getPublishTopic();
+    mq.clusterMode = ConnectClusterMode.of(connectClusterMode);
     mq.clientId = "dev:" + gw.pk + ":" + gw.devId;
     // 集群模式，clientId 要加 random，此处使用时间戳防止重复
-    if (gw.clusterMode != GatewayClusterMode.STANDALONE) {
+    if (mq.clusterMode.isCluster()) {
       mq.clientId += ":" + System.currentTimeMillis();
+      mq.subscribeTopic = "$share/gw/" + gw.getSubscribeTopic();
     }
 
     mq.username = ParseUtil.HASH_METHOD + ":" + Constants.RANDOM;
@@ -86,6 +89,7 @@ public class IotOsConfig {
 
   @SneakyThrows
   private String getPassword(String pk, String devId, String devSecret, String random) {
-    return Hex.encodeHexString((ParseUtil.hmacSHA1Encrypt(pk + devId + devId + random, devSecret)));
+    return Hex.encodeHexString(
+        (ParseUtil.hmacSHA1Encrypt(pk + devId + devSecret + random, devSecret)));
   }
 }
