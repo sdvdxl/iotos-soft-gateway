@@ -90,6 +90,7 @@ IoTOS 与软件网关交互的数据中一定包含 PK 和 devID，若存量设�
 - 子设备注册和添加拓扑
 - 命令发送和接收
 - 远程配置，自动更新本地映射关系
+- 集群模式
 
 如果用户需要详细了解交互机制，可以查阅 `framework-core` 部分的代码，同时可以参考 [IoTOS文档](http://hy.hekr.me/iot-docs-test/web/content/%E8%AE%BE%E5%A4%87%E7%AE%A1%E7%90%86/%E7%BD%91%E5%85%B3%E4%B8%8E%E5%AD%90%E8%AE%BE%E5%A4%87.html) 
 
@@ -157,6 +158,14 @@ DeviceRemoteConfig 类做了设备映射关系；该关系是通过服务启动�
 - `CommonMessageListener` tcp client, udp client, udp server 消息处理监听器
 - `EventListener` 事件监听器
 
+### 集群模式
+
+默认是单机模式。如果要启用集群模式，需要配置`mqtt.connect.cluster.mode` ，可选的参数值有：
+
+- standalone 单机模式，不允许多个客户端登录
+- cluster 集群模式，允许多个客户端同时登录，但是下发的消息只有1个客户端可以收到
+- broadcast 广播模式，允许多个客户端同时登录，下发的消息所有客户端可以收到
+
 ### 开发
 
 SDK 已经发布到 maven 仓库中，https://mvnrepository.com/artifact/me.hekr.iotos.softgateway
@@ -184,7 +193,7 @@ snapshot 版本 需要添加仓库：
 </repositories>
 ```
 
-最新版本： 3.2.4
+最新版本： 3.3.0
   
 示例 demo 可以参考 [iotos-soft-gateway-demo](https://gitee.com/geekhekr/iotos-soft-gateway-demo) 项目。
 
