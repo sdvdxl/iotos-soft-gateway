@@ -11,9 +11,8 @@ public class GatewayConfig {
   protected String pk;
   protected String devId;
   protected String devSecret;
-  protected String clientId;
 
-  public String getUpTopic() {
+  String getPublishTopic() {
     assertValuesSet();
     return "up/dev/" + pk + "/" + devId;
   }
@@ -23,7 +22,7 @@ public class GatewayConfig {
     Assert.notBlank("devId not set", pk);
   }
 
-  public String getDownTopic() {
+  String getSubscribeTopic() {
     assertValuesSet();
     return "down/dev/" + pk + "/" + devId;
   }

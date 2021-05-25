@@ -24,6 +24,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -102,9 +103,12 @@ public class MqttService {
 
       triggerConnectedListeners();
       // 订阅
-      client.subscribe(iotOsConfig.getGatewayConfig().getDownTopic(), 0);
+      client.subscribe(iotOsConfig.getMqttConfig().getSubscribeTopic(), 0);
     } catch (Exception e) {
       log.error("软件网关连接失败！" + e.getMessage(), e);
+      if (e instanceof MqttSecurityException) {
+        log.error("请检查网关配置pk，devId， devSecret 是否正确；网关设备是否已经创建；连接地址环境是否正确");
+      }
       mqttCallBackImpl.triggerConnectFailed();
     }
   }
@@ -268,7 +272,7 @@ public class MqttService {
     }
 
     client.publish(
-        iotOsConfig.getGatewayConfig().getUpTopic(), new MqttMessage(JsonUtil.toBytes(message)));
+        iotOsConfig.getMqttConfig().getPublishTopic(), new MqttMessage(JsonUtil.toBytes(message)));
     if (log.isTraceEnabled()) {
       log.trace("发送消息成功：{}", JsonUtil.toJson(message));
     }
