@@ -30,7 +30,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-    <iotos.softgateway.version>3.3.0</iotos.softgateway.version>
+    <iotos.softgateway.version>3.3.1-SNAPSHOT</iotos.softgateway.version>
     <springboot.version>2.5.0</springboot.version>
   </properties>
 
