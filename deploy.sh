@@ -7,23 +7,23 @@ VERSION="3.3.1-SNAPSHOT"
 echo "版本号：$VERSION"
 
 updateVersion(){
-  mvn clean
-  mvn versions:set -DnewVersion=$VERSION
-  mvn versions:update-properties
-  mvn versions:update-child-modules
+  ./mvnw clean
+  ./mvnw versions:set -DnewVersion=$VERSION
+  ./mvnw versions:update-properties
+  ./mvnw versions:update-child-modules
 }
 
 act=$1
 
 deploy() {
   updateVersion
-  mvn deploy -P deploy
+  ./mvnw deploy -P deploy
 }
 
 
 install() {
   updateVersion
-  mvn clean install -DskipTests=true
+  ./mvnw clean install -DskipTests=true
 }
 
 if [[ "deploy" == "$act" ]] ; then

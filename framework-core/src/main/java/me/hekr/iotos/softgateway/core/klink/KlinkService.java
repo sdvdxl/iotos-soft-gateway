@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 public class KlinkService {
   @Autowired private IotOsConfig iotOsConfig;
   @Autowired private MqttService mqttService;
-  @Setter private volatile long sleepMills = 200;
+  public static volatile long sleepMills = 200;
 
   /**
    * 动态注册设备
