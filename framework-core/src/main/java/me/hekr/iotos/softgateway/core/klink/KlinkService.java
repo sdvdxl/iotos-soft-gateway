@@ -1,8 +1,10 @@
 package me.hekr.iotos.softgateway.core.klink;
 
+import cn.hutool.core.thread.ThreadUtil;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.ParseUtil;
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Service;
 public class KlinkService {
   @Autowired private IotOsConfig iotOsConfig;
   @Autowired private MqttService mqttService;
+  @Setter private volatile long sleepMills = 200;
 
   /**
    * 动态注册设备
@@ -122,6 +125,7 @@ public class KlinkService {
   public void addDev(
       String pk, String productSecret, String devId, String devSecret, String devName) {
     register(pk, devId, productSecret, devName);
+    ThreadUtil.sleep(sleepMills);
     doAddTopo(pk, devId, devSecret);
   }
 
