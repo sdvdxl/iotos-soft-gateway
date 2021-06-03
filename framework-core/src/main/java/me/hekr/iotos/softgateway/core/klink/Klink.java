@@ -15,6 +15,7 @@ import lombok.ToString;
 @JsonInclude(Include.NON_NULL)
 public class Klink implements Serializable {
   private static AtomicInteger msgIdCounter = new AtomicInteger();
+  @JsonIgnore private boolean msgIdSet;
 
   public static int getNextMsgId() {
     return msgIdCounter.accumulateAndGet(
@@ -37,10 +38,18 @@ public class Klink implements Serializable {
   protected String action;
   protected long msgId;
 
+  public void setMsgId(long msgId) {
+    this.msgId = msgId;
+    msgIdSet = true;
+  }
+
   /** 定制前置机使用，发送原始数据 */
   protected String sysCustomRaw;
 
   public void setNewMsgId() {
-    msgId = getNextMsgId();
+    if (!msgIdSet) {
+      msgId = getNextMsgId();
+      msgIdSet = true;
+    }
   }
 }

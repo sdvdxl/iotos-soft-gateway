@@ -5,9 +5,11 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.Klink;
-import me.hekr.iotos.softgateway.common.utils.JsonUtil;
+import me.hekr.iotos.softgateway.core.klink.RegisterResp;
+import me.hekr.iotos.softgateway.core.network.mqtt.MqttService;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,14 @@ public class KlinkProcessorManager {
 
     Klink klink = JsonUtil.fromBytes(message.getPayload(), action.getKlinkClass());
     log.debug("klink: {}", klink);
+    if (action == Action.REGISTER_RESP) {
+      RegisterResp resp = (RegisterResp) klink;
+      if (resp.isSuccess()){
+        MqttService.noticeRegisterSuccess();
+      }
+    } else if (action == Action.ADD_TOPO_RESP) {
+      MqttService.noticeAddTopoSuccess();
+    }
     Processor processor = getProcessor(action);
     if (processor == null) {
       log.warn("未知命令: {}, data:{}", action.getAction(), new String(message.getPayload()));

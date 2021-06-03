@@ -3,6 +3,7 @@ package me.hekr.iotos.softgateway.core.network.mqtt;
 import cn.hutool.core.thread.ThreadUtil;
 import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -16,9 +17,12 @@ import me.hekr.iotos.softgateway.common.utils.ThreadPoolUtil;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.config.MqttConfig;
+import me.hekr.iotos.softgateway.core.enums.Action;
+import me.hekr.iotos.softgateway.core.klink.AddTopo;
 import me.hekr.iotos.softgateway.core.klink.DevLogin;
 import me.hekr.iotos.softgateway.core.klink.DevLogout;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
+import me.hekr.iotos.softgateway.core.klink.Register;
 import me.hekr.iotos.softgateway.core.listener.MqttConnectedListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -38,9 +42,15 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class MqttService {
+  private static final Object registerLock = new Object();
+
+  private static final Object addTopoLock = new Object();
+
   private static final int MAX_RETRY_COUNT = 3;
   private final IotOsConfig iotOsConfig;
-  private final BlockingQueue<KlinkDev> queue = new ArrayBlockingQueue<>(1000);
+  private static final BlockingQueue<KlinkDev> queue = new ArrayBlockingQueue<>(1000);
+  private static final BlockingQueue<KlinkDev> registerQueue = new ArrayBlockingQueue<>(1000);
+  private static final BlockingQueue<KlinkDev> addTopoQueue = new ArrayBlockingQueue<>(1000);
 
   @SuppressWarnings("all")
   private final ExecutorService publishExecutor =
@@ -64,18 +74,31 @@ public class MqttService {
     publishExecutor.execute(this::startPublishTask);
     ThreadPoolUtil.DEFAULT_SCHEDULED.scheduleAtFixedRate(
         () -> {
-          int size = queue.size();
-          if (log.isDebugEnabled()) {
-            log.debug("klink 队列还有 {} 个", size);
-          }
-
-          if (size > iotOsConfig.getKlinkQueueSize()) {
-            log.warn("Klink 队列未及时消费，还有: {} 个记录", size);
-          }
+          checkAndLogQueueSize(registerQueue, 2, "register");
+          checkAndLogQueueSize(addTopoQueue, 2, "register");
+          checkAndLogQueueSize(registerQueue, iotOsConfig.getKlinkQueueSize(), "klink");
         },
         0,
         3,
         TimeUnit.SECONDS);
+  }
+
+  private void checkAndLogQueueSize(Queue<?> queue, int threadhole, String type) {
+    int size = queue.size();
+    if (log.isDebugEnabled()) {
+      log.debug(type + " 队列还有 {} 个", size);
+    }
+
+    if (size > threadhole) {
+      log.warn(type + " 队列未及时消费，还有: {} 个记录", size);
+    }
+  }
+
+  public static void noticeAddTopoSuccess() {
+    synchronized (addTopoLock) {
+      addTopoQueue.poll();
+      addTopoLock.notifyAll();
+    }
   }
 
   private void initConfig(IotOsConfig iotOsConfig) throws MqttException {
@@ -178,9 +201,17 @@ public class MqttService {
     }
   }
 
+  public static void noticeRegisterSuccess() {
+    synchronized (registerLock) {
+      registerQueue.poll();
+      registerLock.notifyAll();
+    }
+  }
+
   /** @param klink 消息，发送的时候会被 toJson */
   @SneakyThrows
   public void publish(KlinkDev klink) {
+
     klink.setNewMsgId();
     if (log.isDebugEnabled()) {
       log.debug("发送 klink: {}", JsonUtil.toJson(klink));
@@ -206,8 +237,14 @@ public class MqttService {
         return;
       }
     }
-
-    queue.add(klink);
+    // 如果是注册设备，确保设备注册成功
+    if (klink instanceof Register || Action.REGISTER == Action.of(klink.getAction())) {
+      registerQueue.add(klink);
+    } else if (klink instanceof AddTopo || Action.ADD_TOPO == Action.of(klink.getAction())) {
+      addTopoQueue.add(klink);
+    } else {
+      queue.add(klink);
+    }
   }
 
   public boolean isDisconnected() {
@@ -223,14 +260,52 @@ public class MqttService {
         } catch (InterruptedException ignored) {
         }
       }
-      KlinkDev msg;
+      KlinkDev msg = null;
+      int waitTime = iotOsConfig.getMqttConfig().getConnectTimeout() * 1000;
+
+      // 优先发送注册信息
+      while (!registerQueue.isEmpty()) {
+        synchronized (registerLock) {
+          msg = registerQueue.peek();
+          if (msg != null) {
+            try {
+              doPublish(msg);
+              registerLock.wait(waitTime);
+            } catch (MqttException e) {
+              log.error(e.getMessage());
+              ThreadUtil.sleep(1000);
+            } catch (InterruptedException e) {
+              return;
+            }
+          }
+        }
+      } // 然后发送添加拓扑信息
+      while (!addTopoQueue.isEmpty()) {
+        synchronized (addTopoLock) {
+          msg = addTopoQueue.peek();
+          if (msg != null) {
+            try {
+              doPublish(msg);
+              addTopoLock.wait(waitTime);
+            } catch (MqttException e) {
+              log.error(e.getMessage());
+              ThreadUtil.sleep(1000);
+            } catch (InterruptedException e) {
+              return;
+            }
+          }
+        }
+      } // 然后发送添加拓扑信息
       try {
-        msg = queue.take();
+        msg = queue.poll(1, TimeUnit.SECONDS);
       } catch (InterruptedException ignored) {
         Thread.currentThread().interrupt();
         continue;
       }
-      trySend(msg);
+
+      if (msg != null) {
+        trySend(msg);
+      }
     }
   }
 
