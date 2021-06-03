@@ -181,6 +181,7 @@ public class MqttService {
   /** @param klink 消息，发送的时候会被 toJson */
   @SneakyThrows
   public void publish(KlinkDev klink) {
+    klink.setNewMsgId();
     if (log.isDebugEnabled()) {
       log.debug("发送 klink: {}", JsonUtil.toJson(klink));
     }
