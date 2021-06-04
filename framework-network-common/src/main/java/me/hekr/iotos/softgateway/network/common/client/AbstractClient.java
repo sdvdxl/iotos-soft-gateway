@@ -132,7 +132,7 @@ public abstract class AbstractClient<T> {
               }
             });
     if (DatagramChannel.class.isAssignableFrom(channelClass)) {
-      channel = bootstrap.bind(bindPort).awaitUninterruptibly().channel();
+      channel = bootstrap.bind(bindPort).syncUninterruptibly().channel();
     } else {
       bootstrap.option(ChannelOption.TCP_NODELAY, true);
       if (autoReconnect) {

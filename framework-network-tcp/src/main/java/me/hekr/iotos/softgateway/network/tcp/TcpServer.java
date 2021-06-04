@@ -112,7 +112,7 @@ public class TcpServer<T> {
     NetUtil.close(work);
   }
 
-  public void writeAndFlush(TcpServerPacketContext<T> ctx, T msg) {
+  public void writeAndFlush(TcpServerConnectionContext<T> ctx, T msg) {
     ctx.getChannel()
         .writeAndFlush(InternalPacket.wrap(msg))
         .addListener(

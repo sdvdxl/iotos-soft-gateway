@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
+import me.hekr.iotos.softgateway.core.exception.IllegalRemoteConfigException;
 import org.apache.commons.lang3.StringUtils;
 
 /** @author iotos */
@@ -33,16 +34,23 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   public static void parseAndUpdate(String line) {
-    @SuppressWarnings("unchecked")
-    Map<String, Object> map = JsonUtil.fromJson(line, Map.class);
-    DeviceRemoteConfig m = new DeviceRemoteConfig(map);
-    update(m);
+    update(parse(line));
     log.info("after parseAndAdd: {}", getAll());
   }
 
   @SuppressWarnings("unchecked")
   public static DeviceRemoteConfig parse(String line) {
-    return new DeviceRemoteConfig(JsonUtil.fromJson(line, Map.class));
+    Map<String, Object> map;
+    try {
+      map = JsonUtil.fromJson(line, Map.class);
+    } catch (Exception e) {
+      throw new IllegalRemoteConfigException("远程配置不是合法的json，" + e.getMessage());
+    }
+    DeviceRemoteConfig m = new DeviceRemoteConfig(map);
+    if (StringUtils.isAnyBlank(m.getPk(), m.getDevId())) {
+      throw new IllegalRemoteConfigException("远程配置pk和devId要填写完整");
+    }
+    return new DeviceRemoteConfig(map);
   }
 
   public static Set<DeviceRemoteConfig> parseMultiLines(String remoteConfig) {

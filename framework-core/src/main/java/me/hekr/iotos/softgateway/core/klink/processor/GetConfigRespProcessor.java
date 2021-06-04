@@ -4,9 +4,11 @@ import cn.hutool.http.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
+import me.hekr.iotos.softgateway.core.klink.DevSend;
 import me.hekr.iotos.softgateway.core.klink.GetConfigResp;
 import me.hekr.iotos.softgateway.core.klink.GetTopoResp;
 import me.hekr.iotos.softgateway.core.klink.KlinkService;
+import me.hekr.iotos.softgateway.core.klink.ModelData;
 import me.hekr.iotos.softgateway.core.network.mqtt.CoreMqttConnectedListenerImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,15 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
     }
     String content = HttpUtil.get(klink.getUrl());
     log.info("config: -------------------\n{}\n-------------------\n", content);
-    DeviceRemoteConfig.parseMultiLinesAndUpdateAll(content);
+    try {
+      DeviceRemoteConfig.parseMultiLinesAndUpdateAll(content);
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+      // 解析出错，上报给网关
+      klinkService.sendKlink(
+          new DevSend(ModelData.cmd("reportError").param("error", e.getMessage())));
+      return;
+    }
 
     // 获取拓扑关系后，再进行比对然后注册设备
     log.info("发送 getTopo，获取拓扑关系");

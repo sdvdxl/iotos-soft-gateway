@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,12 +14,42 @@ import lombok.ToString;
 @ToString
 @JsonInclude(Include.NON_NULL)
 public class Klink implements Serializable {
+  private static AtomicInteger msgIdCounter = new AtomicInteger();
+  @JsonIgnore private boolean msgIdSet;
+
+  public static int getNextMsgId() {
+    return msgIdCounter.accumulateAndGet(
+        1,
+        (a, b) -> {
+          int r = a + b;
+          if (r == Integer.MAX_VALUE) {
+            r = 0;
+          }
+          return r;
+        });
+  }
+
+  public static int getCurMsgId() {
+    return msgIdCounter.get();
+  }
 
   @JsonIgnore public static final String CMD = "cmd";
   private static final long serialVersionUID = -4341021820638489039L;
   protected String action;
   protected long msgId;
 
+  public void setMsgId(long msgId) {
+    this.msgId = msgId;
+    msgIdSet = true;
+  }
+
   /** 定制前置机使用，发送原始数据 */
   protected String sysCustomRaw;
+
+  public void setNewMsgId() {
+    if (!msgIdSet) {
+      msgId = getNextMsgId();
+      msgIdSet = true;
+    }
+  }
 }

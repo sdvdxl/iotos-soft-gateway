@@ -1,10 +1,8 @@
 package me.hekr.iotos.softgateway.core.klink;
 
-import cn.hutool.core.thread.ThreadUtil;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.ParseUtil;
@@ -63,6 +61,7 @@ public class KlinkService {
   private void doRegister(String pk, String devId, String productSecret, String devName)
       throws Exception {
     Register register = new Register();
+    register.setNewMsgId();
     register.setDevId(devId);
     register.setPk(pk);
     register.setName(devName);
@@ -73,6 +72,7 @@ public class KlinkService {
           Hex.encodeHexString(
               ParseUtil.hmacSHA1Encrypt(pk + productSecret + Constants.RANDOM, productSecret)));
     }
+
     mqttService.publish(register);
   }
 
@@ -125,7 +125,6 @@ public class KlinkService {
   public void addDev(
       String pk, String productSecret, String devId, String devSecret, String devName) {
     register(pk, devId, productSecret, devName);
-    ThreadUtil.sleep(sleepMills);
     doAddTopo(pk, devId, devSecret);
   }
 

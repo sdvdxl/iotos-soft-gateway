@@ -19,4 +19,9 @@ public class CloudSendResp extends KlinkResp {
   public String getAction() {
     return Action.CLOUD_SEND_RESP.getAction();
   }
+
+  @Override
+  public void setNewMsgId() {
+    // cloudSendResp 不需要自动生成，使用cloudSend 的msgId作为配对
+  }
 }

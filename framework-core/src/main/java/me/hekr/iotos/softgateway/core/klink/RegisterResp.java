@@ -13,6 +13,11 @@ import me.hekr.iotos.softgateway.core.enums.ErrorCode;
 @NoArgsConstructor
 public class RegisterResp extends KlinkResp {
 
+  @Override
+  public boolean isSuccess() {
+    return super.isSuccess() || code == ErrorCode.DEV_ID_EXIST.getCode();
+  }
+
   private static final long serialVersionUID = -6728983939835762139L;
   private String devSecret;
 

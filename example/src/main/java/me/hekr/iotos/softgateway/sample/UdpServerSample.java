@@ -12,7 +12,7 @@ import me.hekr.iotos.softgateway.network.udp.UdpServer;
  * @author iotos
  */
 public class UdpServerSample {
-  static final int BIND_PORT = 1023;
+  static final int BIND_PORT = 4201;
   static final PacketCoder<String> PACKET_CODER =
       new PacketCoder<String>() {
         @Override
@@ -28,6 +28,7 @@ public class UdpServerSample {
 
   public static void main(String[] args) throws InterruptedException {
     UdpServer<String> server = new UdpServer<>(BIND_PORT);
+    server.setEnableNetLog(true);
     server.setPacketCoder(PACKET_CODER);
     server.setMessageListener(
         ctx -> {

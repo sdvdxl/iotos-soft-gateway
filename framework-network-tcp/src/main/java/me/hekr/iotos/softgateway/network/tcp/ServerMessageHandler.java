@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
-import me.hekr.iotos.softgateway.network.common.PacketContext;
+import me.hekr.iotos.softgateway.network.common.ConnectionContext;
 import me.hekr.iotos.softgateway.network.tcp.listener.EventListener;
 import me.hekr.iotos.softgateway.network.tcp.listener.TcpMessageListener;
 
@@ -19,7 +19,7 @@ import me.hekr.iotos.softgateway.network.tcp.listener.TcpMessageListener;
 @Sharable
 @Slf4j
 public class ServerMessageHandler<T> extends SimpleChannelInboundHandler<InternalPacket<T>> {
-  private static final AttributeKey<PacketContext<?>> PACKET_CONTEXT =
+  private static final AttributeKey<ConnectionContext<?>> PACKET_CONTEXT =
       AttributeKey.valueOf("_PACKET_CONTEXT_");
   private final TcpMessageListener<T> messageListener;
   private final EventListener<T> eventListener;
@@ -32,8 +32,8 @@ public class ServerMessageHandler<T> extends SimpleChannelInboundHandler<Interna
 
   @Override
   public void channelActive(ChannelHandlerContext ctx) throws Exception {
-    TcpServerPacketContext<T> packetContext =
-        TcpServerPacketContext.wrap(ctx, (InetSocketAddress) ctx.channel().remoteAddress());
+    TcpServerConnectionContext<T> packetContext =
+        TcpServerConnectionContext.wrap(ctx, (InetSocketAddress) ctx.channel().remoteAddress());
     ctx.channel().attr(PACKET_CONTEXT).set(packetContext);
 
     eventListener.onConnect(packetContext);
@@ -41,7 +41,7 @@ public class ServerMessageHandler<T> extends SimpleChannelInboundHandler<Interna
 
   @Override
   public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-    TcpServerPacketContext<T> packetContext = getPacketContext(ctx);
+    TcpServerConnectionContext<T> packetContext = getPacketContext(ctx);
     CloseReason closeReason = packetContext.getCloseReason();
     if (closeReason == null) {
       closeReason = CloseReason.CLIENT_CLOSE;
@@ -54,7 +54,7 @@ public class ServerMessageHandler<T> extends SimpleChannelInboundHandler<Interna
   public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
     if (evt instanceof IdleStateEvent) {
       if (((IdleStateEvent) evt).state() == IdleState.READER_IDLE) {
-        TcpServerPacketContext<T> packetContext = getPacketContext(ctx);
+        TcpServerConnectionContext<T> packetContext = getPacketContext(ctx);
         packetContext.increaseHeartbeatTimeoutCount();
         LocalDateTime lastOccurTime = packetContext.getOccurTime();
         packetContext.setOccurTime(LocalDateTime.now());
@@ -66,7 +66,7 @@ public class ServerMessageHandler<T> extends SimpleChannelInboundHandler<Interna
 
   @Override
   protected void channelRead0(ChannelHandlerContext ctx, InternalPacket<T> packet) {
-    TcpServerPacketContext<T> packetContext = getPacketContext(ctx);
+    TcpServerConnectionContext<T> packetContext = getPacketContext(ctx);
     packetContext.resetHeartbeatTimeoutCount();
     packetContext.setMessage(packet.getMessage());
     messageListener.onMessage(packetContext);
@@ -78,7 +78,7 @@ public class ServerMessageHandler<T> extends SimpleChannelInboundHandler<Interna
   }
 
   @SuppressWarnings("unchecked")
-  private TcpServerPacketContext<T> getPacketContext(ChannelHandlerContext ctx) {
-    return (TcpServerPacketContext<T>) ctx.channel().attr(PACKET_CONTEXT).get();
+  private TcpServerConnectionContext<T> getPacketContext(ChannelHandlerContext ctx) {
+    return (TcpServerConnectionContext<T>) ctx.channel().attr(PACKET_CONTEXT).get();
   }
 }

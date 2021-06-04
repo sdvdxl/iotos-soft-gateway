@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.Getter;
+import lombok.ToString;
 import me.hekr.iotos.softgateway.core.klink.AddTopo;
 import me.hekr.iotos.softgateway.core.klink.AddTopoResp;
 import me.hekr.iotos.softgateway.core.klink.BatchDevSend;
@@ -29,6 +30,7 @@ import me.hekr.iotos.softgateway.core.klink.NotSupport;
 import me.hekr.iotos.softgateway.core.klink.Register;
 import me.hekr.iotos.softgateway.core.klink.RegisterResp;
 
+@ToString(of = "action")
 public enum Action {
 
   /** 不支持 */

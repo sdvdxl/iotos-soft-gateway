@@ -29,7 +29,7 @@ public class TcpClientSample {
       };
 
   public static void main(String[] args) {
-    TcpClient<String> client = new TcpClient<>("localhost", 1024);
+    TcpClient<String> client = new TcpClient<>("localhost", 4201);
     client.setEventListener(new EventListenerAdapter<>());
     client.setPacketCoder(packetCoder);
     client.setMessageListener(

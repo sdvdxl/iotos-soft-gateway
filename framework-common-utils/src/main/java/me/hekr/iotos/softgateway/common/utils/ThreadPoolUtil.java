@@ -33,8 +33,8 @@ public class ThreadPoolUtil implements Closeable {
       (ScheduledExecutorService)
           new Builder()
               .setPrefix("default-scheduled")
-              .setCore(CORES * 4)
-              .setMax(32)
+              .setCore(CORES + 1)
+              .setMax(16)
               .setQueueSize(1000)
               .setScheduled(true)
               .build();
@@ -151,7 +151,7 @@ public class ThreadPoolUtil implements Closeable {
     }
 
     public Builder setPrefix(String prefix) {
-      this.format = prefix + "-%d";
+      this.format = prefix + "-";
       return this;
     }
 
@@ -189,7 +189,7 @@ public class ThreadPoolUtil implements Closeable {
      */
     public synchronized ThreadPoolExecutor build() {
 
-      String poolName = StringUtils.defaultString(format, "sm-default-pool-thread-%s");
+      String poolName = StringUtils.defaultString(format, "default-pool-thread-%s");
       return THREAD_POOL_EXECUTOR_CONCURRENT_HASH_MAP.computeIfAbsent(
           poolName,
           name -> {

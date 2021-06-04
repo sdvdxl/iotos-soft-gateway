@@ -2,9 +2,11 @@ package me.hekr.iotos.softgateway.core.network.mqtt;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
+import me.hekr.iotos.softgateway.common.utils.ThreadPoolUtil;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
 import me.hekr.iotos.softgateway.core.klink.processor.KlinkProcessorManager;
@@ -33,6 +35,13 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class MqttCallBackImpl implements MqttCallback {
+  private ThreadPoolExecutor messageExecutor =
+      new ThreadPoolUtil.Builder()
+          .setCore(2)
+          .setMax(16)
+          .setQueueSize(2000)
+          .setPrefix("mqtt-down-topic-message")
+          .build();
   @Autowired private List<MqttDisConnectListener> mqttDisConnectListenerList;
 
   @Autowired private KlinkProcessorManager klinkProcessorManager;
@@ -42,7 +51,7 @@ public class MqttCallBackImpl implements MqttCallback {
   @SneakyThrows
   public void connectionLost(Throwable cause) {
     // 连接丢失后，一般在这里面进行重连
-    log.warn("软网关已经连接断开,准备开始重连, cause: {}", cause.getCause());
+    log.warn("驱动已经连接断开,准备开始重连, cause: ", cause.getCause());
     triggerConnectionLost();
     mqttService.init();
   }
@@ -80,6 +89,17 @@ public class MqttCallBackImpl implements MqttCallback {
 
   @Override
   public void messageArrived(String topic, MqttMessage message) {
+    messageExecutor.execute(
+        () -> {
+          try {
+            handleMessage(topic, message);
+          } catch (Exception e) {
+            log.error(e.getMessage(), e);
+          }
+        });
+  }
+
+  private void handleMessage(String topic, MqttMessage message) {
     if (log.isDebugEnabled()) {
       log.debug(
           "收到 mqtt 消息,topic: {}, qos:{} ,消息: {}",
