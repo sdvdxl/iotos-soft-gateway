@@ -43,15 +43,15 @@ public interface Listener<T> {
   /**
    * 连接关闭
    *
-   * @param context
+   * @param context context
    */
   void onClose(ConnectionContext<T> context);
 
   /**
    * 认证
    *
-   * @param context
-   * @return
+   * @param context context
+   * @return true 认证通过；false 认证失败
    */
   boolean auth(ConnectionContext<T> context);
 

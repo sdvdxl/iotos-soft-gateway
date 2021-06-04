@@ -94,7 +94,7 @@ public class MqttService {
     }
   }
 
-  public  void noticeAddTopoSuccess() {
+  public void noticeAddTopoSuccess() {
     synchronized (addTopoLock) {
       addTopoQueue.poll();
       addTopoLock.notifyAll();
@@ -254,13 +254,10 @@ public class MqttService {
   private void startPublishTask() {
     while (!Thread.currentThread().isInterrupted()) {
       if (isDisconnected()) {
-        try {
-          TimeUnit.SECONDS.sleep(1);
-          continue;
-        } catch (InterruptedException ignored) {
-        }
+        ThreadUtil.sleep(1000);
+        continue;
       }
-      KlinkDev msg = null;
+      KlinkDev msg;
       int waitTime = iotOsConfig.getMqttConfig().getConnectTimeout() * 1000;
 
       // 优先发送注册信息

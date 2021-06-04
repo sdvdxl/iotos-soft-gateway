@@ -46,28 +46,8 @@ public class KlinkProcessorManager {
     }
 
     Klink klink = JsonUtil.fromBytes(message.getPayload(), action.getKlinkClass());
-    if (klink instanceof KlinkResp) {
-      KlinkResp resp = (KlinkResp) klink;
-      boolean isDeviceNotExist = resp.getCode() == ErrorCode.DEVICE_NOT_EXIST.getCode();
-      boolean isTopoNotExist = resp.getCode() == ErrorCode.DEVICE_TOPO_NOT_EXIST.getCode();
+    handleDeviceError(klink);
 
-      if (isDeviceNotExist || isTopoNotExist) {
-        String pk = (String) resp.getParams().get("pk");
-        String devId = (String) resp.getParams().get("devId");
-        Optional<DeviceRemoteConfig> optional = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
-        if (optional.isPresent()) {
-          if (isDeviceNotExist) {
-            klinkService.addDev(pk, devId, optional.get().getDevName());
-          } else {
-            klinkService.addTopo(pk, devId);
-          }
-        } else {
-          // 一般不应该走到这里，除非在这时候非常凑巧的删除了这个远程配置
-          log.warn("设备没有映射在远程配置, pk:{}, devId:{}", pk, devId);
-          return;
-        }
-      }
-    }
     log.debug("klink: {}", klink);
 
     Processor processor = getProcessor(action);
@@ -79,6 +59,44 @@ public class KlinkProcessorManager {
       processor.handle(klink);
     } catch (Exception e) {
       log.error(e.getMessage(), e);
+    }
+  }
+
+  private void handleDeviceError(Klink klink) {
+    if (klink instanceof KlinkResp) {
+      KlinkResp resp = (KlinkResp) klink;
+      boolean isDeviceNotExist = resp.getCode() == ErrorCode.DEVICE_NOT_EXIST.getCode();
+      boolean isTopoNotExist = resp.getCode() == ErrorCode.DEVICE_TOPO_NOT_EXIST.getCode();
+      if (isDeviceNotExist || isTopoNotExist) {
+        String pk;
+        String devId;
+        if (isDeviceNotExist) {
+          if (resp.getParams() == null) {
+            // device not exist, pk:aaba4d89764c45e7a410510012f36ae7, devId:demo_subsystem_002
+            String[] args = resp.getDesc().substring("device not exist, ".length()).split(", ");
+            pk = args[0].split(":")[1];
+            devId = args[1].split(":")[1];
+          } else {
+            pk = (String) resp.getParams().get("subPk");
+            devId = (String) resp.getParams().get("subDevId");
+          }
+        } else {
+          pk = (String) resp.getParams().get("subPk");
+          devId = (String) resp.getParams().get("subDevId");
+        }
+
+        Optional<DeviceRemoteConfig> optional = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
+        if (optional.isPresent()) {
+          if (isDeviceNotExist) {
+            klinkService.addDev(pk, devId, optional.get().getDevName());
+          } else {
+            klinkService.addTopo(pk, devId);
+          }
+        } else {
+          // 一般不应该走到这里，除非在这时候非常凑巧的删除了这个远程配置
+          log.warn("设备没有映射在远程配置, pk:{}, devId:{}", pk, devId);
+        }
+      }
     }
   }
 }

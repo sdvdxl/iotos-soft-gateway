@@ -3,9 +3,9 @@ package me.hekr.iotos.softgateway.network.udp;
 import java.net.InetSocketAddress;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import me.hekr.iotos.softgateway.network.common.ConnectionContext;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
-import me.hekr.iotos.softgateway.network.common.PacketContext;
 
 /**
  * UDP client
@@ -40,7 +40,7 @@ public class UdpServer<T> extends UdpClient<T> {
    * @param host 要发送的 host
    * @param port 要发送的端口
    * @param t 要发送的内容
-   * @return
+   * @return response
    */
   @SneakyThrows
   public T send(String host, int port, T t) {
@@ -49,7 +49,7 @@ public class UdpServer<T> extends UdpClient<T> {
   }
 
   @SneakyThrows
-  public T send(PacketContext<T> ctx, T t) {
+  public T send(ConnectionContext<T> ctx, T t) {
     return send(ctx.getAddress(), t);
   }
 

@@ -2,7 +2,7 @@ package me.hekr.iotos.softgateway.network.common.client;
 
 import java.time.LocalDateTime;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
-import me.hekr.iotos.softgateway.network.common.PacketContext;
+import me.hekr.iotos.softgateway.network.common.ConnectionContext;
 
 /**
  * 新的客户端连接上来监听
@@ -16,7 +16,7 @@ public interface EventListener<T> {
    *
    * @param ctx 上下文
    */
-  void onConnect(PacketContext<T> ctx);
+  void onConnect(ConnectionContext<T> ctx);
 
   /**
    * 客户端与服务端断开连接
@@ -24,7 +24,7 @@ public interface EventListener<T> {
    * @param ctx 上下文
    * @param reason 关闭连接原因
    */
-  void onDisconnect(PacketContext<T> ctx, CloseReason reason);
+  void onDisconnect(ConnectionContext<T> ctx, CloseReason reason);
 
   /**
    * * 客户端不活跃（超过了设定的心跳超时时间）
@@ -33,7 +33,7 @@ public interface EventListener<T> {
    * @param lastOccurTime 上次发生时间，如果是第一次，则为 null
    * @param count 连续发生次数，如果有数据进来就会被重置为0开始
    */
-  void onHeartbeatTimeout(PacketContext<T> ctx, LocalDateTime lastOccurTime, int count);
+  void onHeartbeatTimeout(ConnectionContext<T> ctx, LocalDateTime lastOccurTime, int count);
 
   /**
    * 异常处理
@@ -41,5 +41,5 @@ public interface EventListener<T> {
    * @param ctx 上下文
    * @param t Throwable
    */
-  void exceptionCaught(PacketContext<T> ctx, Throwable t);
+  void exceptionCaught(ConnectionContext<T> ctx, Throwable t);
 }
