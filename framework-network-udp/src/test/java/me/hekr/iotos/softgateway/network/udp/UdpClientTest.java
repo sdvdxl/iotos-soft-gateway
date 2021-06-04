@@ -25,7 +25,7 @@ public class UdpClientTest {
 
   @Test
   public void testSendAsync() {
-    UdpClient<String> client = new UdpClient<>("localhost", 1024, 1021);
+    UdpClient<String> client = new UdpClient<>("localhost", 4201, 4211);
     client.setMessageListener(
         ctx -> System.out.println("收到来自 " + ctx.getAddress() + " 的消息：" + ctx.getMessage()));
     client.setPacketCoder(packetCoder);
@@ -36,7 +36,7 @@ public class UdpClientTest {
 
   @Test
   public void testSendSync() {
-    UdpClient<String> client = new UdpClient<>("localhost", 1024, 1021);
+    UdpClient<String> client = new UdpClient<>("localhost", 4201, 4211);
     client.setSync(true);
     client.setPacketCoder(packetCoder);
     client.setTimeout(30000);

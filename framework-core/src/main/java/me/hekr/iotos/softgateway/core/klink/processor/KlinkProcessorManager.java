@@ -2,15 +2,20 @@ package me.hekr.iotos.softgateway.core.klink.processor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
+import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
+import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
+import me.hekr.iotos.softgateway.core.enums.ErrorCode;
 import me.hekr.iotos.softgateway.core.klink.Klink;
-import me.hekr.iotos.softgateway.core.klink.RegisterResp;
-import me.hekr.iotos.softgateway.core.network.mqtt.MqttService;
+import me.hekr.iotos.softgateway.core.klink.KlinkResp;
+import me.hekr.iotos.softgateway.core.klink.KlinkService;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /** @author iotos */
@@ -18,7 +23,8 @@ import org.springframework.stereotype.Service;
 @Service
 @SuppressWarnings("rawtypes")
 public class KlinkProcessorManager {
-
+  @Autowired private KlinkService klinkService;
+  @Autowired private IotOsConfig iotOsConfig;
   private final Map<Action, Processor> processorMap;
 
   public KlinkProcessorManager(List<Processor> processorList) {
@@ -40,15 +46,30 @@ public class KlinkProcessorManager {
     }
 
     Klink klink = JsonUtil.fromBytes(message.getPayload(), action.getKlinkClass());
-    log.debug("klink: {}", klink);
-    if (action == Action.REGISTER_RESP) {
-      RegisterResp resp = (RegisterResp) klink;
-      if (resp.isSuccess()){
-        MqttService.noticeRegisterSuccess();
+    if (klink instanceof KlinkResp) {
+      KlinkResp resp = (KlinkResp) klink;
+      boolean isDeviceNotExist = resp.getCode() == ErrorCode.DEVICE_NOT_EXIST.getCode();
+      boolean isTopoNotExist = resp.getCode() == ErrorCode.DEVICE_TOPO_NOT_EXIST.getCode();
+
+      if (isDeviceNotExist || isTopoNotExist) {
+        String pk = (String) resp.getParams().get("pk");
+        String devId = (String) resp.getParams().get("devId");
+        Optional<DeviceRemoteConfig> optional = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
+        if (optional.isPresent()) {
+          if (isDeviceNotExist) {
+            klinkService.addDev(pk, devId, optional.get().getDevName());
+          } else {
+            klinkService.addTopo(pk, devId);
+          }
+        } else {
+          // 一般不应该走到这里，除非在这时候非常凑巧的删除了这个远程配置
+          log.warn("设备没有映射在远程配置, pk:{}, devId:{}", pk, devId);
+          return;
+        }
       }
-    } else if (action == Action.ADD_TOPO_RESP) {
-      MqttService.noticeAddTopoSuccess();
     }
+    log.debug("klink: {}", klink);
+
     Processor processor = getProcessor(action);
     if (processor == null) {
       log.warn("未知命令: {}, data:{}", action.getAction(), new String(message.getPayload()));

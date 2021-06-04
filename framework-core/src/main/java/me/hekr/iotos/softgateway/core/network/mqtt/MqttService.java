@@ -42,15 +42,15 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class MqttService {
-  private static final Object registerLock = new Object();
+  private final Object registerLock = new Object();
 
-  private static final Object addTopoLock = new Object();
+  private final Object addTopoLock = new Object();
 
   private static final int MAX_RETRY_COUNT = 3;
   private final IotOsConfig iotOsConfig;
-  private static final BlockingQueue<KlinkDev> queue = new ArrayBlockingQueue<>(1000);
-  private static final BlockingQueue<KlinkDev> registerQueue = new ArrayBlockingQueue<>(1000);
-  private static final BlockingQueue<KlinkDev> addTopoQueue = new ArrayBlockingQueue<>(1000);
+  private final BlockingQueue<KlinkDev> queue = new ArrayBlockingQueue<>(1000);
+  private final BlockingQueue<KlinkDev> registerQueue = new ArrayBlockingQueue<>(1000);
+  private final BlockingQueue<KlinkDev> addTopoQueue = new ArrayBlockingQueue<>(1000);
 
   @SuppressWarnings("all")
   private final ExecutorService publishExecutor =
@@ -94,7 +94,7 @@ public class MqttService {
     }
   }
 
-  public static void noticeAddTopoSuccess() {
+  public  void noticeAddTopoSuccess() {
     synchronized (addTopoLock) {
       addTopoQueue.poll();
       addTopoLock.notifyAll();
@@ -201,7 +201,7 @@ public class MqttService {
     }
   }
 
-  public static void noticeRegisterSuccess() {
+  public void noticeRegisterSuccess() {
     synchronized (registerLock) {
       registerQueue.poll();
       registerLock.notifyAll();
