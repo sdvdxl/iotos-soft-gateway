@@ -151,7 +151,7 @@ public class ThreadPoolUtil implements Closeable {
     }
 
     public Builder setPrefix(String prefix) {
-      this.format = prefix + "-%d";
+      this.format = prefix + "-";
       return this;
     }
 
