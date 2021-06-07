@@ -6,7 +6,7 @@
 VERSION="3.4.1-SNAPSHOT"
 echo "版本号：$VERSION"
 
-updateVersion(){
+updateVersion() {
   ./mvnw clean
   ./mvnw versions:set -DnewVersion=$VERSION
   ./mvnw versions:update-properties
@@ -15,22 +15,21 @@ updateVersion(){
 
 act=$1
 
-deploy() {
+remote() {
   updateVersion
-  ./mvnw deploy -P deploy
+  ./mvnw remote -P remote
 }
-
 
 install() {
   updateVersion
-  ./mvnw clean install -P deploy -DskipTests=true
+  ./mvnw clean install -P remote -DskipTests=true
 }
 
-if [[ "deploy" == "$act" ]] ; then
-  deploy
-elif [[ "version" == "$act" ]] ; then
+if [[ "remote" == "$act" ]]; then
+  remote
+elif [[ "version" == "$act" ]]; then
   updateVersion
-elif [[ "install" == "$act" || "" == "$act" ]] ; then
+elif [[ "install" == "$act" || "" == "$act" ]]; then
   install
 else
   echo 'deploy 或者 install'
