@@ -17,7 +17,7 @@ act=$1
 
 remote() {
   updateVersion
-  ./mvnw remote -P remote
+  ./mvnw deploy -P deploy
 }
 
 install() {
@@ -32,5 +32,5 @@ elif [[ "version" == "$act" ]]; then
 elif [[ "install" == "$act" || "" == "$act" ]]; then
   install
 else
-  echo 'deploy 或者 install'
+  echo 'remote(发布到maven仓库) ，version(更新版本) 或者 install(发布到本地仓库)'
 fi
