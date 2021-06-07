@@ -4,7 +4,7 @@
 # ./deploy upload 生成 maven jar 包并 commit
 set -e
 
-VERSION="3.4.1-SNAPSHOT"
+VERSION="3.4.1"
 echo "版本号：$VERSION"
 
 updateVersion() {
