@@ -319,12 +319,12 @@ public class MqttService {
         if (!iotOsConfig.getGatewayConfig().getPk().equals(pk)) {
           DeviceRemoteConfig dev = DeviceRemoteConfig.getByPkAndDevId(pk, devId).get();
 
-          if (klink instanceof DevLogin) {
+          if (klink instanceof DevLogin && dev.isOffline()) {
             dev.setOnline();
             return;
           }
 
-          if (klink instanceof DevLogout && dev.isOffline()) {
+          if (klink instanceof DevLogout && dev.isOnline()) {
             dev.setOffline();
             return;
           }
