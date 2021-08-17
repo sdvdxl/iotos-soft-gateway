@@ -1,6 +1,7 @@
 # 说明
 
 本项目是 [氦氪](https://hekr.me/) [IoTOS](https://hekr.me/p-iotos.html) 的配套**专用**软网关开发 Java SDK，用来进行二次开发对接 IoTOS 平台的一套工具集合。
+需要配合 IoTOS 平台的网关（开启远程配置）使用。
 
 本 SDK 托管在 [gitee](https://gitee.com/geekhekr/iotos-soft-gateway) 以开源的方式提供给客户使用，使用 [MulanPSL-2.0](https://gitee.com/geekhekr/iotos-soft-gateway/blob/master/LICENSE) 方式授权。
 
@@ -206,6 +207,19 @@ snapshot 版本 需要添加仓库：
 最新版本请关注 [发行版信息](https://gitee.com/geekhekr/iotos-soft-gateway/releases)
   
 示例 demo 可以参考 [iotos-soft-gateway-demo](https://gitee.com/geekhekr/iotos-soft-gateway-demo) 项目。
+
+### 远程配置
+
+远程配置只能用于网关设备，并且在创建产品的时候，开启远程配置功能。
+
+远程配置内容为json数据，每行一个json对象，格式为：
+
+```json
+{"pk":"","devId":"","devName":"","deviceType": ""}
+```
+
+其中 `pk` 是子设备在IoT平台的pk，`devId` 是子设备在IoT平台的devId，devName是设备在IoT平台的设备名字，deviceType 是自定义的设备类型，用于区分不同子设备类型，如果只有1种设备，可以不写。
+其他的字段可以自行填写，比如子系统设备根据ip进行区分，则可以加配置，比如`"ip":"10.1.1.2"`。
 
 ### 发布
 
