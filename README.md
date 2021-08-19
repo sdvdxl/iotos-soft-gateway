@@ -227,7 +227,7 @@ snapshot 版本 需要添加仓库：
 
 `./deploy.sh install` 安装到本地
 
-`./deploy.sh deploy` 发布到中央仓库（需要10分钟-2小时同步到中央仓库）（需要管理员执行）
+`./deploy.sh remote` 发布到中央仓库（需要10分钟-2小时同步到中央仓库）（需要管理员执行）
 
 [中央仓库地址](https://repo1.maven.org/maven2/me/hekr/iotos/softgateway/)
 
