@@ -1,5 +1,6 @@
 package me.hekr.iotos.softgateway.core.klink;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import me.hekr.iotos.softgateway.core.dto.DeviceMapper;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.enums.ErrorCode;
 import me.hekr.iotos.softgateway.core.network.mqtt.MqttService;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,9 +31,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class KlinkService {
+  public static volatile long sleepMills = 200;
   @Autowired private IotOsConfig iotOsConfig;
   @Autowired private MqttService mqttService;
-  public static volatile long sleepMills = 200;
 
   /**
    * 动态注册设备
@@ -156,13 +158,26 @@ public class KlinkService {
    */
   @SneakyThrows
   public void devLogin(String pk, String devId) {
-    doDevLogin(pk, devId);
+    doDevLogin(pk, devId, null);
   }
 
-  private void doDevLogin(String pk, String devId) {
+  /**
+   * 设备上线
+   *
+   * @param pk pk
+   * @param devId devId
+   * @param raw 原始数据
+   */
+  @SneakyThrows
+  public void devLogin(String pk, String devId, String raw) {
+    doDevLogin(pk, devId, raw);
+  }
+
+  private void doDevLogin(String pk, String devId, String raw) {
     DevLogin devLogin = new DevLogin();
     devLogin.setDevId(devId);
     devLogin.setPk(pk);
+    devLogin.setSysCustomRaw(raw);
     mqttService.publish(devLogin);
   }
 
@@ -174,13 +189,25 @@ public class KlinkService {
    */
   @SneakyThrows
   public void devLogout(String pk, String devId) {
-    doDevLogout(pk, devId);
+    doDevLogout(pk, devId, null);
+  }
+  /**
+   * 设备离线
+   *
+   * @param pk pk
+   * @param devId devId
+   * @param raw 原始数据
+   */
+  @SneakyThrows
+  public void devLogout(String pk, String devId, String raw) {
+    doDevLogout(pk, devId, raw);
   }
 
-  private void doDevLogout(String pk, String devId) {
+  private void doDevLogout(String pk, String devId, String raw) {
     DevLogout devLogout = new DevLogout();
     devLogout.setDevId(devId);
     devLogout.setPk(pk);
+    devLogout.setSysCustomRaw(raw);
     mqttService.publish(devLogout);
   }
 
@@ -244,6 +271,7 @@ public class KlinkService {
   public void sendKlink(DeviceMapper mapper, KlinkDev klink) {
     Optional<DeviceRemoteConfig> devMapper = getDeviceMapper(mapper);
     if (!devMapper.isPresent()) {
+      log.warn("设备关系不存在，mapper: {}", mapper.getProps());
       return;
     }
     DeviceRemoteConfig dev = devMapper.get();
@@ -260,6 +288,36 @@ public class KlinkService {
   @SneakyThrows
   public void sendKlink(KlinkDev klink) {
     mqttService.publish(klink);
+  }
+
+  /**
+   * 编码为hex
+   *
+   * @param bytes 字节数组
+   * @return 编码字符串
+   */
+  public String bytesToHex(byte[] bytes) {
+    return Hex.encodeHexString(bytes);
+  }
+
+  /**
+   * 编码为String（utf8）
+   *
+   * @param bytes 字节数组
+   * @return 编码字符串
+   */
+  public String bytesToString(byte[] bytes) {
+    return new String(bytes, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * 编码为base64
+   *
+   * @param bytes 字节数组
+   * @return 编码字符串
+   */
+  public String bytesToBase64(byte[] bytes) {
+    return Base64.encodeBase64String(bytes);
   }
 
   /**
@@ -289,6 +347,23 @@ public class KlinkService {
     mqttService.publish(kLink);
   }
 
+  /**
+   * 设备发送数据
+   *
+   * @param pk pk
+   * @param devId devId
+   * @param data 物模型数据
+   * @param raw 原始数据
+   */
+  public void devSend(String pk, String devId, ModelData data, String raw) {
+    DevSend kLink = new DevSend();
+    kLink.setPk(pk);
+    kLink.setDevId(devId);
+    kLink.setData(data);
+    kLink.setSysCustomRaw(raw);
+    mqttService.publish(kLink);
+  }
+
   /** 获取远程配置文件 */
   @SneakyThrows
   public void getConfig() {
@@ -298,7 +373,6 @@ public class KlinkService {
     getConfig.setDevId(g.getDevId());
     mqttService.publish(getConfig);
   }
-
   /**
    * 发送数据
    *
@@ -308,12 +382,24 @@ public class KlinkService {
    * @param data 物模型数据
    */
   public void devSend(DeviceMapper mapper, ModelData data) {
+    devSend(mapper, data, null);
+  }
+  /**
+   * 发送数据
+   *
+   * <p>如果找不到 mapper，则打印日志，不会真实发送数据
+   *
+   * @param mapper 设备映射
+   * @param data 物模型数据
+   * @param raw 原始数据
+   */
+  public void devSend(DeviceMapper mapper, ModelData data, String raw) {
     Optional<DeviceRemoteConfig> devMapper = getDeviceMapper(mapper);
     if (!devMapper.isPresent()) {
       return;
     }
     DeviceRemoteConfig dev = devMapper.get();
-    devSend(dev.getPk(), dev.getDevId(), data);
+    devSend(dev.getPk(), dev.getDevId(), data, raw);
   }
 
   /**

@@ -18,7 +18,7 @@
 
   <groupId>me.hekr.iotos.softgateway</groupId>
   <artifactId>iotos-soft-gateway</artifactId>
-  <version>3.4.0-SNAPSHOT</version>
+  <version>3.4.3-SNAPSHOT</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>IoTOS 软网关</description>
   <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
@@ -30,8 +30,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-    <iotos.softgateway.version>3.4.0-SNAPSHOT</iotos.softgateway.version>
-    <springboot.version>2.5.0</springboot.version>
+    <iotos.softgateway.version>3.4.3-SNAPSHOT</iotos.softgateway.version>
+    <springboot.version>2.5.4</springboot.version>
   </properties>
 
   <licenses>
@@ -51,7 +51,7 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://https://gitee.com/geekhekr/iotos-soft-gateway.git</connection>
+    <connection>scm:git:git://gitee.com/geekhekr/iotos-soft-gateway.git</connection>
     <developerConnection>scm:git:ssh://gitee.com:geekhekr/iotos-soft-gateway.git
     </developerConnection>
     <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
@@ -61,7 +61,7 @@
     <dependencies>
       <dependency>
         <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-parent</artifactId>
+        <artifactId>spring-boot-starter-parent</artifactId>
         <version>${springboot.version}</version>
         <type>pom</type>
         <scope>import</scope>
