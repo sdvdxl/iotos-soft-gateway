@@ -121,7 +121,7 @@ public class DeviceRemoteConfig implements Serializable {
     return getAll().stream().filter(d -> dataEq(d.data, p.data)).findAny();
   }
 
-  private static boolean dataEq(Map<String, Object> data, Map<String, Object> properties) {
+   static boolean dataEq(Map<String, Object> data, Map<String, Object> properties) {
     return data.entrySet().containsAll(properties.entrySet());
   }
 
