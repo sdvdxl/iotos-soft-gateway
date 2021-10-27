@@ -46,9 +46,16 @@ public class MqttService {
   private final Object registerLock = new Object();
   private final Object addTopoLock = new Object();
   private final IotOsConfig iotOsConfig;
-  private final BlockingQueue<KlinkDev> queue = new ArrayBlockingQueue<>(1000);
-  private final BlockingQueue<KlinkDev> registerQueue = new ArrayBlockingQueue<>(1000);
-  private final BlockingQueue<KlinkDev> addTopoQueue = new ArrayBlockingQueue<>(1000);
+  private final String defaultQueueSize = "1000";
+  private final BlockingQueue<KlinkDev> queue =
+      new ArrayBlockingQueue<>(
+          Integer.parseInt(System.getProperty("iot.queue.general", defaultQueueSize)));
+  private final BlockingQueue<KlinkDev> registerQueue =
+      new ArrayBlockingQueue<>(
+          Integer.parseInt(System.getProperty("iot.queue.register", defaultQueueSize)));
+  private final BlockingQueue<KlinkDev> addTopoQueue =
+      new ArrayBlockingQueue<>(
+          Integer.parseInt(System.getProperty("iot.queue.register", defaultQueueSize)));
 
   @SuppressWarnings("all")
   private final ExecutorService publishExecutor =
@@ -237,10 +244,11 @@ public class MqttService {
     }
     // 如果是注册设备，确保设备注册成功
     if (klink instanceof Register || Action.REGISTER == Action.of(klink.getAction())) {
-      registerQueue.add(klink);
+      registerQueue.put(klink);
     } else if (klink instanceof AddTopo || Action.ADD_TOPO == Action.of(klink.getAction())) {
-      addTopoQueue.add(klink);
+      addTopoQueue.put(klink);
     } else {
+      // 如果满会抛出异常
       queue.add(klink);
     }
   }
