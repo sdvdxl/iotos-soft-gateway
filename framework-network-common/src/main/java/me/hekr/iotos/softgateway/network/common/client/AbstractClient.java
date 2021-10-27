@@ -9,6 +9,7 @@ import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.handler.logging.LoggingHandler;
@@ -27,6 +28,7 @@ import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 @Slf4j
 public abstract class AbstractClient<T> {
   public final Object LOCK = new Object();
+  private final int maxDatagramSize;
   public T result;
   @Setter protected boolean enableNetLog;
   protected EventLoopGroup eventLoop;
@@ -59,6 +61,12 @@ public abstract class AbstractClient<T> {
 
   public AbstractClient(Class<? extends Channel> channelClass) {
     this.channelClass = channelClass;
+    this.maxDatagramSize = 2048;
+  }
+
+  public AbstractClient(Class<? extends Channel> channelClass, int maxDatagramSize) {
+    this.channelClass = channelClass;
+    this.maxDatagramSize = maxDatagramSize;
   }
 
   /**
@@ -132,6 +140,8 @@ public abstract class AbstractClient<T> {
               }
             });
     if (DatagramChannel.class.isAssignableFrom(channelClass)) {
+      bootstrap.option(
+          ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(maxDatagramSize));
       channel = bootstrap.bind(bindPort).syncUninterruptibly().channel();
     } else {
       bootstrap.option(ChannelOption.TCP_NODELAY, true);

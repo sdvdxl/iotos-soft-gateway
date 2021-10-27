@@ -42,11 +42,9 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class MqttService {
-  private final Object registerLock = new Object();
-
-  private final Object addTopoLock = new Object();
-
   private static final int MAX_RETRY_COUNT = 3;
+  private final Object registerLock = new Object();
+  private final Object addTopoLock = new Object();
   private final IotOsConfig iotOsConfig;
   private final BlockingQueue<KlinkDev> queue = new ArrayBlockingQueue<>(1000);
   private final BlockingQueue<KlinkDev> registerQueue = new ArrayBlockingQueue<>(1000);
@@ -226,16 +224,16 @@ public class MqttService {
         log.warn("没找到设备，pk:{}, devId:{}", pk, devId);
         return;
       }
-      DeviceRemoteConfig dev = byPkAndDevId.get();
-      if (klink instanceof DevLogin && dev.isOnline()) {
-        log.info("设备已经是在线状态 {}", dev);
-        return;
-      }
-
-      if (klink instanceof DevLogout && dev.isOffline()) {
-        log.info("设备已经是离线状态 {}", dev);
-        return;
-      }
+      //      DeviceRemoteConfig dev = byPkAndDevId.get();
+      //      if (klink instanceof DevLogin && dev.isOnline()) {
+      //        log.info("设备已经是在线状态 {}", dev);
+      //        return;
+      //      }
+      //
+      //      if (klink instanceof DevLogout && dev.isOffline()) {
+      //        log.info("设备已经是离线状态 {}", dev);
+      //        return;
+      //      }
     }
     // 如果是注册设备，确保设备注册成功
     if (klink instanceof Register || Action.REGISTER == Action.of(klink.getAction())) {

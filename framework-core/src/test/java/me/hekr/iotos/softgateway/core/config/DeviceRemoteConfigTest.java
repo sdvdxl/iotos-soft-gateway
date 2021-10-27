@@ -1,6 +1,7 @@
 package me.hekr.iotos.softgateway.core.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -73,4 +74,14 @@ public class DeviceRemoteConfigTest {
     DeviceRemoteConfig.update(new DeviceRemoteConfig(map));
     assertEquals("A", DeviceRemoteConfig.getByPkAndDevId("pk", "devId").get().getDeviceType());
   }
+
+  @Test
+  public void testEq(){
+    Map<String,Object> params1 = new HashMap<>();
+    params1.put("a",new Integer(1));
+    Map<String,Object> params2 = new HashMap<>();
+    params2.put("a",1);
+    assertTrue(DeviceRemoteConfig.dataEq(params1,params2));
+  }
+
 }

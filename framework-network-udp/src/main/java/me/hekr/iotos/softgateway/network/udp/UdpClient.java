@@ -23,7 +23,14 @@ import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 public class UdpClient<T> extends AbstractClient<T> {
 
   public UdpClient(String host, int port, int bindPort) {
-    super(NioDatagramChannel.class);
+    super(NioDatagramChannel.class, 2048);
+    this.host = host;
+    this.port = port;
+    this.bindPort = bindPort;
+  }
+
+  public UdpClient(String host, int port, int bindPort, int maxDatagramSize) {
+    super(NioDatagramChannel.class, maxDatagramSize);
     this.host = host;
     this.port = port;
     this.bindPort = bindPort;
