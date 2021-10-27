@@ -23,9 +23,9 @@ import org.springframework.stereotype.Service;
 @Service
 @SuppressWarnings("rawtypes")
 public class KlinkProcessorManager {
+  private final Map<Action, Processor> processorMap;
   @Autowired private KlinkService klinkService;
   @Autowired private IotOsConfig iotOsConfig;
-  private final Map<Action, Processor> processorMap;
 
   public KlinkProcessorManager(List<Processor> processorList) {
 
@@ -46,6 +46,12 @@ public class KlinkProcessorManager {
     }
 
     Klink klink = JsonUtil.fromBytes(message.getPayload(), action.getKlinkClass());
+    if (klink instanceof KlinkResp) {
+      if (!((KlinkResp) klink).isSuccess()) {
+        log.error("收到mqtt返回消息不成功，消息： {}", new String(message.getPayload()));
+      }
+    }
+
     handleDeviceError(klink);
 
     log.debug("klink: {}", klink);

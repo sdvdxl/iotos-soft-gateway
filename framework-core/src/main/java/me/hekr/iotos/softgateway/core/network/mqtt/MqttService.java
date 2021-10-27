@@ -21,6 +21,7 @@ import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.AddTopo;
 import me.hekr.iotos.softgateway.core.klink.DevLogin;
 import me.hekr.iotos.softgateway.core.klink.DevLogout;
+import me.hekr.iotos.softgateway.core.klink.Klink;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
 import me.hekr.iotos.softgateway.core.klink.Register;
 import me.hekr.iotos.softgateway.core.listener.MqttConnectedListener;
@@ -80,8 +81,8 @@ public class MqttService {
     ThreadPoolUtil.DEFAULT_SCHEDULED.scheduleAtFixedRate(
         () -> {
           checkAndLogQueueSize(registerQueue, 2, "register");
-          checkAndLogQueueSize(addTopoQueue, 2, "register");
-          checkAndLogQueueSize(registerQueue, iotOsConfig.getKlinkQueueSize(), "klink");
+          checkAndLogQueueSize(addTopoQueue, 2, "topo");
+          checkAndLogQueueSize(queue, iotOsConfig.getKlinkQueueSize(), "klink");
         },
         0,
         3,
@@ -278,6 +279,7 @@ public class MqttService {
               log.error(e.getMessage());
               ThreadUtil.sleep(1000);
             } catch (InterruptedException e) {
+              log.warn("registerQueue 发送被打断");
               return;
             }
           }
@@ -294,6 +296,7 @@ public class MqttService {
               log.error(e.getMessage());
               ThreadUtil.sleep(1000);
             } catch (InterruptedException e) {
+              log.warn("addTopoQueue 发送被打断");
               return;
             }
           }
@@ -310,6 +313,8 @@ public class MqttService {
         trySend(msg);
       }
     }
+
+    log.warn("收到打断信号，停止发送消息");
   }
 
   private void trySend(KlinkDev klink) {
@@ -364,5 +369,13 @@ public class MqttService {
     } catch (Exception e) {
       log.error(e.getMessage(), e);
     }
+  }
+
+  public KlinkDev peekRegisterMessage() {
+    return registerQueue.peek();
+  }
+
+  public Klink peekAddTopoMessage() {
+    return addTopoQueue.peek();
   }
 }
