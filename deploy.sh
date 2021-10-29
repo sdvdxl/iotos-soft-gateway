@@ -4,12 +4,13 @@
 # ./deploy upload 生成 maven jar 包并 commit
 set -e
 
-VERSION="3.4.5-SNAPSHOT"
+VERSION="3.4.5"
 echo "版本号：$VERSION"
 
 updateVersion() {
   ./mvnw clean
   ./mvnw versions:set -DnewVersion=$VERSION
+  ./mvnw versions:commit
 #  ./mvnw versions:update-properties
   ./mvnw versions:update-child-modules
 }
