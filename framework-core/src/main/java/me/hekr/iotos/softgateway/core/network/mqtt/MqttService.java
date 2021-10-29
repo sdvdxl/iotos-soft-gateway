@@ -21,6 +21,7 @@ import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.AddTopo;
 import me.hekr.iotos.softgateway.core.klink.DevLogin;
 import me.hekr.iotos.softgateway.core.klink.DevLogout;
+import me.hekr.iotos.softgateway.core.klink.Klink;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
 import me.hekr.iotos.softgateway.core.klink.Register;
 import me.hekr.iotos.softgateway.core.listener.MqttConnectedListener;
@@ -46,9 +47,16 @@ public class MqttService {
   private final Object registerLock = new Object();
   private final Object addTopoLock = new Object();
   private final IotOsConfig iotOsConfig;
-  private final BlockingQueue<KlinkDev> queue = new ArrayBlockingQueue<>(1000);
-  private final BlockingQueue<KlinkDev> registerQueue = new ArrayBlockingQueue<>(1000);
-  private final BlockingQueue<KlinkDev> addTopoQueue = new ArrayBlockingQueue<>(1000);
+  private final String defaultQueueSize = "1000";
+  private final BlockingQueue<KlinkDev> queue =
+      new ArrayBlockingQueue<>(
+          Integer.parseInt(System.getProperty("iot.queue.general", defaultQueueSize)));
+  private final BlockingQueue<KlinkDev> registerQueue =
+      new ArrayBlockingQueue<>(
+          Integer.parseInt(System.getProperty("iot.queue.register", defaultQueueSize)));
+  private final BlockingQueue<KlinkDev> addTopoQueue =
+      new ArrayBlockingQueue<>(
+          Integer.parseInt(System.getProperty("iot.queue.register", defaultQueueSize)));
 
   @SuppressWarnings("all")
   private final ExecutorService publishExecutor =
@@ -73,8 +81,8 @@ public class MqttService {
     ThreadPoolUtil.DEFAULT_SCHEDULED.scheduleAtFixedRate(
         () -> {
           checkAndLogQueueSize(registerQueue, 2, "register");
-          checkAndLogQueueSize(addTopoQueue, 2, "register");
-          checkAndLogQueueSize(registerQueue, iotOsConfig.getKlinkQueueSize(), "klink");
+          checkAndLogQueueSize(addTopoQueue, 2, "topo");
+          checkAndLogQueueSize(queue, iotOsConfig.getKlinkQueueSize(), "klink");
         },
         0,
         3,
@@ -237,10 +245,11 @@ public class MqttService {
     }
     // 如果是注册设备，确保设备注册成功
     if (klink instanceof Register || Action.REGISTER == Action.of(klink.getAction())) {
-      registerQueue.add(klink);
+      registerQueue.put(klink);
     } else if (klink instanceof AddTopo || Action.ADD_TOPO == Action.of(klink.getAction())) {
-      addTopoQueue.add(klink);
+      addTopoQueue.put(klink);
     } else {
+      // 如果满会抛出异常
       queue.add(klink);
     }
   }
@@ -270,6 +279,7 @@ public class MqttService {
               log.error(e.getMessage());
               ThreadUtil.sleep(1000);
             } catch (InterruptedException e) {
+              log.warn("registerQueue 发送被打断");
               return;
             }
           }
@@ -286,6 +296,7 @@ public class MqttService {
               log.error(e.getMessage());
               ThreadUtil.sleep(1000);
             } catch (InterruptedException e) {
+              log.warn("addTopoQueue 发送被打断");
               return;
             }
           }
@@ -302,6 +313,8 @@ public class MqttService {
         trySend(msg);
       }
     }
+
+    log.warn("收到打断信号，停止发送消息");
   }
 
   private void trySend(KlinkDev klink) {
@@ -356,5 +369,13 @@ public class MqttService {
     } catch (Exception e) {
       log.error(e.getMessage(), e);
     }
+  }
+
+  public KlinkDev peekRegisterMessage() {
+    return registerQueue.peek();
+  }
+
+  public Klink peekAddTopoMessage() {
+    return addTopoQueue.peek();
   }
 }

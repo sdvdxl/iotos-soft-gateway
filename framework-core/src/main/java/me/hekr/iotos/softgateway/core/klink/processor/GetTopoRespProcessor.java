@@ -40,10 +40,18 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
     if (deviceRemoteConfigListeners != null) {
       for (DeviceRemoteConfigListener listener : deviceRemoteConfigListeners) {
         if (!firstBefore.get()) {
-          listener.firstBefore();
+          try {
+            listener.firstBefore();
+          } catch (Exception e) {
+            log.error(e.getMessage(), e);
+          }
           firstBefore.set(true);
         }
-        listener.before();
+        try {
+          listener.before();
+        } catch (Exception e) {
+          log.error(e.getMessage(), e);
+        }
       }
     }
     List<Dev> topoDevices = klink.getSubs();
@@ -71,10 +79,18 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
 
       for (DeviceRemoteConfigListener listener : deviceRemoteConfigListeners) {
         if (!firstAfter.get()) {
-          listener.firstAfter();
+          try {
+            listener.firstAfter();
+          } catch (Exception e) {
+            log.error(e.getMessage(), e);
+          }
           firstAfter.set(true);
         }
-        listener.after();
+        try {
+          listener.after();
+        } catch (Exception e) {
+          log.error(e.getMessage(), e);
+        }
       }
     }
   }
