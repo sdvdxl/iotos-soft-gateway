@@ -18,7 +18,7 @@
 
   <groupId>me.hekr.iotos.softgateway</groupId>
   <artifactId>iotos-soft-gateway</artifactId>
-  <version>3.4.5-SNAPSHOT</version>
+  <version>3.4.5</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>IoTOS 软网关</description>
   <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
@@ -30,8 +30,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-    <iotos.softgateway.version>3.4.4-SNAPSHOT</iotos.softgateway.version>
-    <springboot.version>2.5.4</springboot.version>
+    <iotos.softgateway.version>${project.version}</iotos.softgateway.version>
+    <springboot.version>2.5.6</springboot.version>
   </properties>
 
   <licenses>
@@ -51,7 +51,7 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://gitee.com/geekhekr/iotos-soft-gateway.git</connection>
+    <connection>scm:git:git://https://gitee.com/geekhekr/iotos-soft-gateway.git</connection>
     <developerConnection>scm:git:ssh://gitee.com:geekhekr/iotos-soft-gateway.git
     </developerConnection>
     <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
@@ -69,7 +69,7 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
-        <version>4.1.60.Final</version>
+        <version>4.1.69.Final</version>
       </dependency>
       <dependency>
         <groupId>me.hekr.iotos.softgateway</groupId>
