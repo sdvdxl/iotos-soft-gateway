@@ -39,7 +39,7 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
   private void handleTopo(GetTopoResp klink) {
     if (deviceRemoteConfigListeners != null) {
       for (DeviceRemoteConfigListener listener : deviceRemoteConfigListeners) {
-        if (!firstBefore.get()) {
+        if (firstBefore.compareAndSet(false, true)) {
           try {
             listener.firstBefore();
           } catch (Exception e) {
@@ -78,7 +78,7 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
     if (deviceRemoteConfigListeners != null) {
 
       for (DeviceRemoteConfigListener listener : deviceRemoteConfigListeners) {
-        if (!firstAfter.get()) {
+        if (firstAfter.compareAndSet(false, true)) {
           try {
             listener.firstAfter();
           } catch (Exception e) {

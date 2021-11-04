@@ -1,7 +1,6 @@
 package me.hekr.iotos.softgateway.common.utils;
 
 import cn.hutool.core.thread.ThreadFactoryBuilder;
-import java.io.Closeable;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
@@ -18,7 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 
 /** @author du */
 @Slf4j
-public class ThreadPoolUtil implements Closeable {
+public class ThreadPoolUtil {
   public static final UncaughtExceptionHandler DEFAULT_UNCAUGHT_EXCEPTION_HANDLER =
       (t, e) ->
           log.error(
@@ -82,8 +81,7 @@ public class ThreadPoolUtil implements Closeable {
     Thread.setDefaultUncaughtExceptionHandler(enable ? DEFAULT_UNCAUGHT_EXCEPTION_HANDLER : null);
   }
 
-  @Override
-  public void close() {
+  public static void close() {
     THREAD_POOL_EXECUTOR_CONCURRENT_HASH_MAP.values().forEach(ThreadPoolExecutor::shutdown);
   }
 
