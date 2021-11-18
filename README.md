@@ -144,7 +144,7 @@ DeviceRemoteConfig 类做了设备映射关系；该关系是通过服务启动�
 1. 子设备只有1种类型，远程配置中可以不填写 deviceType 字段， 实现类要加 `@Service("{CMD}"+Constants.CMD_BEAN_SUFFIX)`，其中 `{CMD}` 为 IoTOS 物模型命令。
 1. 子设备多于1种类型，远程配置中必须填写 deviceType 字段， 实现类要加 `@Service("{CMD}#{deviceType}"+Constants.CMD_BEAN_SUFFIX)`，其中 `{CMD}` 为 IoTOS 物模型命令。
 
-比如设备类型是 A, 命令是 set，则 bean 的名字为 `"set#A"+Constants.CMD_BEAN_SUFFIX`。
+###### 比如设备类型是 A, 命令是 set，则 bean 的名字为 `"set#A"+Constants.CMD_BEAN_SUFFIX`。
 
 实现方法 `void handle(DeviceRemoteConfig deviceRemoteConfig, ModelData data)`；参数 `deviceRemoteConfig` 是控制的设备， `data`
 是物模型信息，实际需要参考子产品定义的物模型。
