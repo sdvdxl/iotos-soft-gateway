@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Documented
 @Component
 @Target(ElementType.TYPE)
-public @interface Command {
+public @interface CloudSendCommand {
 
   /** cmd列表，必填 */
   String[] cmd() default {};

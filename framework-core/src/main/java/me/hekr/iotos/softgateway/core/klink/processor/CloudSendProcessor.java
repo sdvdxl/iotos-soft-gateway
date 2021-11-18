@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.core.annotation.Command;
+import me.hekr.iotos.softgateway.core.annotation.CloudSendCommand;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
@@ -167,15 +167,16 @@ public class CloudSendProcessor implements Processor<CloudSend> {
    */
   private boolean isCommandMatch(
       CloudSend klink, DeviceRemoteConfig deviceRemoteConfig, SubsystemCommandService l) {
-    Command command = AnnotationUtils.findAnnotation(l.getClass(), Command.class);
-    if (command == null) {
+    CloudSendCommand cloudSendCommand =
+        AnnotationUtils.findAnnotation(l.getClass(), CloudSendCommand.class);
+    if (cloudSendCommand == null) {
       return false;
     }
 
     // cmd, type, param,
-    String[] cmds = command.cmd();
-    String[] types = command.type();
-    boolean deviceTypeMatch = command.gateway() == deviceRemoteConfig.isGateway();
+    String[] cmds = cloudSendCommand.cmd();
+    String[] types = cloudSendCommand.type();
+    boolean deviceTypeMatch = cloudSendCommand.gateway() == deviceRemoteConfig.isGateway();
     // 设备类型不匹配
     if (!deviceTypeMatch) {
       return false;
