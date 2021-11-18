@@ -142,11 +142,7 @@ public class CloudSendProcessor implements Processor<CloudSend> {
         l -> {
           boolean match = isCommandMatch(klink, deviceRemoteConfig, l);
           if (match) {
-            try {
-              l.handle(deviceRemoteConfig, klink.getData());
-            } catch (Exception e) {
-              log.error("调用方法失败， " + l.getClass().getName() + ", " + e.getMessage(), e);
-            }
+            l.handle(deviceRemoteConfig, klink.getData());
           } else {
             log.warn(
                 "pk:{}, devId:{}, data:{} 没有配置下发命令(cloudSend)处理器",
