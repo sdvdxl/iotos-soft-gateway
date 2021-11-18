@@ -10,10 +10,10 @@ import org.springframework.stereotype.Component;
 /**
  * iot 下发指令注解
  *
- * <p>cmd， type param （如果配置了值的话）全部匹配才会走到对应的类
+ * <p>cmd，type， gateway 是 与 的关系。
  *
- * <p>思路： bean加载的时候，注入所有的 SubsystemCommandService 的bean；消息来的时候，从这些bean里面扫描所有匹配的bean，匹配成功，则调用 void
- * handle(DeviceRemoteConfig deviceRemoteConfig, ModelData data); 方法处理
+ * <p>举例： <code>@CloudSendCommand(cmd={"cmdA","cmdB"}, type={"typeA", "typeB"})</code> 可以匹配设备类型为
+ * typeA或者typeB的，下发命令是 cmdA 或者 cmdB的数据。
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -21,8 +21,12 @@ import org.springframework.stereotype.Component;
 @Target(ElementType.TYPE)
 public @interface CloudSendCommand {
 
-  /** cmd列表，必填 */
-  String[] cmd() default {};
+  /**
+   * cmd列表，可以指定多个。
+   *
+   * <p>cmd 列表是或的关系。
+   */
+  String[] cmd();
 
   /**
    * 是否是网关，true是网关设备
@@ -31,6 +35,6 @@ public @interface CloudSendCommand {
    */
   boolean gateway() default false;
 
-  /** 类型，可空 */
+  /** 类型 或的关系 */
   String[] type() default {};
 }
