@@ -7,7 +7,9 @@ package me.hekr.iotos.softgateway.network.http;
  */
 public class HttpException extends RuntimeException {
 
-  public HttpException(HttpRequest request, Throwable t) {}
+  public HttpException(HttpRequest request, Throwable t) {
+    super(request.toString(), t);
+  }
 
   public HttpException(String message) {
     super(message);

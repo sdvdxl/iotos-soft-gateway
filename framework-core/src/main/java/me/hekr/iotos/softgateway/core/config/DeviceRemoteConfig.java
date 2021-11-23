@@ -11,6 +11,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import me.hekr.iotos.softgateway.core.exception.IllegalRemoteConfigException;
@@ -26,6 +28,9 @@ public class DeviceRemoteConfig implements Serializable {
   private Map<String, Object> data = new HashMap<>();
   /** 在线状态 */
   private volatile boolean online;
+
+  /** 是否是网关标识符，true 是网关否则是子设备 */
+  @Setter @Getter private boolean gateway;
 
   public DeviceRemoteConfig() {}
 
@@ -121,7 +126,7 @@ public class DeviceRemoteConfig implements Serializable {
     return getAll().stream().filter(d -> dataEq(d.data, p.data)).findAny();
   }
 
-   static boolean dataEq(Map<String, Object> data, Map<String, Object> properties) {
+  static boolean dataEq(Map<String, Object> data, Map<String, Object> properties) {
     return data.entrySet().containsAll(properties.entrySet());
   }
 
