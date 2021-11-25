@@ -221,7 +221,7 @@ public class MqttService {
 
     klink.setNewMsgId();
     if (log.isDebugEnabled()) {
-      log.debug("发送 klink: {}", JsonUtil.toJson(klink));
+      log.debug("入队列 klink: {}", JsonUtil.toJson(klink));
     }
 
     String pk = klink.getPk();
@@ -300,11 +300,12 @@ public class MqttService {
 
   private void sendAddTopoMessage(int waitTime) {
     KlinkDev msg;
-    while (!addTopoQueue.isEmpty() && Thread.currentThread().isInterrupted()) {
+    while (!addTopoQueue.isEmpty() && !Thread.currentThread().isInterrupted()) {
       synchronized (addTopoLock) {
         msg = addTopoQueue.peek();
         if (msg != null) {
           try {
+            log.info("发送设备添加拓扑信息：{}", JsonUtil.toJson(msg));
             doPublish(msg);
             addTopoLock.wait(waitTime);
           } catch (MqttException e) {
@@ -320,12 +321,14 @@ public class MqttService {
   }
 
   private void sendRegisterMessage(int waitTime) {
+
     KlinkDev msg;
-    while (!registerQueue.isEmpty() && Thread.currentThread().isInterrupted()) {
+    while (!registerQueue.isEmpty() && !Thread.currentThread().isInterrupted()) {
       synchronized (registerLock) {
         msg = registerQueue.peek();
         if (msg != null) {
           try {
+            log.info("发送设备注册信息：{}", JsonUtil.toJson(msg));
             doPublish(msg);
             registerLock.wait(waitTime);
           } catch (MqttException e) {

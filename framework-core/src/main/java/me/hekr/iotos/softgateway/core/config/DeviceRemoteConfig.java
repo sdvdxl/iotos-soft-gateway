@@ -1,6 +1,7 @@
 package me.hekr.iotos.softgateway.core.config;
 
 import cn.hutool.core.collection.ConcurrentHashSet;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -283,6 +284,7 @@ public class DeviceRemoteConfig implements Serializable {
     return getProp("deviceType");
   }
 
+  @JsonIgnoreType
   public static class Props implements Serializable {
     private final Map<String, Object> data = new HashMap<>();
 

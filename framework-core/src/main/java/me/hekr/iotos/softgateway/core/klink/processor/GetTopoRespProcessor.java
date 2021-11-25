@@ -1,6 +1,7 @@
 package me.hekr.iotos.softgateway.core.klink.processor;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.thread.ThreadUtil;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -70,8 +71,17 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
     // 查找配置存在，但是拓扑不存在的设备，进行注册
     devices = CollectionUtil.subtract(mappedDevices, topoDevices);
     log.info("需要添加拓扑的设备：{}", devices);
+
+    // 1. 先注册
     for (Dev d : devices) {
-      klinkService.addDev(d.getPk(), d.getDevId(), d.getName());
+      klinkService.register(d.getPk(), d.getDevId(), d.getName());
+    }
+
+    ThreadUtil.sleep(1000);
+
+    // 2. 添加拓扑
+    for (Dev d : devices) {
+      klinkService.addTopo(d.getPk(), d.getDevId());
     }
 
     log.info("设备同步完成");
