@@ -2,10 +2,8 @@ package me.hekr.iotos.softgateway.network.tcp;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageCodec;
+import io.netty.handler.codec.ByteToMessageCodec;
 import java.net.InetSocketAddress;
 import java.util.List;
 import me.hekr.iotos.softgateway.network.common.DecodePacket;
@@ -17,8 +15,7 @@ import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
  *
  * @author iotos
  */
-@Sharable
-class TcpCodecHandler<T> extends MessageToMessageCodec<ByteBuf, InternalPacket<T>> {
+class TcpCodecHandler<T> extends ByteToMessageCodec<InternalPacket<T>> {
   private final PacketCoder<T> packetCoder;
 
   public TcpCodecHandler(PacketCoder<T> packetCoder) {
@@ -26,10 +23,11 @@ class TcpCodecHandler<T> extends MessageToMessageCodec<ByteBuf, InternalPacket<T
   }
 
   @Override
-  protected void encode(ChannelHandlerContext ctx, InternalPacket<T> msg, List<Object> out) {
+  protected void encode(ChannelHandlerContext ctx, InternalPacket<T> msg, ByteBuf out)
+      throws Exception {
     byte[] bytes = packetCoder.encode(msg.getMessage());
     if (bytes != null) {
-      out.add(Unpooled.wrappedBuffer(bytes));
+      out.writeBytes(bytes);
     }
   }
 
@@ -38,7 +36,8 @@ class TcpCodecHandler<T> extends MessageToMessageCodec<ByteBuf, InternalPacket<T
     byte[] bytes = ByteBufUtil.getBytes(buf);
     DecodePacket p = packetCoder.decode(bytes);
     if (p != null && p != DecodePacket.NULL) {
-      buf.readBytes(p.getReadSize());
+      buf.skipBytes(p.getReadSize());
+
       out.add(
           InternalPacket.wrap(p.getResult(), (InetSocketAddress) ctx.channel().remoteAddress()));
     }
