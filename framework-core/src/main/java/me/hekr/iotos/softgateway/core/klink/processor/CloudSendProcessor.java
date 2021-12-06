@@ -1,7 +1,5 @@
 package me.hekr.iotos.softgateway.core.klink.processor;
 
-import static me.hekr.iotos.softgateway.core.constant.Constants.CMD_BEAN_SUFFIX;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +16,6 @@ import me.hekr.iotos.softgateway.core.klink.CloudSend;
 import me.hekr.iotos.softgateway.core.klink.CloudSendResp;
 import me.hekr.iotos.softgateway.core.klink.KlinkService;
 import me.hekr.iotos.softgateway.core.subsystem.SubsystemCommandService;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -93,38 +90,6 @@ public class CloudSendProcessor implements Processor<CloudSend> {
     }
 
     handleCommandAnnotationListeners(klink, deviceRemoteConfig);
-
-    // FIXME 下个版本删除
-    handleBeanCommandListener(klink, pk, devId, deviceRemoteConfig);
-  }
-
-  /**
-   * 处理bean name方式的命令；废弃
-   *
-   * @param klink
-   * @param pk
-   * @param devId
-   * @param deviceRemoteConfig
-   */
-  @Deprecated
-  private void handleBeanCommandListener(
-      CloudSend klink, String pk, String devId, DeviceRemoteConfig deviceRemoteConfig) {
-    String beanName = klink.getData().getCmd();
-    if (deviceRemoteConfig.getDeviceType() != null) {
-      beanName = beanName + "#" + deviceRemoteConfig.getDeviceType();
-    }
-    beanName += CMD_BEAN_SUFFIX;
-
-    // * <p>实现类要加 @Service(xx+CMD_BEAN_SUFFIX)，其中 xx 为 iotos 命令
-    SubsystemCommandService subsystemCommandService;
-    try {
-      subsystemCommandService = context.getBean(beanName, SubsystemCommandService.class);
-    } catch (BeansException e) {
-      log.info("pk:{}, devId:{}, data:{} 没有配置下发命令(cloudSend)处理器", pk, devId, klink.getData());
-      return;
-    }
-
-    subsystemCommandService.handle(deviceRemoteConfig, klink.getData());
   }
 
   /**

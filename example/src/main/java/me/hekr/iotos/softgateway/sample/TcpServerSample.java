@@ -19,7 +19,7 @@ public class TcpServerSample {
     server.bind(4201);
     server.setMessageListener(new MyMessageListener(server));
     server.setPackageCoder(new MyPacketCoder());
-    server.setHeartbeatTimeout(3000);
+    server.setHeartbeatTimeout(3000000);
     server.start();
     new CountDownLatch(1).await();
     //  server.close()
@@ -33,7 +33,8 @@ public class TcpServerSample {
 
     @Override
     public DecodePacket decode(byte[] bytes) {
-      return DecodePacket.wrap(new String(bytes), bytes.length);
+      char c = (char) bytes[0];
+      return DecodePacket.wrap("" + c, 1);
     }
     ;
   }

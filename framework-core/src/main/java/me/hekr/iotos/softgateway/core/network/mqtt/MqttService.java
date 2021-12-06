@@ -67,6 +67,7 @@ public class MqttService {
       Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("connectExecutor", false));
 
   private final AtomicInteger connectCount = new AtomicInteger();
+  private volatile boolean deviceRemoteConfigReinited = true;
   private volatile long lastConnectTime = 0;
   @Autowired private List<MqttConnectedListener> mqttConnectedListeners;
   private MqttClient client;
@@ -220,7 +221,7 @@ public class MqttService {
 
     klink.setNewMsgId();
     if (log.isDebugEnabled()) {
-      log.debug("发送 klink: {}", JsonUtil.toJson(klink));
+      log.debug("入队列 klink: {}", JsonUtil.toJson(klink));
     }
 
     String pk = klink.getPk();
@@ -259,62 +260,87 @@ public class MqttService {
   }
 
   private void startPublishTask() {
+    deviceRemoteConfigReinited = true;
     while (!Thread.currentThread().isInterrupted()) {
       if (isDisconnected()) {
         ThreadUtil.sleep(1000);
         continue;
       }
-      KlinkDev msg;
       int waitTime = iotOsConfig.getMqttConfig().getConnectTimeout() * 1000;
 
       // 优先发送注册信息
-      while (!registerQueue.isEmpty()) {
-        synchronized (registerLock) {
-          msg = registerQueue.peek();
-          if (msg != null) {
-            try {
-              doPublish(msg);
-              registerLock.wait(waitTime);
-            } catch (MqttException e) {
-              log.error(e.getMessage());
-              ThreadUtil.sleep(1000);
-            } catch (InterruptedException e) {
-              log.warn("registerQueue 发送被打断");
-              return;
-            }
-          }
-        }
-      } // 然后发送添加拓扑信息
-      while (!addTopoQueue.isEmpty()) {
-        synchronized (addTopoLock) {
-          msg = addTopoQueue.peek();
-          if (msg != null) {
-            try {
-              doPublish(msg);
-              addTopoLock.wait(waitTime);
-            } catch (MqttException e) {
-              log.error(e.getMessage());
-              ThreadUtil.sleep(1000);
-            } catch (InterruptedException e) {
-              log.warn("addTopoQueue 发送被打断");
-              return;
-            }
-          }
-        }
-      } // 然后发送添加拓扑信息
-      try {
-        msg = queue.poll(1, TimeUnit.SECONDS);
-      } catch (InterruptedException ignored) {
-        Thread.currentThread().interrupt();
-        continue;
-      }
+      sendRegisterMessage(waitTime);
 
-      if (msg != null) {
-        trySend(msg);
-      }
+      // 然后发送添加拓扑信息
+      sendAddTopoMessage(waitTime);
+
+      // 处理完了登录和拓扑
+      deviceRemoteConfigReinited = false;
+
+      // 发送其他数据
+      sendOtherMessage();
     }
 
     log.warn("收到打断信号，停止发送消息");
+  }
+
+  private void sendOtherMessage() {
+    KlinkDev msg;
+    try {
+      msg = queue.poll(1, TimeUnit.SECONDS);
+    } catch (InterruptedException ignored) {
+      Thread.currentThread().interrupt();
+      return;
+    }
+
+    if (msg != null) {
+      trySend(msg);
+    }
+  }
+
+  private void sendAddTopoMessage(int waitTime) {
+    KlinkDev msg;
+    while (!addTopoQueue.isEmpty() && !Thread.currentThread().isInterrupted()) {
+      synchronized (addTopoLock) {
+        msg = addTopoQueue.peek();
+        if (msg != null) {
+          try {
+            log.info("发送设备添加拓扑信息：{}", JsonUtil.toJson(msg));
+            doPublish(msg);
+            addTopoLock.wait(waitTime);
+          } catch (MqttException e) {
+            log.error(e.getMessage());
+            ThreadUtil.sleep(1000);
+          } catch (InterruptedException e) {
+            log.warn("addTopoQueue 发送被打断");
+            Thread.currentThread().interrupt();
+          }
+        }
+      }
+    }
+  }
+
+  private void sendRegisterMessage(int waitTime) {
+
+    KlinkDev msg;
+    while (!registerQueue.isEmpty() && !Thread.currentThread().isInterrupted()) {
+      synchronized (registerLock) {
+        msg = registerQueue.peek();
+        if (msg != null) {
+          try {
+            log.info("发送设备注册信息：{}", JsonUtil.toJson(msg));
+            doPublish(msg);
+            registerLock.wait(waitTime);
+          } catch (MqttException e) {
+            log.error(e.getMessage());
+            ThreadUtil.sleep(1000);
+          } catch (InterruptedException e) {
+            log.warn("registerQueue 发送被打断");
+            Thread.currentThread().interrupt();
+          }
+        }
+      }
+    }
   }
 
   private void trySend(KlinkDev klink) {

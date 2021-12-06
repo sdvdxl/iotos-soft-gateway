@@ -34,11 +34,11 @@ public class TcpServer<T> {
   private EventLoopGroup boss;
   private EventLoopGroup work;
   private int port;
-  private TcpCodecHandler<T> tcpCodecHandler;
   private EventListener<T> eventListener;
   private TcpMessageListener<T> messageListener;
   private int timeout;
   @Setter private boolean enableNetLog;
+  private PacketCoder<T> packetCoder;
 
   public TcpServer() {}
 
@@ -48,7 +48,7 @@ public class TcpServer<T> {
   }
 
   public void setPackageCoder(PacketCoder<T> packetCoder) {
-    this.tcpCodecHandler = new TcpCodecHandler<>(packetCoder);
+    this.packetCoder = packetCoder;
   }
 
   public void setEventListener(EventListener<T> eventListener) {
@@ -99,7 +99,7 @@ public class TcpServer<T> {
                         .addLast(
                             "idleStateHandler",
                             new IdleStateHandler(timeout, 0, 0, TimeUnit.MILLISECONDS))
-                        .addLast("tcpCodecHandler", tcpCodecHandler)
+                        .addLast("tcpCodecHandler", new TcpCodecHandler<>(packetCoder))
                         .addLast("messageHandler", messageHandler);
                   }
                 });
