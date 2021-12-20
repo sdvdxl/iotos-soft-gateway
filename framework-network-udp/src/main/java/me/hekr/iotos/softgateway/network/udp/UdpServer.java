@@ -31,7 +31,7 @@ public class UdpServer<T> extends UdpClient<T> {
 
   @Override
   public void setPacketCoder(PacketCoder<T> packetCoder) {
-    packetCoderHandler = new UdpCodecHandler<>(packetCoder);
+    this.packetCoderHandlerFactory = () -> new UdpCodecHandler<>(packetCoder);
   }
 
   /**
