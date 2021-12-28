@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 public class HttpRequest {
   protected Request request;
   String baseUrl;
+  private boolean init;
   private Builder requestBuilder;
 
   public HttpRequest(Builder builder) {
@@ -27,7 +28,7 @@ public class HttpRequest {
     return new Builder();
   }
 
-  public Request getOkHttpRequest() {
+  Request buildRequest() {
     HttpUrl httpUrl = HttpUrl.parse(requestBuilder.path);
     // 为 null，非完整的 url，拼接 baseUrl
     if (httpUrl == null) {
@@ -39,6 +40,15 @@ public class HttpRequest {
         (k, v) -> httpUrlBuilder.addQueryParameter(k, String.valueOf(v)));
 
     return requestBuilder.okHttpRequestBuilder.url(httpUrlBuilder.build()).build();
+  }
+
+  public Request getOkHttpRequest() {
+    if (request != null) {
+      return request;
+    }
+
+    request = buildRequest();
+    return request;
   }
 
   @Override

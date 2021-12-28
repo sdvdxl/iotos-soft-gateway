@@ -4,7 +4,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import lombok.Data;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -17,16 +17,18 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
 
 /** @author du */
-@Data
 @Slf4j
 public class HttpClient {
 
-  private OkHttpClient okHttpClient;
-  private String baseUrl;
+  @Getter private final String baseUrl;
+  @Getter private OkHttpClient okHttpClient;
   /** http response 结果校验，如果不通过则抛出异常 */
   @Setter private HttpResponseChecker httpResponseChecker = HttpResponseChecker.DEFAULT;
 
-  private HttpClient() {}
+  private HttpClient(String baseUrl, OkHttpClient client) {
+    this.baseUrl = baseUrl;
+    this.okHttpClient = client;
+  }
 
   @SneakyThrows
   public static HttpClient newInstance(String baseUrl, int timeoutOfSecs, Level level) {
@@ -50,10 +52,7 @@ public class HttpClient {
             .retryOnConnectionFailure(false)
             .addInterceptor(interceptor)
             .build();
-    HttpClient httpClient = new HttpClient();
-    httpClient.okHttpClient = client;
-    httpClient.baseUrl = baseUrl;
-    return httpClient;
+    return new HttpClient(baseUrl, client);
   }
 
   @SneakyThrows
