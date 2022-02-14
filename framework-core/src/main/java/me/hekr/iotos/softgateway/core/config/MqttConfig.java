@@ -14,6 +14,8 @@ public class MqttConfig {
   protected int connectTimeout;
   /** 心跳时间，单位秒 */
   protected int keepAliveTime;
+
+  protected boolean autoCloudSendResp;
   /**
    * 集群模式
    *

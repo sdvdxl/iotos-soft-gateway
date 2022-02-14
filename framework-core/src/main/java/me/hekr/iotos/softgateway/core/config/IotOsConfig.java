@@ -37,6 +37,10 @@ public class IotOsConfig {
   @Getter
   private int klinkQueueSize;
 
+  /** 是否自动回复cloudSend， true 自动回复， false 需要手动回复 */
+  @Value("${connect.mqtt.autoCloudSendResp:true}")
+  private boolean autoCloudSendResp;
+
   /**
    * 集群模式，默认单机模式
    *
@@ -72,6 +76,7 @@ public class IotOsConfig {
     mq.publishTopic = gw.getPublishTopic();
     mq.clusterMode = ConnectClusterMode.of(connectClusterMode);
     mq.clientId = "dev:" + gw.pk + ":" + gw.devId;
+    mq.autoCloudSendResp = autoCloudSendResp;
     // 集群模式，clientId 要加 random，此处使用时间戳防止重复
     if (mq.clusterMode.isCluster()) {
       mq.clientId += ":" + System.currentTimeMillis();
