@@ -92,8 +92,8 @@ public class MqttService {
 
   private void checkAndLogQueueSize(Queue<?> queue, int threadhole, String type) {
     int size = queue.size();
-    if (log.isDebugEnabled()) {
-      log.debug(type + " 队列还有 {} 个", size);
+    if (log.isTraceEnabled()) {
+      log.trace(type + " 队列还有 {} 个", size);
     }
 
     if (size > threadhole) {
