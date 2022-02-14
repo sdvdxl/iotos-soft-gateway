@@ -2,7 +2,6 @@ package me.hekr.iotos.softgateway.network.udp;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageCodec;
@@ -16,7 +15,6 @@ import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
  *
  * @author iotos
  */
-@Sharable
 class UdpCodecHandler<T> extends MessageToMessageCodec<DatagramPacket, InternalPacket<T>> {
   private final PacketCoder<T> packetCoder;
 

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
  *
  * <p>举例： <code>@CloudSendCommand(cmd={"cmdA","cmdB"}, type={"typeA", "typeB"})</code> 可以匹配设备类型为
  * typeA或者typeB的，下发命令是 cmdA 或者 cmdB的数据。
+ *
+ * @author sdvdxl
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -26,7 +28,7 @@ public @interface CloudSendCommand {
    *
    * <p>cmd 列表是或的关系。
    */
-  String[] cmd();
+  String[] cmd() default {};
 
   /**
    * 是否是网关，true是网关设备

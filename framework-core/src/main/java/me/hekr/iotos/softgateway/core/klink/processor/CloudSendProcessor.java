@@ -105,7 +105,9 @@ public class CloudSendProcessor implements Processor<CloudSend> {
     // 遍历所有的subsystemCommandServices，找到匹配的注解的bean
     subsystemCommandServices.forEach(
         l -> {
-          boolean match = isCommandMatch(klink, deviceRemoteConfig, l);
+          boolean match =
+              isCommandMatch(
+                  klink, deviceRemoteConfig.isGateway(), deviceRemoteConfig.getDeviceType(), l);
           if (match) {
             l.handle(deviceRemoteConfig, klink.getData());
           } else {
@@ -122,41 +124,43 @@ public class CloudSendProcessor implements Processor<CloudSend> {
    * 处理带注解的下发消息监听器
    *
    * @param klink
-   * @param deviceRemoteConfig
+   * @param deviceIsGateway 当前访问的设备是否是网关
    * @param l
-   * @return
+   * @return 是否匹配
    */
-  private boolean isCommandMatch(
-      CloudSend klink, DeviceRemoteConfig deviceRemoteConfig, SubsystemCommandService l) {
+  static boolean isCommandMatch(
+      CloudSend klink, boolean deviceIsGateway, String deviceType, SubsystemCommandService l) {
     CloudSendCommand cloudSendCommand =
         AnnotationUtils.findAnnotation(l.getClass(), CloudSendCommand.class);
     if (cloudSendCommand == null) {
       return false;
     }
 
-    // cmd, type, param,
-    String[] cmds = cloudSendCommand.cmd();
-    String[] types = cloudSendCommand.type();
-    boolean deviceTypeMatch = cloudSendCommand.gateway() == deviceRemoteConfig.isGateway();
+    boolean match = cloudSendCommand.gateway() == deviceIsGateway;
     // 设备类型不匹配
-    if (!deviceTypeMatch) {
-      return false;
-    }
-
-    boolean match = false;
-    for (String cmd : cmds) {
-      if (klink.getData().getCmd().equals(cmd)) {
-        match = true;
-        break;
-      }
-    }
-
     if (!match) {
       return false;
     }
 
+    // cmd, type
+    String[] cmds = cloudSendCommand.cmd();
+    if (cmds.length > 0) {
+      match = false;
+      for (String cmd : cmds) {
+        if (klink.getData().getCmd().equals(cmd)) {
+          match = true;
+          break;
+        }
+      }
+
+      if (!match) {
+        return false;
+      }
+    }
+
+    String[] types = cloudSendCommand.type();
     if (types.length > 0) {
-      match = Arrays.asList(types).contains(deviceRemoteConfig.getDeviceType());
+      match = Arrays.asList(types).contains(deviceType);
     }
     return match;
   }

@@ -2,8 +2,8 @@ package me.hekr.iotos.softgateway.network.tcp;
 
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.extern.slf4j.Slf4j;
-import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 import me.hekr.iotos.softgateway.network.common.client.AbstractClient;
+import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 
 /**
  * UDP client
@@ -27,6 +27,6 @@ public class TcpClient<T> extends AbstractClient<T> {
 
   @Override
   public void setPacketCoder(PacketCoder<T> packetCoder) {
-    packetCoderHandler = new TcpCodecHandler<>(packetCoder);
+    this.packetCoderHandlerFactory = () -> new TcpCodecHandler<>(packetCoder);
   }
 }

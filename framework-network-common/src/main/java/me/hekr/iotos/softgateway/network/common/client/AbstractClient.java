@@ -5,7 +5,6 @@ import cn.hutool.socket.SocketRuntimeException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -51,7 +50,7 @@ public abstract class AbstractClient<T> {
   @Getter protected int port;
   protected Class<? extends Channel> channelClass;
   /** 实现类传递 */
-  protected ChannelDuplexHandler packetCoderHandler;
+  protected PacketCoderHandlerFactory packetCoderHandlerFactory;
 
   Bootstrap bootstrap;
   /** true 自动重连，仅针对 tcp ，start 方法启动，会阻塞一直到连接成功 */
@@ -136,7 +135,9 @@ public abstract class AbstractClient<T> {
                   ch.pipeline().addLast(new LoggingHandler());
                 }
 
-                ch.pipeline().addLast(packetCoderHandler).addLast(clientMessageHandler);
+                ch.pipeline()
+                    .addLast(packetCoderHandlerFactory.getPacketCoderHandler())
+                    .addLast(clientMessageHandler);
               }
             });
     if (DatagramChannel.class.isAssignableFrom(channelClass)) {
