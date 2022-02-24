@@ -12,7 +12,7 @@ import org.apache.commons.codec.binary.Hex;
  */
 public class ParseUtil {
   /** hash加密方法 */
-  public static final String HASH_METHOD = "HmacSHA1";
+  public static final String HASH_METHOD = "HmacSHA256";
 
   /**
    * sign值计算
