@@ -13,3 +13,10 @@
 
 
 4. 远程配置中映射关系配置错误，映射的字段要和代码中一致
+
+
+## Spring
+
+允许循环依赖，需要配置：
+
+spring.main.allow-circular-references=true
