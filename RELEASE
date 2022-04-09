@@ -1,0 +1,3 @@
+3.5.2-SNAPSHOT
+
+1. 允许配置 cloudSendResp 是否自动回复，`connect.mqtt.autoCloudSendResp` 默认 true，自动回复，设置为 false

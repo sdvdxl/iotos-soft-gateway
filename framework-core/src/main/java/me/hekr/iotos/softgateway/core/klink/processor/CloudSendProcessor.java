@@ -67,7 +67,10 @@ public class CloudSendProcessor implements Processor<CloudSend> {
       log.error(e.getMessage(), e);
     }
 
-    klinkService.sendKlink(resp);
+    // 如果配置为自动回复，则发送 cloudSendResp
+    if (iotOsConfig.getMqttConfig().isAutoCloudSendResp()) {
+      klinkService.sendKlink(resp);
+    }
   }
 
   private void doHandleCloudSend(CloudSend klink) {

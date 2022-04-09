@@ -231,6 +231,23 @@ snapshot 版本 需要添加仓库：
 
 ### 配置参数
 
+```yaml
+connect:
+  mqtt:
+    endpoint: 'tcp://106.75.50.110:1883'
+    #    endpoint: 'tcp://dev100:1883'
+
+    # 链接超时时间，秒
+    connectionTimeout: 10
+    # 心跳保持，秒
+    keepAliveTime: 60
+    # 集群模式 standalone 单机模式，不允许多个客户端登录
+    # cluster 集群模式，允许多个客户端同时登录，但是下发的消息只有1个客户端可以收到
+    # broadcast 广播模式，允许多个客户端同时登录，下发的消息所有客户端可以收到；
+    cluster.mode: standalone
+```
+
+
 默认发送队列大小为1000
 
 设置常规发送消息队列大小，包括登录，devSend等，根据设备发送频率设置。
@@ -242,7 +259,7 @@ snapshot 版本 需要添加仓库：
 
 设置注册消息队列大小，根据远程配置的设备数量配置，保险可设置为1.5-2倍
 
--iot.queue.register=1000
+-Diot.queue.register=1000
 
 设置注册消息队列大小，根据远程配置的设备数量配置，保险可设置为1.5-2倍
 
@@ -257,3 +274,4 @@ snapshot 版本 需要添加仓库：
 [中央仓库地址](https://repo1.maven.org/maven2/me/hekr/iotos/softgateway/)
 
 然后提交到 gitee 上，打上 tag。
+
