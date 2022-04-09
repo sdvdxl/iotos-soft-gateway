@@ -18,7 +18,7 @@
 
   <groupId>me.hekr.iotos.softgateway</groupId>
   <artifactId>iotos-soft-gateway</artifactId>
-  <version>3.5.1</version>
+  <version>3.5.2</version>
   <name>${project.groupId}:${project.artifactId}</name>
   <description>IoTOS 软网关</description>
   <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
@@ -126,7 +126,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.12</version>
+      <version>4.13.1</version>
       <scope>test</scope>
     </dependency>
 
