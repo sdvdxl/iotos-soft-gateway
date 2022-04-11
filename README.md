@@ -231,21 +231,7 @@ snapshot 版本 需要添加仓库：
 
 ### 配置参数
 
-```yaml
-connect:
-  mqtt:
-    endpoint: 'tcp://106.75.50.110:1883'
-    #    endpoint: 'tcp://dev100:1883'
-
-    # 链接超时时间，秒
-    connectionTimeout: 10
-    # 心跳保持，秒
-    keepAliveTime: 60
-    # 集群模式 standalone 单机模式，不允许多个客户端登录
-    # cluster 集群模式，允许多个客户端同时登录，但是下发的消息只有1个客户端可以收到
-    # broadcast 广播模式，允许多个客户端同时登录，下发的消息所有客户端可以收到；
-    cluster.mode: standalone
-```
+参考 `example/src/main/resources/application.yml` 文件
 
 
 默认发送队列大小为1000
