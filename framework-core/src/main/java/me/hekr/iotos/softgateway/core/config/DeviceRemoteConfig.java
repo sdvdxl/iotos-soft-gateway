@@ -1,5 +1,6 @@
 package me.hekr.iotos.softgateway.core.config;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ConcurrentHashSet;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import java.io.Serializable;
@@ -19,7 +20,9 @@ import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import me.hekr.iotos.softgateway.core.exception.IllegalRemoteConfigException;
 import org.apache.commons.lang3.StringUtils;
 
-/** @author iotos */
+/**
+ * @author iotos
+ */
 @Slf4j
 public class DeviceRemoteConfig implements Serializable {
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
@@ -29,6 +32,9 @@ public class DeviceRemoteConfig implements Serializable {
   private Map<String, Object> data = new HashMap<>();
   /** 在线状态 */
   private volatile boolean online;
+
+  /** 设备参数 */
+  private final Map<String, Object> deviceParams = new ConcurrentHashMap<>();
 
   /** 是否是网关标识符，true 是网关否则是子设备 */
   @Setter @Getter private boolean gateway;
@@ -282,6 +288,27 @@ public class DeviceRemoteConfig implements Serializable {
    */
   public String getDeviceType() {
     return getProp("deviceType");
+  }
+
+  /**
+   * 更新本地参数
+   *
+   * @param params 新参数
+   * @return true 发生了变化； false 没有变化
+   */
+  public boolean updateDeviceParams(Map<String, Object> params) {
+    if (CollectionUtil.isEmpty(params)) {
+      return false;
+    }
+
+    boolean changed =
+        params.entrySet().stream()
+            .filter(e -> Objects.nonNull(e.getKey()))
+            .filter(e -> Objects.nonNull(e.getValue()))
+            .noneMatch(e -> e.getValue().equals(deviceParams.get(e.getKey())));
+
+    deviceParams.putAll(params);
+    return changed;
   }
 
   @JsonIgnoreType

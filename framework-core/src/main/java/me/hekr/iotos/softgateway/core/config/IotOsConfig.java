@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-/** @author iotos */
+/**
+ * @author iotos
+ */
 @Slf4j
 @ComponentScan("me.hekr.iotos.softgateway.core")
 @Configuration
@@ -40,6 +42,10 @@ public class IotOsConfig {
   /** 是否自动回复cloudSend， true 自动回复， false 需要手动回复 */
   @Value("${connect.mqtt.autoCloudSendResp:true}")
   private boolean autoCloudSendResp;
+
+  /** 是否本地数据发生变化才发送数据 */
+  @Value("${connect.mqtt.data.changed:false}")
+  private boolean dataChanged;
 
   /**
    * 集群模式，默认单机模式
@@ -77,6 +83,7 @@ public class IotOsConfig {
     mq.clusterMode = ConnectClusterMode.of(connectClusterMode);
     mq.clientId = "dev:" + gw.pk + ":" + gw.devId;
     mq.autoCloudSendResp = autoCloudSendResp;
+    mq.dataChanged = dataChanged;
     // 集群模式，clientId 要加 random，此处使用时间戳防止重复
     if (mq.clusterMode.isCluster()) {
       mq.clientId += ":" + System.currentTimeMillis();

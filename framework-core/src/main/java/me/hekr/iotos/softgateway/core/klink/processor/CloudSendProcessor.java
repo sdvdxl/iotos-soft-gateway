@@ -76,23 +76,13 @@ public class CloudSendProcessor implements Processor<CloudSend> {
   private void doHandleCloudSend(CloudSend klink) {
     String pk = klink.getPk();
     String devId = klink.getDevId();
-    DeviceRemoteConfig deviceRemoteConfig;
-    if (iotOsConfig.getGatewayConfig().isGateway(pk, devId)) {
-      deviceRemoteConfig = new DeviceRemoteConfig();
-      deviceRemoteConfig.setPk(pk);
-      deviceRemoteConfig.setDevId(devId);
-      deviceRemoteConfig.setGateway(true);
-      deviceRemoteConfig.setOnline();
-    } else {
-      Optional<DeviceRemoteConfig> dev = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
-      if (!dev.isPresent()) {
-        throw new CloudSendException(pk, devId, klink.getData(), "没找到对应的子系统设备");
-      }
 
-      deviceRemoteConfig = dev.get();
+    Optional<DeviceRemoteConfig> dev = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
+    if (!dev.isPresent()) {
+      throw new CloudSendException(pk, devId, klink.getData(), "没找到对应的子系统设备");
     }
 
-    handleCommandAnnotationListeners(klink, deviceRemoteConfig);
+    handleCommandAnnotationListeners(klink, dev.get());
   }
 
   /**
