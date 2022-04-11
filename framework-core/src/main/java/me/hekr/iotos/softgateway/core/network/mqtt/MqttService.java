@@ -8,6 +8,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.SneakyThrows;
@@ -21,8 +22,10 @@ import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.AddTopo;
 import me.hekr.iotos.softgateway.core.klink.DevLogin;
 import me.hekr.iotos.softgateway.core.klink.DevLogout;
+import me.hekr.iotos.softgateway.core.klink.DevSend;
 import me.hekr.iotos.softgateway.core.klink.Klink;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
+import me.hekr.iotos.softgateway.core.klink.ModelData;
 import me.hekr.iotos.softgateway.core.klink.Register;
 import me.hekr.iotos.softgateway.core.listener.MqttConnectedListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -62,6 +65,8 @@ public class MqttService {
   private final ExecutorService publishExecutor =
       Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("publishExecutor", false));
 
+  private final ScheduledExecutorService dataFullSendExecutor;
+
   @SuppressWarnings("all")
   private final ExecutorService connectExecutor =
       Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("connectExecutor", false));
@@ -88,6 +93,50 @@ public class MqttService {
         0,
         3,
         TimeUnit.SECONDS);
+
+    if (iotOsConfig.getMqttConfig().getDataFullInterval() > 0) {
+      log.info("全量数据发送间隔：{}s", iotOsConfig.getMqttConfig().getDataFullInterval());
+
+      dataFullSendExecutor =
+          Executors.newSingleThreadScheduledExecutor(
+              ThreadUtil.newNamedThreadFactory("dataFullSendExecutor", true));
+      dataFullSendExecutor.scheduleWithFixedDelay(
+          () -> sendAllDeviceModelParams(iotOsConfig),
+          60,
+          iotOsConfig.getMqttConfig().getDataFullInterval(),
+          TimeUnit.SECONDS);
+    } else {
+      log.info("全量数据发送已禁用");
+
+      dataFullSendExecutor = null;
+    }
+  }
+
+  /**
+   * 发送全部设备的所有参数
+   *
+   * @param iotOsConfig
+   */
+  private void sendAllDeviceModelParams(IotOsConfig iotOsConfig) {
+    if (log.isDebugEnabled()) {
+      log.debug("同步所有设备的所有参数， 设备数量： {}", DeviceRemoteConfig.getAllSubDevices().size());
+    }
+
+    DeviceRemoteConfig.getAllSubDevices()
+        .forEach(
+            e -> {
+              DevSend devSend = new DevSend();
+              devSend.setPk(e.getPk());
+              devSend.setDevId(e.getDevId());
+              ModelData modelData = ModelData.cmd(iotOsConfig.getMqttConfig().getDataFullCmd());
+              modelData.setParams(e.getModelParams());
+              devSend.setData(modelData);
+              try {
+                doPublish(devSend);
+              } catch (MqttException ex) {
+                log.error(ex.getMessage(), e);
+              }
+            });
   }
 
   private void checkAndLogQueueSize(Queue<?> queue, int threadhole, String type) {
@@ -215,7 +264,9 @@ public class MqttService {
     }
   }
 
-  /** @param klink 消息，发送的时候会被 toJson */
+  /**
+   * @param klink 消息，发送的时候会被 toJson
+   */
   @SneakyThrows
   public void publish(KlinkDev klink) {
 
@@ -250,8 +301,7 @@ public class MqttService {
     } else if (klink instanceof AddTopo || Action.ADD_TOPO == Action.of(klink.getAction())) {
       addTopoQueue.put(klink);
     } else {
-      // 如果满会抛出异常
-      queue.add(klink);
+      queue.put(klink);
     }
   }
 
@@ -344,27 +394,41 @@ public class MqttService {
   }
 
   private void trySend(KlinkDev klink) {
+    if (log.isDebugEnabled()) {
+      log.debug("尝试发送MQTT：{}", JsonUtil.toJson(klink));
+    }
+
     String pk = klink.getPk();
     String devId = klink.getDevId();
+    Optional<DeviceRemoteConfig> devOpt = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
+    if (!devOpt.isPresent()) {
+      log.debug("DeviceRemoteConfig中 没找到设备，pk:{}, devId:{}", pk, devId);
+      return;
+    }
+
+    DeviceRemoteConfig dev = devOpt.get();
+    // 如果是 devSend ，判断是不是发生数据变化；不变化不发送
+    if (!isDataChanged(klink, dev)) {
+      if (log.isDebugEnabled()) {
+        log.debug("数据没变化，不发送");
+      }
+      return;
+    }
+
     // 报错就重试
     for (int i = 0; i < MAX_RETRY_COUNT; i++) {
       try {
         doPublish(klink);
 
         // 发送成功，如果是发送在线，则设置为在线
-        // 网关本身不做处理
-        if (!iotOsConfig.getGatewayConfig().getPk().equals(pk)) {
-          DeviceRemoteConfig dev = DeviceRemoteConfig.getByPkAndDevId(pk, devId).get();
+        if (klink instanceof DevLogin && dev.isOffline()) {
+          dev.setOnline();
+          return;
+        }
 
-          if (klink instanceof DevLogin && dev.isOffline()) {
-            dev.setOnline();
-            return;
-          }
-
-          if (klink instanceof DevLogout && dev.isOnline()) {
-            dev.setOffline();
-            return;
-          }
+        if (klink instanceof DevLogout && dev.isOnline()) {
+          dev.setOffline();
+          return;
         }
         break;
       } catch (MqttException e) {
@@ -374,6 +438,22 @@ public class MqttService {
         log.error(e.getMessage(), e);
       }
     }
+  }
+
+  /** 是否数据发生变化 */
+  private boolean isDataChanged(Klink klink, DeviceRemoteConfig dev) {
+    // 禁用变更发送，直接发送
+    if (!iotOsConfig.getMqttConfig().isDataChanged()) {
+      return true;
+    }
+
+    if (!(klink instanceof DevSend)) {
+      return true;
+    }
+
+    DevSend devSend = (DevSend) klink;
+
+    return dev.updateDeviceParams(devSend.getData().getParams());
   }
 
   private void doPublish(Object message) throws MqttException {

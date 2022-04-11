@@ -3,6 +3,7 @@ package me.hekr.iotos.softgateway.core.klink.processor;
 import cn.hutool.http.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
+import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.DevSend;
 import me.hekr.iotos.softgateway.core.klink.GetConfigResp;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class GetConfigRespProcessor implements Processor<GetConfigResp> {
   @Autowired private KlinkService klinkService;
+  @Autowired private IotOsConfig iotOsConfig;
 
   @Override
   public void handle(GetConfigResp klink) {
@@ -48,9 +50,22 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
       return;
     }
 
+    addGateway();
+
     // 获取拓扑关系后，再进行比对然后注册设备
     log.info("发送 getTopo，获取拓扑关系");
     klinkService.getTopo();
+  }
+
+  /** 添加网关自身 */
+  private void addGateway() {
+    DeviceRemoteConfig gatewayConfig = new DeviceRemoteConfig();
+    gatewayConfig = new DeviceRemoteConfig();
+    gatewayConfig.setPk(iotOsConfig.getGatewayConfig().getPk());
+    gatewayConfig.setDevId(iotOsConfig.getGatewayConfig().getDevId());
+    gatewayConfig.setGateway(true);
+    gatewayConfig.setOnline();
+    DeviceRemoteConfig.update(gatewayConfig);
   }
 
   @Override

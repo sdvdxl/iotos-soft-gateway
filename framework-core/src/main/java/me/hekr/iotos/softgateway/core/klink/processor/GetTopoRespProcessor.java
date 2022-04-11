@@ -56,7 +56,7 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
       }
     }
     List<Dev> topoDevices = klink.getSubs();
-    Set<DeviceRemoteConfig> all = DeviceRemoteConfig.getAll();
+    Set<DeviceRemoteConfig> all = DeviceRemoteConfig.getAllSubDevices();
     // 查找拓扑中存在，但是配置中不存在的设备，删除拓扑关系
     Set<Dev> mappedDevices =
         all.stream()

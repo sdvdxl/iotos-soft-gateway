@@ -1,11 +1,13 @@
 package me.hekr.iotos.softgateway.core.config;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ConcurrentHashSet;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,7 +21,9 @@ import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import me.hekr.iotos.softgateway.core.exception.IllegalRemoteConfigException;
 import org.apache.commons.lang3.StringUtils;
 
-/** @author iotos */
+/**
+ * @author iotos
+ */
 @Slf4j
 public class DeviceRemoteConfig implements Serializable {
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
@@ -29,6 +33,9 @@ public class DeviceRemoteConfig implements Serializable {
   private Map<String, Object> data = new HashMap<>();
   /** 在线状态 */
   private volatile boolean online;
+
+  /** 设备参数 */
+  @Getter private final Map<String, Object> modelParams = new ConcurrentHashMap<>();
 
   /** 是否是网关标识符，true 是网关否则是子设备 */
   @Setter @Getter private boolean gateway;
@@ -41,7 +48,7 @@ public class DeviceRemoteConfig implements Serializable {
 
   public static void parseAndUpdate(String line) {
     update(parse(line));
-    log.info("after parseAndAdd: {}", getAll());
+    log.info("after parseAndAdd: {}", getAllSubDevices());
   }
 
   @SuppressWarnings("unchecked")
@@ -74,7 +81,11 @@ public class DeviceRemoteConfig implements Serializable {
     }
   }
 
-  public static void add(DeviceRemoteConfig d) {
+  private static void add(DeviceRemoteConfig d) {
+    Objects.requireNonNull(d, "deviceRemoteConfig is null");
+    Objects.requireNonNull(d.getPk(), "pk is null");
+    Objects.requireNonNull(d.getDevId(), "devId is null");
+
     SET.add(d);
     log.info("after add: {}", getStatus());
   }
@@ -93,28 +104,33 @@ public class DeviceRemoteConfig implements Serializable {
    */
   public static void updateAll(Collection<DeviceRemoteConfig> deviceRemoteConfigs) {
     synchronized (SET) {
-      SET.clear();
-      addAll(deviceRemoteConfigs);
-      log.info("after updateAll, {}", getStatus());
+      for (DeviceRemoteConfig d : deviceRemoteConfigs) {
+        update(d);
+      }
     }
+
+    log.info("after updateAll, {}", getStatus());
   }
 
   public static String getStatus() {
-    return "size: " + size() + ", devices: " + getAll();
+    return "size: " + size() + ", devices: " + getAllSubDevices();
   }
 
   /**
-   * 添加新的集合数据
+   * 获取所有子设备（不包含网关）
    *
-   * @param deviceRemoteConfigs 新的数据
+   * @return
    */
-  private static void addAll(Collection<DeviceRemoteConfig> deviceRemoteConfigs) {
-    SET.addAll(deviceRemoteConfigs);
-    log.info("after addAll: {}", getStatus());
+  public static Set<DeviceRemoteConfig> getAllSubDevices() {
+    return SET.stream().filter(d -> !d.isGateway()).collect(Collectors.toSet());
   }
 
   public static Set<DeviceRemoteConfig> getAll() {
-    return SET;
+    return new HashSet<>(SET);
+  }
+
+  public static DeviceRemoteConfig getGatewayDevice() {
+    return SET.stream().filter(d -> !d.isGateway()).findAny().get();
   }
 
   /**
@@ -124,7 +140,7 @@ public class DeviceRemoteConfig implements Serializable {
    * @return 匹配属性的一个设备
    */
   public static Optional<DeviceRemoteConfig> getBySubSystemProperties(Props p) {
-    return getAll().stream().filter(d -> dataEq(d.data, p.data)).findAny();
+    return getAllSubDevices().stream().filter(d -> dataEq(d.data, p.data)).findAny();
   }
 
   static boolean dataEq(Map<String, Object> data, Map<String, Object> properties) {
@@ -132,7 +148,7 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   public static int size() {
-    return getAll().size();
+    return getAllSubDevices().size();
   }
 
   public static Optional<DeviceRemoteConfig> getByPkAndDevId(String pk, String devId) {
@@ -149,7 +165,11 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   public static boolean isEmpty() {
-    return getAll().isEmpty();
+    return getAllSubDevices().isEmpty();
+  }
+
+  public static void clear() {
+    SET.clear();
   }
 
   /**
@@ -282,6 +302,27 @@ public class DeviceRemoteConfig implements Serializable {
    */
   public String getDeviceType() {
     return getProp("deviceType");
+  }
+
+  /**
+   * 更新本地参数
+   *
+   * @param params 新参数
+   * @return true 发生了变化； false 没有变化
+   */
+  public boolean updateDeviceParams(Map<String, Object> params) {
+    if (CollectionUtil.isEmpty(params)) {
+      return false;
+    }
+
+    boolean changed =
+        params.entrySet().stream()
+            .filter(e -> Objects.nonNull(e.getKey()))
+            .filter(e -> Objects.nonNull(e.getValue()))
+            .noneMatch(e -> e.getValue().equals(modelParams.get(e.getKey())));
+
+    modelParams.putAll(params);
+    return changed;
   }
 
   @JsonIgnoreType

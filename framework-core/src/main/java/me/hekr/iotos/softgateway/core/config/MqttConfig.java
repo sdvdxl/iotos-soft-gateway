@@ -3,9 +3,15 @@ package me.hekr.iotos.softgateway.core.config;
 import lombok.Getter;
 import me.hekr.iotos.softgateway.core.enums.ConnectClusterMode;
 
-/** @author iotos */
+/**
+ * @author iotos
+ */
 @Getter
 public class MqttConfig {
+
+  public boolean dataChanged;
+  protected int dataFullInterval;
+  protected String dataFullCmd;
   protected String endpoint;
   protected String username;
   protected char[] password;
