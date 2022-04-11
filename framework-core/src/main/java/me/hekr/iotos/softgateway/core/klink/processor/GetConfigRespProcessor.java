@@ -65,7 +65,7 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
     gatewayConfig.setDevId(iotOsConfig.getGatewayConfig().getDevId());
     gatewayConfig.setGateway(true);
     gatewayConfig.setOnline();
-    DeviceRemoteConfig.add(gatewayConfig);
+    DeviceRemoteConfig.update(gatewayConfig);
   }
 
   @Override

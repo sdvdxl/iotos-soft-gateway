@@ -8,6 +8,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.SneakyThrows;
@@ -24,6 +25,7 @@ import me.hekr.iotos.softgateway.core.klink.DevLogout;
 import me.hekr.iotos.softgateway.core.klink.DevSend;
 import me.hekr.iotos.softgateway.core.klink.Klink;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
+import me.hekr.iotos.softgateway.core.klink.ModelData;
 import me.hekr.iotos.softgateway.core.klink.Register;
 import me.hekr.iotos.softgateway.core.listener.MqttConnectedListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -63,6 +65,8 @@ public class MqttService {
   private final ExecutorService publishExecutor =
       Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("publishExecutor", false));
 
+  private final ScheduledExecutorService dataFullSendExecutor;
+
   @SuppressWarnings("all")
   private final ExecutorService connectExecutor =
       Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("connectExecutor", false));
@@ -89,6 +93,50 @@ public class MqttService {
         0,
         3,
         TimeUnit.SECONDS);
+
+    if (iotOsConfig.getMqttConfig().getDataFullInterval() > 0) {
+      log.info("全量数据发送间隔：{}s", iotOsConfig.getMqttConfig().getDataFullInterval());
+
+      dataFullSendExecutor =
+          Executors.newSingleThreadScheduledExecutor(
+              ThreadUtil.newNamedThreadFactory("dataFullSendExecutor", true));
+      dataFullSendExecutor.scheduleWithFixedDelay(
+          () -> sendAllDeviceModelParams(iotOsConfig),
+          60,
+          iotOsConfig.getMqttConfig().getDataFullInterval(),
+          TimeUnit.SECONDS);
+    } else {
+      log.info("全量数据发送已禁用");
+
+      dataFullSendExecutor = null;
+    }
+  }
+
+  /**
+   * 发送全部设备的所有参数
+   *
+   * @param iotOsConfig
+   */
+  private void sendAllDeviceModelParams(IotOsConfig iotOsConfig) {
+    if (log.isDebugEnabled()) {
+      log.debug("同步所有设备的所有参数， 设备数量： {}", DeviceRemoteConfig.getAllSubDevices().size());
+    }
+
+    DeviceRemoteConfig.getAllSubDevices()
+        .forEach(
+            e -> {
+              DevSend devSend = new DevSend();
+              devSend.setPk(e.getPk());
+              devSend.setDevId(e.getDevId());
+              ModelData modelData = ModelData.cmd(iotOsConfig.getMqttConfig().getDataFullCmd());
+              modelData.setParams(e.getModelParams());
+              devSend.setData(modelData);
+              try {
+                doPublish(devSend);
+              } catch (MqttException ex) {
+                log.error(ex.getMessage(), e);
+              }
+            });
   }
 
   private void checkAndLogQueueSize(Queue<?> queue, int threadhole, String type) {
@@ -346,6 +394,10 @@ public class MqttService {
   }
 
   private void trySend(KlinkDev klink) {
+    if (log.isDebugEnabled()) {
+      log.debug("尝试发送MQTT：{}", JsonUtil.toJson(klink));
+    }
+
     String pk = klink.getPk();
     String devId = klink.getDevId();
     Optional<DeviceRemoteConfig> devOpt = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
@@ -357,6 +409,9 @@ public class MqttService {
     DeviceRemoteConfig dev = devOpt.get();
     // 如果是 devSend ，判断是不是发生数据变化；不变化不发送
     if (!isDataChanged(klink, dev)) {
+      if (log.isDebugEnabled()) {
+        log.debug("数据没变化，不发送");
+      }
       return;
     }
 

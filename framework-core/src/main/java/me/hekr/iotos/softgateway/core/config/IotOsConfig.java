@@ -47,6 +47,12 @@ public class IotOsConfig {
   @Value("${connect.mqtt.data.changed:false}")
   private boolean dataChanged;
 
+  /** 全量数据发送间隔； 小于等于0不发送 */
+  @Value("${connect.mqtt.data.full.interval:0}")
+  private int dataFullInterval;
+  /** 全量数据发送命令 */
+  @Value("${connect.mqtt.data.full.cmd:'report'}")
+  private String dataFullCmd;
   /**
    * 集群模式，默认单机模式
    *
@@ -74,6 +80,13 @@ public class IotOsConfig {
     gatewayConfig.devId = gatewayDevId;
     gatewayConfig.devSecret = gatewayDevSecret;
 
+    DeviceRemoteConfig gateway = new DeviceRemoteConfig();
+    gateway.setPk(gatewayPk);
+    gateway.setDevId(gatewayDevId);
+    gateway.setGateway(true);
+    gateway.setOnline();
+    DeviceRemoteConfig.update(gateway);
+
     mqttConfig = new MqttConfig();
     MqttConfig mq = mqttConfig;
     GatewayConfig gw = gatewayConfig;
@@ -84,6 +97,8 @@ public class IotOsConfig {
     mq.clientId = "dev:" + gw.pk + ":" + gw.devId;
     mq.autoCloudSendResp = autoCloudSendResp;
     mq.dataChanged = dataChanged;
+    mq.dataFullInterval = dataFullInterval;
+    mq.dataFullCmd = dataFullCmd;
     // 集群模式，clientId 要加 random，此处使用时间戳防止重复
     if (mq.clusterMode.isCluster()) {
       mq.clientId += ":" + System.currentTimeMillis();

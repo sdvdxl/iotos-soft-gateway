@@ -43,6 +43,7 @@ public class DeviceRemoteConfigTest {
 
   @Test
   public void testUpdateAll() {
+    DeviceRemoteConfig.clear();
     DeviceRemoteConfig.updateAll(
         Collections.singletonList(
             DeviceRemoteConfig.parse(
@@ -66,7 +67,7 @@ public class DeviceRemoteConfigTest {
     DeviceRemoteConfig d = new DeviceRemoteConfig();
     d.setPk("pk");
     d.setDevId("devId");
-    DeviceRemoteConfig.add(d);
+    DeviceRemoteConfig.update(d);
     Map<String, Object> map = new HashMap<>();
     map.put("pk", "pk");
     map.put("devId", "devId");

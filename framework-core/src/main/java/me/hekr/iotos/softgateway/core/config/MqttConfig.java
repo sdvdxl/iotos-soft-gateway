@@ -10,6 +10,8 @@ import me.hekr.iotos.softgateway.core.enums.ConnectClusterMode;
 public class MqttConfig {
 
   public boolean dataChanged;
+  protected int dataFullInterval;
+  protected String dataFullCmd;
   protected String endpoint;
   protected String username;
   protected char[] password;
