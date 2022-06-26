@@ -315,14 +315,14 @@ public class DeviceRemoteConfig implements Serializable {
       return false;
     }
 
-    boolean changed =
+    boolean notChanged =
         params.entrySet().stream()
             .filter(e -> Objects.nonNull(e.getKey()))
             .filter(e -> Objects.nonNull(e.getValue()))
-            .noneMatch(e -> e.getValue().equals(modelParams.get(e.getKey())));
+            .allMatch(e -> e.getValue().equals(modelParams.get(e.getKey())));
 
     modelParams.putAll(params);
-    return changed;
+    return !notChanged;
   }
 
   @JsonIgnoreType

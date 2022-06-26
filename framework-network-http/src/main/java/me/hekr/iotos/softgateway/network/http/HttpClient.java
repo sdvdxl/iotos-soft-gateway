@@ -16,7 +16,9 @@ import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
 
-/** @author du */
+/**
+ * @author du
+ */
 @Slf4j
 public class HttpClient {
 
@@ -57,7 +59,15 @@ public class HttpClient {
 
   @SneakyThrows
   public static HttpClient newInstance(String url) {
-    return newInstance(url, 3, Level.BASIC);
+    Level level = Level.NONE;
+    if (log.isDebugEnabled()) {
+      level = Level.HEADERS;
+    } else if (log.isInfoEnabled()) {
+      level = Level.NONE;
+    } else if (log.isTraceEnabled()) {
+      level = Level.BODY;
+    }
+    return newInstance(url, 3, level);
   }
 
   @SneakyThrows
