@@ -1,9 +1,15 @@
 package me.hekr.iotos.softgateway.network.http;
 
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -11,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
+import okhttp3.OkHttpClient.Builder;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -33,11 +40,14 @@ public class HttpClient {
   }
 
   @SneakyThrows
-  public static HttpClient newInstance(String baseUrl, int timeoutOfSecs, Level level) {
+  public static HttpClient newInstance(
+      String baseUrl, int timeoutOfSecs, Level level, boolean checkSsl) {
     ConnectionPool connectionPool = new ConnectionPool(1, 30, TimeUnit.SECONDS);
     HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
     interceptor.setLevel(level);
-    OkHttpClient client =
+    OkHttpClient client;
+
+    Builder builder =
         new OkHttpClient()
             .newBuilder()
             // 读超时
@@ -52,8 +62,25 @@ public class HttpClient {
             .connectTimeout(Duration.ofSeconds(timeoutOfSecs))
             // 不重试
             .retryOnConnectionFailure(false)
-            .addInterceptor(interceptor)
-            .build();
+            .addInterceptor(interceptor);
+
+    if (!checkSsl) {
+      // Create a trust manager that does not validate certificate chains
+      // Create a trust manager that does not validate certificate chains
+      TrustAllTrustManager trustAllTrustManager = new TrustAllTrustManager();
+      final TrustManager[] trustAllCerts = new TrustManager[] {trustAllTrustManager};
+
+      // Install the all-trusting trust manager
+      final SSLContext sslContext = SSLContext.getInstance("SSL");
+      sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+
+      // Create an ssl socket factory with our all-trusting manager
+      final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+      builder
+          .sslSocketFactory(sslSocketFactory, trustAllTrustManager)
+          .hostnameVerifier((hostname, session) -> true);
+    }
+    client = builder.build();
     return new HttpClient(baseUrl, client);
   }
 
@@ -67,12 +94,12 @@ public class HttpClient {
     } else if (log.isTraceEnabled()) {
       level = Level.BODY;
     }
-    return newInstance(url, 3, level);
+    return newInstance(url, 3, level, false);
   }
 
   @SneakyThrows
   public static HttpClient newInstance(String url, Level level) {
-    return newInstance(url, 3, level);
+    return newInstance(url, 3, level, false);
   }
 
   @SneakyThrows
@@ -141,5 +168,25 @@ public class HttpClient {
     }
 
     return resultList;
+  }
+
+  static class TrustAllTrustManager implements X509TrustManager {
+
+    public static TrustAllTrustManager INSTANCE = new TrustAllTrustManager();
+
+    private TrustAllTrustManager() {}
+
+    @Override
+    public void checkClientTrusted(X509Certificate[] x509Certificates, String s)
+        throws CertificateException {}
+
+    @Override
+    public void checkServerTrusted(X509Certificate[] x509Certificates, String s)
+        throws CertificateException {}
+
+    @Override
+    public X509Certificate[] getAcceptedIssuers() {
+      return new X509Certificate[0];
+    }
   }
 }

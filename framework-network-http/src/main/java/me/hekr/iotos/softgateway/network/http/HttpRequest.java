@@ -9,7 +9,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.springframework.http.MediaType;
 
-/** @author iotos */
+/**
+ * @author iotos
+ */
 public class HttpRequest {
   protected Request request;
   String baseUrl;
@@ -53,7 +55,12 @@ public class HttpRequest {
 
   @Override
   public String toString() {
-    return "HttpRequest{" + "request=" + getOkHttpRequest() + '}';
+    return "path:"
+        + requestBuilder.path
+        + ", queryParams:"
+        + requestBuilder.queryParams
+        + ", headers:"
+        + requestBuilder.headerBuilder.build();
   }
 
   public static class Builder {
