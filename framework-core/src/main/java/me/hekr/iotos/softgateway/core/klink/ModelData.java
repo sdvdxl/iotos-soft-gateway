@@ -7,9 +7,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
-/** @author iotos */
+/**
+ * @author iotos
+ */
 @Data
+@Accessors(chain = true)
 public class ModelData implements Serializable {
 
   private static final long serialVersionUID = 5838451843005203760L;
