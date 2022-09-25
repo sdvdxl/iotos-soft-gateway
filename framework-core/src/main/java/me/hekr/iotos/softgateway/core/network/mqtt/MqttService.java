@@ -175,8 +175,10 @@ public class MqttService {
     log.info("软件网关开始连接");
 
     try {
+      client.setTimeToWait(options.getConnectionTimeout() * 1000L);
       client.setCallback(mqttCallBackImpl);
       client.connect(options);
+      // 等待操作时间设置成和连接时间一样
       log.info("软件网关开始连接连接成功！");
       connectCount.incrementAndGet();
 
