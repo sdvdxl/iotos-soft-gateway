@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
+import me.hekr.iotos.softgateway.core.dto.DeviceMapper;
 import me.hekr.iotos.softgateway.core.exception.IllegalRemoteConfigException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -152,10 +153,11 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   public static Optional<DeviceRemoteConfig> getByPkAndDevId(String pk, String devId) {
-    return getAll().stream()
-        .filter(d -> d.getPk().equals(pk))
-        .filter(e -> e.getDevId().equals(devId))
-        .findAny();
+    return getBySubSystemProperties(Props.p("pk", pk).put("devId", devId).get());
+  }
+
+  public static Optional<DeviceRemoteConfig> getByDeviceMapper(DeviceMapper deviceMapper) {
+    return getBySubSystemProperties(deviceMapper.getProps());
   }
 
   public static void parseMultiLinesAndUpdateAll(String content) {
