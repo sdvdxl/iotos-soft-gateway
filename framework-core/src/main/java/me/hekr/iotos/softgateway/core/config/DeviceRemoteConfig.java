@@ -141,7 +141,7 @@ public class DeviceRemoteConfig implements Serializable {
    * @return 匹配属性的一个设备
    */
   public static Optional<DeviceRemoteConfig> getBySubSystemProperties(Props p) {
-    return getAllSubDevices().stream().filter(d -> dataEq(d.data, p.data)).findAny();
+    return getAll().stream().filter(d -> dataEq(d.data, p.data)).findAny();
   }
 
   static boolean dataEq(Map<String, Object> data, Map<String, Object> properties) {

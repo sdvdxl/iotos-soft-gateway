@@ -83,6 +83,7 @@ public class MqttService {
   public MqttService(IotOsConfig iotOsConfig) throws MqttException {
     this.iotOsConfig = iotOsConfig;
     initConfig(iotOsConfig);
+    init();
     publishExecutor.execute(this::startPublishTask);
     ThreadPoolUtil.DEFAULT_SCHEDULED.scheduleAtFixedRate(
         () -> {
@@ -94,7 +95,8 @@ public class MqttService {
         3,
         TimeUnit.SECONDS);
 
-    if (iotOsConfig.getMqttConfig().getDataFullInterval() > 0) {
+    if (iotOsConfig.getMqttConfig().dataChanged
+        && iotOsConfig.getMqttConfig().getDataFullInterval() > 0) {
       log.info("全量数据发送间隔：{}s", iotOsConfig.getMqttConfig().getDataFullInterval());
 
       dataFullSendExecutor =
@@ -142,7 +144,7 @@ public class MqttService {
   private void checkAndLogQueueSize(Queue<?> queue, int threadhole, String type) {
     int size = queue.size();
     if (log.isTraceEnabled()) {
-      log.trace(type + " 队列还有 {} 个", size);
+      log.debug(type + " 队列还有 {} 个", size);
     }
 
     if (size > threadhole) {
@@ -181,10 +183,11 @@ public class MqttService {
       // 等待操作时间设置成和连接时间一样
       log.info("软件网关开始连接连接成功！");
       connectCount.incrementAndGet();
+      // 先订阅
+      client.subscribe(iotOsConfig.getMqttConfig().getSubscribeTopic(), 2);
 
       triggerConnectedListeners();
       // 订阅
-      client.subscribe(iotOsConfig.getMqttConfig().getSubscribeTopic(), 0);
     } catch (Exception e) {
       log.error("软件网关连接失败！" + e.getMessage(), e);
       if (e instanceof MqttSecurityException) {
@@ -272,38 +275,22 @@ public class MqttService {
   @SneakyThrows
   public void publish(KlinkDev klink) {
 
-    klink.setNewMsgId();
-    if (log.isDebugEnabled()) {
-      log.debug("入队列 klink: {}", JsonUtil.toJson(klink));
-    }
-
-    String pk = klink.getPk();
-    String devId = klink.getDevId();
-    Optional<DeviceRemoteConfig> byPkAndDevId = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
-    // 网关本身不做处理
-    if (!iotOsConfig.getGatewayConfig().getPk().equals(pk)) {
-      if (!byPkAndDevId.isPresent()) {
-        log.warn("没找到设备，pk:{}, devId:{}", pk, devId);
-        return;
+    try {
+      klink.setNewMsgId();
+      if (log.isDebugEnabled()) {
+        log.debug("入队列 klink: {}", JsonUtil.toJson(klink));
       }
-      //      DeviceRemoteConfig dev = byPkAndDevId.get();
-      //      if (klink instanceof DevLogin && dev.isOnline()) {
-      //        log.info("设备已经是在线状态 {}", dev);
-      //        return;
-      //      }
-      //
-      //      if (klink instanceof DevLogout && dev.isOffline()) {
-      //        log.info("设备已经是离线状态 {}", dev);
-      //        return;
-      //      }
-    }
-    // 如果是注册设备，确保设备注册成功
-    if (klink instanceof Register || Action.REGISTER == Action.of(klink.getAction())) {
-      registerQueue.put(klink);
-    } else if (klink instanceof AddTopo || Action.ADD_TOPO == Action.of(klink.getAction())) {
-      addTopoQueue.put(klink);
-    } else {
-      queue.put(klink);
+
+      // 如果是注册设备，确保设备注册成功
+      if (klink instanceof Register || Action.REGISTER == Action.of(klink.getAction())) {
+        registerQueue.put(klink);
+      } else if (klink instanceof AddTopo || Action.ADD_TOPO == Action.of(klink.getAction())) {
+        addTopoQueue.put(klink);
+      } else {
+        queue.put(klink);
+      }
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
     }
   }
 
@@ -410,11 +397,13 @@ public class MqttService {
 
     DeviceRemoteConfig dev = devOpt.get();
     // 如果是 devSend ，判断是不是发生数据变化；不变化不发送
-    if (!isDataChanged(klink, dev)) {
-      if (log.isDebugEnabled()) {
-        log.debug("数据没变化，不发送");
+    if ((klink instanceof DevSend)) {
+      if (!isDataChanged(klink, dev)) {
+        if (log.isDebugEnabled()) {
+          log.debug("数据没变化，不发送");
+        }
+        return;
       }
-      return;
     }
 
     // 报错就重试

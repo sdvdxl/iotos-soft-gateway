@@ -39,7 +39,7 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
       return;
     }
 
-    log.debug("远程配置url: {}", klink.getUrl());
+    log.info("远程配置url: {}", klink.getUrl());
 
     String content = HttpUtil.get(klink.getUrl(), 3000);
     log.info("config: -------------------\n{}\n-------------------\n", content);
