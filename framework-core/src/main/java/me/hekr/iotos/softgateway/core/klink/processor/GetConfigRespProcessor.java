@@ -38,7 +38,10 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
       log.warn("远程配置url为空，code:{}", klink.getCode());
       return;
     }
-    String content = HttpUtil.get(klink.getUrl());
+
+    log.info("远程配置url: {}", klink.getUrl());
+
+    String content = HttpUtil.get(klink.getUrl(), 3000);
     log.info("config: -------------------\n{}\n-------------------\n", content);
     try {
       DeviceRemoteConfig.parseMultiLinesAndUpdateAll(content);
