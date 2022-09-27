@@ -72,7 +72,6 @@ public class MqttService {
       Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("connectExecutor", false));
 
   private final AtomicInteger connectCount = new AtomicInteger();
-  private volatile boolean deviceRemoteConfigReinited = true;
   private volatile long lastConnectTime = 0;
   @Autowired private List<MqttConnectedListener> mqttConnectedListeners;
   private MqttClient client;
@@ -94,7 +93,8 @@ public class MqttService {
         3,
         TimeUnit.SECONDS);
 
-    if (iotOsConfig.getMqttConfig().getDataFullInterval() > 0) {
+    if (iotOsConfig.getMqttConfig().isDataChanged()
+        && iotOsConfig.getMqttConfig().getDataFullInterval() > 0) {
       log.info("全量数据发送间隔：{}s", iotOsConfig.getMqttConfig().getDataFullInterval());
 
       dataFullSendExecutor =
@@ -178,11 +178,13 @@ public class MqttService {
       client.setCallback(mqttCallBackImpl);
       client.connect(options);
       log.info("软件网关开始连接连接成功！");
-      connectCount.incrementAndGet();
 
-      triggerConnectedListeners();
       // 订阅
       client.subscribe(iotOsConfig.getMqttConfig().getSubscribeTopic(), 0);
+      ThreadUtil.safeSleep(1000);
+
+      triggerConnectedListeners();
+
     } catch (Exception e) {
       log.error("软件网关连接失败！" + e.getMessage(), e);
       if (e instanceof MqttSecurityException) {
@@ -193,7 +195,7 @@ public class MqttService {
   }
 
   private void triggerConnectedListeners() {
-    boolean firstConnected = connectCount.get() == 1;
+    boolean firstConnected = connectCount.incrementAndGet() == 1;
     if (mqttConnectedListeners != null) {
       for (MqttConnectedListener listener : mqttConnectedListeners) {
         if (firstConnected) {
@@ -310,7 +312,6 @@ public class MqttService {
   }
 
   private void startPublishTask() {
-    deviceRemoteConfigReinited = true;
     while (!Thread.currentThread().isInterrupted()) {
       if (isDisconnected()) {
         ThreadUtil.sleep(1000);
@@ -325,7 +326,6 @@ public class MqttService {
       sendAddTopoMessage(waitTime);
 
       // 处理完了登录和拓扑
-      deviceRemoteConfigReinited = false;
 
       // 发送其他数据
       sendOtherMessage();

@@ -271,7 +271,6 @@ public class KlinkService {
   public void sendKlink(DeviceMapper mapper, KlinkDev klink) {
     Optional<DeviceRemoteConfig> devMapper = getDeviceMapper(mapper);
     if (!devMapper.isPresent()) {
-      log.warn("设备关系不存在，mapper: {}", mapper.getProps());
       return;
     }
     DeviceRemoteConfig dev = devMapper.get();
