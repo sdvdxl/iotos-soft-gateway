@@ -36,22 +36,22 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
   private void handleConfig(GetConfigResp klink) {
     if (StringUtils.isBlank(klink.getUrl())) {
       log.warn("远程配置url为空，code:{}", klink.getCode());
-      return;
+    }else {
+      log.info("远程配置url: {}", klink.getUrl());
+
+      String content = HttpUtil.get(klink.getUrl(), 3000);
+      log.info("config: -------------------\n{}\n-------------------\n", content);
+      try {
+        DeviceRemoteConfig.parseMultiLinesAndUpdateAll(content);
+      } catch (Exception e) {
+        log.error(e.getMessage(), e);
+        // 解析出错，上报给网关
+        klinkService.sendKlink(
+            new DevSend(ModelData.cmd("reportError").param("error", e.getMessage())));
+      }
     }
 
-    log.info("远程配置url: {}", klink.getUrl());
 
-    String content = HttpUtil.get(klink.getUrl(), 3000);
-    log.info("config: -------------------\n{}\n-------------------\n", content);
-    try {
-      DeviceRemoteConfig.parseMultiLinesAndUpdateAll(content);
-    } catch (Exception e) {
-      log.error(e.getMessage(), e);
-      // 解析出错，上报给网关
-      klinkService.sendKlink(
-          new DevSend(ModelData.cmd("reportError").param("error", e.getMessage())));
-      return;
-    }
 
     addGateway();
 

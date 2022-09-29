@@ -145,18 +145,6 @@ cmd，type， gateway 是 与 的关系。
 举例： <code>@CloudSendCommand(cmd={"cmdA","cmdB"}, type={"typeA", "typeB"})</code> 可以匹配设备类型为
 typeA或者typeB的，下发命令是 cmdA 或者 cmdB的数据。
 
-<p style="color: red">下面方法下个版本会删除，当前做了兼容处理</p>
-
->框架封装了下发命令处理过程，只需要实现 `SubsystemCommandService` 接口并根据要求定义成 Spring 的 bean 即可，Bean要求：
->
->1. 子设备只有1种类型，远程配置中可以不填写 deviceType 字段， 实现类要加 `@Service("{CMD}"+Constants.CMD_BEAN_SUFFIX)`，其中 `{CMD}` 为 IoTOS 物模型命令。
->1. 子设备多于1种类型，远程配置中必须填写 deviceType 字段， 实现类要加 `@Service("{CMD}#{deviceType}"+Constants.CMD_BEAN_SUFFIX)`，其中 `{CMD}` 为 IoTOS 物模型命令。
-
-###### 比如设备类型是 A, 命令是 set，则 bean 的名字为 `"set#A"+Constants.CMD_BEAN_SUFFIX`。
-
-实现方法 `void handle(DeviceRemoteConfig deviceRemoteConfig, ModelData data)`；参数 `deviceRemoteConfig` 是控制的设备， `data`
-是物模型信息，实际需要参考子产品定义的物模型。
-
 ### 其他开发接口
 
 - `MqttDisConnectListener` mqtt 连接监听，可以参考 `CoreMqttConnectedListenerImpl`
