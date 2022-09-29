@@ -18,6 +18,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
+import me.hekr.iotos.softgateway.core.dto.DeviceMapper;
 import me.hekr.iotos.softgateway.core.exception.IllegalRemoteConfigException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,6 +27,11 @@ import org.apache.commons.lang3.StringUtils;
  */
 @Slf4j
 public class DeviceRemoteConfig implements Serializable {
+  public static final String PROPERTY_PK = "pk";
+  public static final String PROPERTY_DEVID = "devId";
+  public static final String PROPERTY_DEVICE_NAME = "devName";
+  public static final String PROPERTY_DEVICE_TYPE = "deviceType";
+
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
   /** 自定义属性 */
   private final Map<Object, Object> customData = new ConcurrentHashMap<>();
@@ -140,7 +146,7 @@ public class DeviceRemoteConfig implements Serializable {
    * @return 匹配属性的一个设备
    */
   public static Optional<DeviceRemoteConfig> getBySubSystemProperties(Props p) {
-    return getAllSubDevices().stream().filter(d -> dataEq(d.data, p.data)).findAny();
+    return getAll().stream().filter(d -> dataEq(d.data, p.data)).findAny();
   }
 
   static boolean dataEq(Map<String, Object> data, Map<String, Object> properties) {
@@ -152,10 +158,11 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   public static Optional<DeviceRemoteConfig> getByPkAndDevId(String pk, String devId) {
-    return getAll().stream()
-        .filter(d -> d.getPk().equals(pk))
-        .filter(e -> e.getDevId().equals(devId))
-        .findAny();
+    return getBySubSystemProperties(Props.p(PROPERTY_PK, pk).put(PROPERTY_DEVID, devId).get());
+  }
+
+  public static Optional<DeviceRemoteConfig> getByDeviceMapper(DeviceMapper deviceMapper) {
+    return getBySubSystemProperties(deviceMapper.getProps());
   }
 
   public static void parseMultiLinesAndUpdateAll(String content) {
@@ -262,7 +269,7 @@ public class DeviceRemoteConfig implements Serializable {
    * @return DeviceRemoteConfig
    */
   public DeviceRemoteConfig setPk(String pk) {
-    data.put("pk", pk);
+    data.put(PROPERTY_PK, pk);
     return this;
   }
 
@@ -272,7 +279,7 @@ public class DeviceRemoteConfig implements Serializable {
    * @return devId
    */
   public String getDevId() {
-    return getProp("devId");
+    return getProp(PROPERTY_DEVID);
   }
 
   /**
@@ -282,7 +289,7 @@ public class DeviceRemoteConfig implements Serializable {
    * @return DeviceRemoteConfig
    */
   public DeviceRemoteConfig setDevId(String devId) {
-    data.put("devId", devId);
+    data.put(PROPERTY_DEVID, devId);
     return this;
   }
 
@@ -292,7 +299,7 @@ public class DeviceRemoteConfig implements Serializable {
    * @return 设备名字
    */
   public String getDevName() {
-    return getProp("devName");
+    return getProp(PROPERTY_DEVICE_NAME);
   }
 
   /**
@@ -301,7 +308,7 @@ public class DeviceRemoteConfig implements Serializable {
    * @return 设备类型
    */
   public String getDeviceType() {
-    return getProp("deviceType");
+    return getProp(PROPERTY_DEVICE_TYPE);
   }
 
   /**
