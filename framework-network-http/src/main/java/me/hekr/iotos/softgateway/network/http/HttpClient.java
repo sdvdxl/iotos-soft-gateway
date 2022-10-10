@@ -15,38 +15,45 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
+import me.hekr.iotos.softgateway.network.http.HttpLoggingInterceptor.Level;
 import okhttp3.ConnectionPool;
 import okhttp3.OkHttpClient;
 import okhttp3.OkHttpClient.Builder;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okhttp3.logging.HttpLoggingInterceptor;
-import okhttp3.logging.HttpLoggingInterceptor.Level;
 
 /**
  * @author du
  */
 @Slf4j
 public class HttpClient {
-
+  @Getter private final String clientName;
   @Getter private final String baseUrl;
   @Getter private OkHttpClient okHttpClient;
   /** http response 结果校验，如果不通过则抛出异常 */
   @Setter private HttpResponseChecker httpResponseChecker = HttpResponseChecker.DEFAULT;
 
-  private HttpClient(String baseUrl, OkHttpClient client) {
+  private HttpClient(String clientName, String baseUrl, OkHttpClient client) {
+    this.clientName = clientName;
     this.baseUrl = baseUrl;
     this.okHttpClient = client;
   }
 
-  @SneakyThrows
+  private HttpClient(String baseUrl, OkHttpClient client) {
+    this(baseUrl, baseUrl, client);
+  }
+
   public static HttpClient newInstance(
       String baseUrl, int timeoutOfSecs, Level level, boolean checkSsl) {
-    ConnectionPool connectionPool = new ConnectionPool(1, 30, TimeUnit.SECONDS);
-    HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-    interceptor.setLevel(level);
-    OkHttpClient client;
+    return newInstance(baseUrl, baseUrl, timeoutOfSecs, level, checkSsl);
+  }
 
+  @SneakyThrows
+  public static HttpClient newInstance(
+      String clientName, String baseUrl, int timeoutOfSecs, Level level, boolean checkSsl) {
+    ConnectionPool connectionPool = new ConnectionPool(1, 30, TimeUnit.SECONDS);
+
+    OkHttpClient client;
     Builder builder =
         new OkHttpClient()
             .newBuilder()
@@ -61,8 +68,10 @@ public class HttpClient {
             // 连接超时
             .connectTimeout(Duration.ofSeconds(timeoutOfSecs))
             // 不重试
-            .retryOnConnectionFailure(false)
-            .addInterceptor(interceptor);
+            .retryOnConnectionFailure(false);
+    if (level != null && level != Level.NONE) {
+      builder.addInterceptor(new HttpLoggingInterceptor(clientName, level));
+    }
 
     if (!checkSsl) {
       // Create a trust manager that does not validate certificate chains
@@ -81,7 +90,7 @@ public class HttpClient {
           .hostnameVerifier((hostname, session) -> true);
     }
     client = builder.build();
-    return new HttpClient(baseUrl, client);
+    return new HttpClient(clientName, baseUrl, client);
   }
 
   @SneakyThrows

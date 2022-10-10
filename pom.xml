@@ -57,6 +57,7 @@
     <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
   </scm>
 
+
   <dependencyManagement>
     <dependencies>
       <!--       子模块-->
@@ -133,6 +134,13 @@
         <artifactId>logback-classic</artifactId>
         <version>1.2.11</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>5.8.2</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -140,7 +148,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.22</version>
+      <version>1.18.24</version>
       <scope>provided</scope>
     </dependency>
 
