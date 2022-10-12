@@ -97,10 +97,10 @@ public class MqttService {
 
       dataFullSendExecutor =
           Executors.newSingleThreadScheduledExecutor(
-              ThreadUtil.newNamedThreadFactory("dataFullSendExecutor", true));
+              ThreadUtil.newNamedThreadFactory("checkKlinkQueueStatus", true));
       dataFullSendExecutor.scheduleWithFixedDelay(
           () -> sendAllDeviceModelParams(iotOsConfig),
-          60,
+          iotOsConfig.getMqttConfig().getDataFullInterval(),
           iotOsConfig.getMqttConfig().getDataFullInterval(),
           TimeUnit.SECONDS);
     } else {
@@ -139,9 +139,7 @@ public class MqttService {
 
   private void checkAndLogQueueSize(Queue<?> queue, int threadhole, String type) {
     int size = queue.size();
-    if (log.isInfoEnabled()) {
-      log.info(type + " 队列还有 {} 个", size);
-    }
+    log.info(type + " 队列还有 {} 个", size);
 
     if (size > threadhole) {
       log.warn(type + " 队列未及时消费，还有: {} 个记录", size);
@@ -432,15 +430,16 @@ public class MqttService {
         doPublish(klink);
 
         // 发送成功，如果是发送在线，则设置为在线
-        if (action == Action.DEV_LOGIN && dev.isOffline()) {
-          dev.setOnline();
-          break;
+        switch (action) {
+          case DEV_LOGIN:
+            dev.setOnline();
+            break;
+          case DEV_LOGOUT:
+            dev.setOffline();
+            break;
+          default:
         }
-
-        if (action == Action.DEV_LOGOUT && dev.isOnline()) {
-          dev.setOffline();
-          break;
-        }
+        break;
       } catch (MqttException e) {
         log.error("mqtt发布报错：" + e.getMessage() + ",第 " + (i + 1) + "次重试", e);
         ThreadUtil.sleep(1000);
