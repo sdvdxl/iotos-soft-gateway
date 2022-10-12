@@ -87,7 +87,7 @@ public class MqttService {
         () -> {
           checkAndLogQueueSize(registerQueue, 2, "register");
           checkAndLogQueueSize(addTopoQueue, 2, "topo");
-          checkAndLogQueueSize(queue, iotOsConfig.getKlinkQueueSize(), "klink");
+          checkAndLogQueueSize(queue, 100, "klink");
         },
         0,
         3,
