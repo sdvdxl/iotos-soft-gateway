@@ -53,7 +53,7 @@ public class MqttCallBackImpl implements MqttCallback {
     // 连接丢失后，一般在这里面进行重连
     log.warn("驱动已经连接断开,准备开始重连, cause: ", cause.getCause());
     triggerConnectionLost();
-    mqttService.init();
+    mqttService.start();
   }
 
   private void triggerConnectionLost() {
