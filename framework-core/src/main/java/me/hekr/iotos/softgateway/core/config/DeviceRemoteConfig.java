@@ -81,9 +81,13 @@ public class DeviceRemoteConfig implements Serializable {
 
   public static void update(DeviceRemoteConfig d) {
     synchronized (SET) {
-      remove(d);
-      add(d);
-      log.info("after update: {}", getStatus());
+      Optional<DeviceRemoteConfig> optConfig = SET.stream().filter(e -> e.equals(d)).findAny();
+
+      if (optConfig.isPresent()) {
+        optConfig.get().data = d.data;
+      } else {
+        add(d);
+      }
     }
   }
 
@@ -91,9 +95,7 @@ public class DeviceRemoteConfig implements Serializable {
     Objects.requireNonNull(d, "deviceRemoteConfig is null");
     Objects.requireNonNull(d.getPk(), "pk is null");
     Objects.requireNonNull(d.getDevId(), "devId is null");
-
     SET.add(d);
-    log.info("after add: {}", getStatus());
   }
 
   public static void remove(DeviceRemoteConfig d) {
@@ -119,7 +121,7 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   public static String getStatus() {
-    return "size: " + size() + ", devices: " + getAllSubDevices();
+    return "deviceRemoteConfig size: " + size();
   }
 
   /**

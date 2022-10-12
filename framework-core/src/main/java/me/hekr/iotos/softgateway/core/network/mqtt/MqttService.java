@@ -20,8 +20,6 @@ import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.config.MqttConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.AddTopo;
-import me.hekr.iotos.softgateway.core.klink.DevLogin;
-import me.hekr.iotos.softgateway.core.klink.DevLogout;
 import me.hekr.iotos.softgateway.core.klink.DevSend;
 import me.hekr.iotos.softgateway.core.klink.Klink;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
@@ -407,7 +405,7 @@ public class MqttService {
 
   private void trySend(KlinkDev klink) {
     if (log.isDebugEnabled()) {
-      log.debug("尝试发送MQTT：{}", JsonUtil.toJson(klink));
+      log.debug("尝试发送到MQTT：{}", JsonUtil.toJson(klink));
     }
 
     String pk = klink.getPk();
@@ -427,22 +425,22 @@ public class MqttService {
       return;
     }
 
+    Action action = Action.of(klink.getAction());
     // 报错就重试
     for (int i = 0; i < MAX_RETRY_COUNT; i++) {
       try {
         doPublish(klink);
 
         // 发送成功，如果是发送在线，则设置为在线
-        if (klink instanceof DevLogin && dev.isOffline()) {
+        if (action == Action.DEV_LOGIN && dev.isOffline()) {
           dev.setOnline();
-          return;
+          break;
         }
 
-        if (klink instanceof DevLogout && dev.isOnline()) {
+        if (action == Action.DEV_LOGOUT && dev.isOnline()) {
           dev.setOffline();
-          return;
+          break;
         }
-        break;
       } catch (MqttException e) {
         log.error("mqtt发布报错：" + e.getMessage() + ",第 " + (i + 1) + "次重试", e);
         ThreadUtil.sleep(1000);
