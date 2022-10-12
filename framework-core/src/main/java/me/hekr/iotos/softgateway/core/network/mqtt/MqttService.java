@@ -320,15 +320,27 @@ public class MqttService {
       int waitTime = iotOsConfig.getMqttConfig().getConnectTimeout() * 1000;
 
       // 优先发送注册信息
-      sendRegisterMessage(waitTime);
+      try {
+        sendRegisterMessage(waitTime);
+      } catch (Exception e) {
+        log.error(e.getMessage(), e);
+      }
 
       // 然后发送添加拓扑信息
-      sendAddTopoMessage(waitTime);
+      try {
+        sendAddTopoMessage(waitTime);
+      } catch (Exception e) {
+        log.error(e.getMessage(), e);
+      }
 
       // 处理完了登录和拓扑
 
       // 发送其他数据
-      sendOtherMessage();
+      try {
+        sendOtherMessage();
+      } catch (Exception e) {
+        log.error(e.getMessage(), e);
+      }
     }
 
     log.warn("收到打断信号，停止发送消息");
