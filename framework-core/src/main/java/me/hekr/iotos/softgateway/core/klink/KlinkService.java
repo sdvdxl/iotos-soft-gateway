@@ -443,7 +443,7 @@ public class KlinkService {
     Objects.requireNonNull(props, "mapper.getProps 必须不为 null");
     Optional<DeviceRemoteConfig> subsystemDev = DeviceRemoteConfig.getBySubSystemProperties(props);
     if (!subsystemDev.isPresent()) {
-      log.warn("没有配置映射设备信息，请在远程配置中进行配置，设备信息：{}", props);
+      log.debug("没有配置映射设备信息，请在远程配置中进行配置，设备信息：{}", props);
     }
 
     return subsystemDev;

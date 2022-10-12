@@ -88,7 +88,7 @@ public class MqttService {
           checkAndLogQueueSize(queue, 100, "klink");
         },
         0,
-        3,
+        60,
         TimeUnit.SECONDS);
 
     if (iotOsConfig.getMqttConfig().isDataChanged()
@@ -139,8 +139,8 @@ public class MqttService {
 
   private void checkAndLogQueueSize(Queue<?> queue, int threadhole, String type) {
     int size = queue.size();
-    if (log.isTraceEnabled()) {
-      log.trace(type + " 队列还有 {} 个", size);
+    if (log.isInfoEnabled()) {
+      log.info(type + " 队列还有 {} 个", size);
     }
 
     if (size > threadhole) {
