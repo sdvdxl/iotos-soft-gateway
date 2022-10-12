@@ -1,15 +1,19 @@
 package me.hekr.iotos.softgateway.core.network.mqtt;
 
 import cn.hutool.core.thread.ThreadUtil;
+import com.google.common.base.Stopwatch;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +48,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class MqttService {
+  private static final int CUSTOM_CODE_SPENT_SECONDS = 10;
   private static final int MAX_RETRY_COUNT = 3;
   private final Object registerLock = new Object();
   private final Object addTopoLock = new Object();
@@ -179,8 +184,18 @@ public class MqttService {
       client.subscribe(iotOsConfig.getMqttConfig().getSubscribeTopic(), 0);
       ThreadUtil.safeSleep(1000);
 
-      triggerConnectedListeners();
-
+      log.info("开始执行 triggerConnectedListeners");
+      Stopwatch stopWatch = Stopwatch.createStarted();
+      CompletableFuture<Void> future = CompletableFuture.runAsync(this::triggerConnectedListeners);
+      try {
+        future.get(CUSTOM_CODE_SPENT_SECONDS, TimeUnit.SECONDS);
+      } catch (InterruptedException | ExecutionException e) {
+        throw new RuntimeException(e);
+      } catch (TimeoutException e) {
+        log.warn("执行 triggerConnectedListeners 太长，请将业务逻辑放在异步处理");
+      }
+      stopWatch.stop();
+      log.info("执行结束 triggerConnectedListeners 耗时 :{}", stopWatch);
     } catch (Exception e) {
       log.error("软件网关连接失败！" + e.getMessage(), e);
       if (e instanceof MqttSecurityException) {
