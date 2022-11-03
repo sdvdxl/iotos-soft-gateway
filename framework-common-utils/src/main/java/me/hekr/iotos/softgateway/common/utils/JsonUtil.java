@@ -15,6 +15,7 @@ public class JsonUtil {
     objectMapper
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .configure(DeserializationFeature.FAIL_ON_TRAILING_TOKENS, true);
+    objectMapper.findAndRegisterModules();
   }
 
   @SneakyThrows
