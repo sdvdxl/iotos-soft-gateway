@@ -10,4 +10,4 @@
 
 2022-04-09
 
-1. 允许配置 cloudSendResp 是否自动回复，`connect.mqtt.autoCloudSendResp` 默认 true，自动回复，设置为 false
+1. 允许配置 cloudSendResp 是否自动回复，`connect.mqtt.autoCloudSendResp` 默认 true，自动回复; 设置为 false 需要手动回复

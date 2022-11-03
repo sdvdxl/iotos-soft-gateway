@@ -1,15 +1,19 @@
 package me.hekr.iotos.softgateway.core.network.mqtt;
 
 import cn.hutool.core.thread.ThreadUtil;
+import com.google.common.base.Stopwatch;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +24,6 @@ import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.config.MqttConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.AddTopo;
-import me.hekr.iotos.softgateway.core.klink.DevLogin;
-import me.hekr.iotos.softgateway.core.klink.DevLogout;
 import me.hekr.iotos.softgateway.core.klink.DevSend;
 import me.hekr.iotos.softgateway.core.klink.Klink;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
@@ -46,6 +48,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 public class MqttService {
+  private static final int CUSTOM_CODE_SPENT_SECONDS = 10;
   private static final int MAX_RETRY_COUNT = 3;
   private final Object registerLock = new Object();
   private final Object addTopoLock = new Object();
@@ -87,10 +90,10 @@ public class MqttService {
         () -> {
           checkAndLogQueueSize(registerQueue, 2, "register");
           checkAndLogQueueSize(addTopoQueue, 2, "topo");
-          checkAndLogQueueSize(queue, iotOsConfig.getKlinkQueueSize(), "klink");
+          checkAndLogQueueSize(queue, 100, "klink");
         },
         0,
-        3,
+        60,
         TimeUnit.SECONDS);
 
     if (iotOsConfig.getMqttConfig().isDataChanged()
@@ -99,10 +102,10 @@ public class MqttService {
 
       dataFullSendExecutor =
           Executors.newSingleThreadScheduledExecutor(
-              ThreadUtil.newNamedThreadFactory("dataFullSendExecutor", true));
+              ThreadUtil.newNamedThreadFactory("checkKlinkQueueStatus", true));
       dataFullSendExecutor.scheduleWithFixedDelay(
           () -> sendAllDeviceModelParams(iotOsConfig),
-          60,
+          iotOsConfig.getMqttConfig().getDataFullInterval(),
           iotOsConfig.getMqttConfig().getDataFullInterval(),
           TimeUnit.SECONDS);
     } else {
@@ -141,9 +144,7 @@ public class MqttService {
 
   private void checkAndLogQueueSize(Queue<?> queue, int threadhole, String type) {
     int size = queue.size();
-    if (log.isTraceEnabled()) {
-      log.trace(type + " 队列还有 {} 个", size);
-    }
+    log.info(type + " 队列还有 {} 个", size);
 
     if (size > threadhole) {
       log.warn(type + " 队列未及时消费，还有: {} 个记录", size);
@@ -183,8 +184,18 @@ public class MqttService {
       client.subscribe(iotOsConfig.getMqttConfig().getSubscribeTopic(), 0);
       ThreadUtil.safeSleep(1000);
 
-      triggerConnectedListeners();
-
+      log.info("开始执行 triggerConnectedListeners");
+      Stopwatch stopWatch = Stopwatch.createStarted();
+      CompletableFuture<Void> future = CompletableFuture.runAsync(this::triggerConnectedListeners);
+      try {
+        future.get(CUSTOM_CODE_SPENT_SECONDS, TimeUnit.SECONDS);
+      } catch (InterruptedException | ExecutionException e) {
+        throw new RuntimeException(e);
+      } catch (TimeoutException e) {
+        log.warn("执行 triggerConnectedListeners 太长，请将业务逻辑放在异步处理");
+      }
+      stopWatch.stop();
+      log.info("执行结束 triggerConnectedListeners 耗时 :{}", stopWatch);
     } catch (Exception e) {
       log.error("软件网关连接失败！" + e.getMessage(), e);
       if (e instanceof MqttSecurityException) {
@@ -226,7 +237,7 @@ public class MqttService {
     }
   }
 
-  public void init() {
+  public void start() {
     connectExecutor.execute(this::loopConnect);
   }
 
@@ -320,15 +331,27 @@ public class MqttService {
       int waitTime = iotOsConfig.getMqttConfig().getConnectTimeout() * 1000;
 
       // 优先发送注册信息
-      sendRegisterMessage(waitTime);
+      try {
+        sendRegisterMessage(waitTime);
+      } catch (Exception e) {
+        log.error(e.getMessage(), e);
+      }
 
       // 然后发送添加拓扑信息
-      sendAddTopoMessage(waitTime);
+      try {
+        sendAddTopoMessage(waitTime);
+      } catch (Exception e) {
+        log.error(e.getMessage(), e);
+      }
 
       // 处理完了登录和拓扑
 
       // 发送其他数据
-      sendOtherMessage();
+      try {
+        sendOtherMessage();
+      } catch (Exception e) {
+        log.error(e.getMessage(), e);
+      }
     }
 
     log.warn("收到打断信号，停止发送消息");
@@ -395,7 +418,7 @@ public class MqttService {
 
   private void trySend(KlinkDev klink) {
     if (log.isDebugEnabled()) {
-      log.debug("尝试发送MQTT：{}", JsonUtil.toJson(klink));
+      log.debug("尝试发送到MQTT：{}", JsonUtil.toJson(klink));
     }
 
     String pk = klink.getPk();
@@ -415,20 +438,21 @@ public class MqttService {
       return;
     }
 
+    Action action = Action.of(klink.getAction());
     // 报错就重试
     for (int i = 0; i < MAX_RETRY_COUNT; i++) {
       try {
         doPublish(klink);
 
         // 发送成功，如果是发送在线，则设置为在线
-        if (klink instanceof DevLogin && dev.isOffline()) {
-          dev.setOnline();
-          return;
-        }
-
-        if (klink instanceof DevLogout && dev.isOnline()) {
-          dev.setOffline();
-          return;
+        switch (action) {
+          case DEV_LOGIN:
+            dev.setOnline();
+            break;
+          case DEV_LOGOUT:
+            dev.setOffline();
+            break;
+          default:
         }
         break;
       } catch (MqttException e) {
