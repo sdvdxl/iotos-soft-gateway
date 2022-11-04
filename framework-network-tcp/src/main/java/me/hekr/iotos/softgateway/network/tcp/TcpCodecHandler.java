@@ -35,7 +35,7 @@ class TcpCodecHandler<T> extends ByteToMessageCodec<InternalPacket<T>> {
   protected void decode(ChannelHandlerContext ctx, ByteBuf buf, List<Object> out) {
     byte[] bytes = ByteBufUtil.getBytes(buf);
     DecodePacket p = packetCoder.decode(bytes);
-    if (p != null && p != DecodePacket.NULL) {
+    if (p != null && p != DecodePacket.NULL && p.getReadSize() > 0) {
       buf.skipBytes(p.getReadSize());
 
       out.add(
