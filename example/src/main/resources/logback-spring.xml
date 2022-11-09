@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration debug="false">
-  <property name="LOG_FILE_NAME" value="gateway-demo"/>
+<configuration debug="true">
+  <property name="LOG_FILE_NAME" value="demo-driver"/>
 
   <!--定义日志文件的存储地址 -->
-  <springProfile name="local">
+  <springProfile name="!prod">
     <property name="LOG_HOME" value="${user.home}/logs"/>
   </springProfile>
-  <springProfile name="!local">
+  <springProfile name="prod">
     <property name="LOG_HOME" value="${LOG_HOME:-/data/logs}"/>
   </springProfile>
+
 
   <!--<property name="COLOR_PATTERN" value="%black(%contextName-) %red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta( %replace(%caller{1}){'\t|Caller.{1}0|\r\n', ''})- %gray(%msg%xEx%n)" />-->
   <!-- 控制台输出 -->
@@ -64,31 +65,33 @@
       <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
       <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}:%L - %msg%n</pattern>
     </encoder>
-
   </appender>
 
   <appender name="ASYNC_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
     <!--    拷贝堆栈信息， 默认false -->
-    <!--    <includeCallerData>true</includeCallerData>-->
+    <includeCallerData>true</includeCallerData>
     <appender-ref ref="STDOUT"/>
-    <appender-ref ref="FILE"/>
-    <appender-ref ref="ERROR"/>
   </appender>
+
+  <!-- Spring日志级别控制  -->
+  <logger name="org.springframework" level="warn"/>
 
 
   <!-- 日志输出级别 -->
-  <springProfile name="local,dev,test">
-    <logger name="com.apache.ibatis" level="TRACE"/>
+  <springProfile name="!prod">
+    <logger name="org.apache.ibatis" level="TRACE"/>
+    <logger name="com.ruoyi" level="TRACE"/>
     <logger name="java.sql.Connection" level="DEBUG"/>
     <logger name="java.sql.Statement" level="DEBUG"/>
     <logger name="java.sql.PreparedStatement" level="DEBUG"/>
-    <root level="DEBUG">
+
+    <root level="debug">
       <appender-ref ref="ASYNC_CONSOLE"/>
       <appender-ref ref="FILE"/>
       <appender-ref ref="ERROR"/>
     </root>
   </springProfile>
-  <springProfile name="prod,default">
+  <springProfile name="prod">
     <root level="INFO">
       <appender-ref ref="FILE"/>
       <appender-ref ref="ERROR"/>
