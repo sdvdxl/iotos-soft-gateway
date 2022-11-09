@@ -2,6 +2,7 @@ package me.hekr.iotos.softgateway.sample;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.List;
+import javax.annotation.PostConstruct;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import me.hekr.iotos.softgateway.network.http.HttpClient;
 import me.hekr.iotos.softgateway.network.http.HttpPageResponse;
@@ -10,14 +11,23 @@ import me.hekr.iotos.softgateway.network.http.HttpRequestPageable;
 import me.hekr.iotos.softgateway.network.http.HttpResponse;
 import me.hekr.iotos.softgateway.network.http.HttpResponseChecker;
 import me.hekr.iotos.softgateway.network.http.PageableResponseParser;
+import okhttp3.logging.HttpLoggingInterceptor.Level;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * 运行前先启动 HttpServerSample
  *
  * @author iotos
  */
+@SpringBootApplication
 public class HttpClientSample {
   public static void main(String[] args) {
+    SpringApplication.run(HttpClientSample.class, args);
+  }
+
+  @PostConstruct
+  public void init() {
     testRequestPageable();
     testRequestPageableItems();
     testChecker();
@@ -25,7 +35,7 @@ public class HttpClientSample {
 
   /** 测试分页 */
   public static void testRequestPageable() {
-    HttpClient client = HttpClient.newInstance("http://localhost:8080/");
+    HttpClient client = HttpClient.newInstance("http://localhost:8080/", Level.BODY);
     client.setHttpResponseChecker(
         response -> {
           // 200才算成功

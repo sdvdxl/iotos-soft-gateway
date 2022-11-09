@@ -31,33 +31,3 @@ gateway:
   devId: 'du_gateway'
   devSecret: '0abcbe87d37d4e5d9da07fae5856277f'
 
-# 日志配置，注意仅针对 springboot 项目有效
-logging:
-  # 日志级别
-  # 如果要加其他日志过滤，格式为： level.包名: LEVEL
-  # 比如 level.me.hekr.iotos: DEBUG
-  level:
-    root: INFO
-    org.spring: WARN
-    me.hekr.iotos: DEBUG
-    io.netty: DEBUG
-
-  # 日志文件保存位置
-  pattern:
-    file: '%date{"yyyy-MM-dd HH:mm:ss.SSS"} %-5level [%thread] %logger{128}.%M:%line - %msg %n'
-    console: '%date{"yyyy-MM-dd HH:mm:ss.SSS"} %-5level [%thread] %logger{128}.%M:%line - %msg %n'
-  charset:
-    console: UTF-8
-    file: UTF-8
-  logback:
-    rollingpolicy:
-      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz
-      clean-history-on-start: true
-      # 日志文件大小
-      max-file-size: '500mb'
-      # 历史日志文件保存天数
-      max-history: 7
-  file:
-    name: logs/iotos-soft-gateway.log
-
-#  profiles.active: default
