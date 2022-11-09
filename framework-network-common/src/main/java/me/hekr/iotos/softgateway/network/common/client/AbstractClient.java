@@ -23,7 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 
-/** @author iotos */
+/**
+ * @author iotos
+ */
 @Slf4j
 public abstract class AbstractClient<T> {
   public final Object LOCK = new Object();
@@ -88,7 +90,7 @@ public abstract class AbstractClient<T> {
     if (eventLoop != null) {
       try {
         log.info("关闭 eventLoop");
-        eventLoop.shutdownGracefully(0, 10, TimeUnit.SECONDS);
+        eventLoop.shutdownGracefully(0, 10, TimeUnit.SECONDS).sync();
         log.info(" 成功关闭 client");
       } catch (Exception e) {
         log.error(e.getMessage(), e);
