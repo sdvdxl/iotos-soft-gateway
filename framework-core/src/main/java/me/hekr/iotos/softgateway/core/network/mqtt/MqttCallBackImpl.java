@@ -94,7 +94,13 @@ public class MqttCallBackImpl implements MqttCallback {
           try {
             handleMessage(topic, message);
           } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error(
+                e.getMessage()
+                    + "， topic: "
+                    + topic
+                    + ", message: "
+                    + new String(message.getPayload(), StandardCharsets.UTF_8),
+                e);
           }
         });
   }

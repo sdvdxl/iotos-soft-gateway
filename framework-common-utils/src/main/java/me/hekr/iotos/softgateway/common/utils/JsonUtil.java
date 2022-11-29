@@ -4,10 +4,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.TimeZone;
 import lombok.SneakyThrows;
 import org.apache.commons.codec.binary.Base64;
 
-/** json工具类，用于完成对象与json之间的转换 */
+/**
+ * json工具类，用于完成对象与json之间的转换
+ *
+ * <p>时间格式化默认为 GMT+8
+ */
 public class JsonUtil {
   private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -16,6 +21,7 @@ public class JsonUtil {
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .configure(DeserializationFeature.FAIL_ON_TRAILING_TOKENS, true);
     objectMapper.findAndRegisterModules();
+    objectMapper.setTimeZone(TimeZone.getTimeZone("GMT+8"));
   }
 
   @SneakyThrows
