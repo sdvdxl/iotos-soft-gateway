@@ -51,8 +51,8 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://https://gitee.com/geekhekr/iotos-soft-gateway.git</connection>
-    <developerConnection>scm:git:ssh://gitee.com:geekhekr/iotos-soft-gateway.git
+    <connection>scm:git:https://gitee.com/geekhekr/iotos-soft-gateway.git</connection>
+    <developerConnection>scm:git:git@gitee.com:geekhekr/iotos-soft-gateway-demo.git
     </developerConnection>
     <url>https://gitee.com/geekhekr/iotos-soft-gateway</url>
   </scm>
@@ -171,6 +171,9 @@
 
   <profiles>
     <profile>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
       <id>deploy</id>
       <build>
         <plugins>
@@ -227,6 +230,12 @@
                 </goals>
               </execution>
             </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <version>3.7.1</version>
           </plugin>
         </plugins>
       </build>
