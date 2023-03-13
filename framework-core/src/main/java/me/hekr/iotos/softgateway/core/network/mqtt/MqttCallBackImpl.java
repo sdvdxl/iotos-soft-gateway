@@ -89,20 +89,25 @@ public class MqttCallBackImpl implements MqttCallback {
 
   @Override
   public void messageArrived(String topic, MqttMessage message) {
-    messageExecutor.execute(
-        () -> {
-          try {
-            handleMessage(topic, message);
-          } catch (Exception e) {
-            log.error(
-                e.getMessage()
-                    + "， topic: "
-                    + topic
-                    + ", message: "
-                    + new String(message.getPayload(), StandardCharsets.UTF_8),
-                e);
-          }
-        });
+    // 注意 ，如果抛出异常，mqtt client 会断开链接
+    try {
+      messageExecutor.execute(
+          () -> {
+            try {
+              handleMessage(topic, message);
+            } catch (Exception e) {
+              log.error(
+                  e.getMessage()
+                      + "， topic: "
+                      + topic
+                      + ", message: "
+                      + new String(message.getPayload(), StandardCharsets.UTF_8),
+                  e);
+            }
+          });
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+    }
   }
 
   private void handleMessage(String topic, MqttMessage message) {
