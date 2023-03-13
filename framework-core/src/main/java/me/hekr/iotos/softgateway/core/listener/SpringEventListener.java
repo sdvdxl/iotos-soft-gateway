@@ -17,7 +17,7 @@ public class SpringEventListener {
   public void onApplicationStartedEvent(ApplicationReadyEvent event) {
     log.info("应用启动成功， 开始链接MQTT，初始化业务流程");
     // 只是为了看清楚日志
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 3; i++) {
       log.info("业务初始化中...");
       ThreadUtil.safeSleep(1000);
     }

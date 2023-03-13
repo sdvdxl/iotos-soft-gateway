@@ -64,13 +64,13 @@ public class MqttService {
 
   @SuppressWarnings("all")
   private final ExecutorService publishExecutor =
-      Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("publishExecutor", false));
+      Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("publishExecutor", true));
 
   private final ScheduledExecutorService dataFullSendExecutor;
 
   @SuppressWarnings("all")
   private final ExecutorService connectExecutor =
-      Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("connectExecutor", false));
+      Executors.newSingleThreadExecutor(ThreadUtil.newNamedThreadFactory("connectExecutor", true));
 
   private final AtomicInteger connectCount = new AtomicInteger();
   private volatile long lastConnectTime = 0;
