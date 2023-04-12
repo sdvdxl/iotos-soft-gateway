@@ -4,14 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ConcurrentHashSet;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -35,14 +28,12 @@ public class DeviceRemoteConfig implements Serializable {
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
   /** 自定义属性 */
   private final Map<Object, Object> customData = new ConcurrentHashMap<>();
+  /** 设备参数 */
+  @Getter private final Map<String, Object> modelParams = new ConcurrentHashMap<>();
 
   private Map<String, Object> data = new HashMap<>();
   /** 在线状态 */
   private volatile boolean online;
-
-  /** 设备参数 */
-  @Getter private final Map<String, Object> modelParams = new ConcurrentHashMap<>();
-
   /** 是否是网关标识符，true 是网关否则是子设备 */
   @Setter @Getter private boolean gateway;
 
@@ -112,6 +103,22 @@ public class DeviceRemoteConfig implements Serializable {
    */
   public static void updateAll(Collection<DeviceRemoteConfig> deviceRemoteConfigs) {
     synchronized (SET) {
+      // 先删除已经不存在的设备
+      Iterator<DeviceRemoteConfig> iterator = deviceRemoteConfigs.iterator();
+      while (iterator.hasNext()) {
+        DeviceRemoteConfig next = iterator.next();
+        boolean notExist =
+            deviceRemoteConfigs.stream()
+                .noneMatch(
+                    oldDevice ->
+                        next.getPk().equals(oldDevice.getPk())
+                            && next.getDevId().equals(oldDevice.getDevId()));
+        if (notExist) {
+          iterator.remove();
+        }
+      }
+
+      // 更新已经存在的
       for (DeviceRemoteConfig d : deviceRemoteConfigs) {
         update(d);
       }

@@ -3,7 +3,6 @@ package me.hekr.iotos.softgateway.core.config;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig.Props;
@@ -44,12 +43,13 @@ public class DeviceRemoteConfigTest {
   @Test
   public void testUpdateAll() {
     DeviceRemoteConfig.clear();
-    DeviceRemoteConfig.updateAll(
-        Collections.singletonList(
-            DeviceRemoteConfig.parse(
-                "{\"pk\":\"pk_test\",\"devId\":\"1000004\",\"devName\":\"人脸识别\"}")));
+    DeviceRemoteConfig.parseMultiLinesAndUpdateAll(
+        "{\"pk\":\"pk_test\",\"devId\":\"1000004\",\"devName\":\"人脸识别\"}");
     assertEquals(1, DeviceRemoteConfig.size());
     assertEquals("pk_test", DeviceRemoteConfig.getByPkAndDevId("pk_test", "1000004").get().getPk());
+    assertEquals(1, DeviceRemoteConfig.getAllSubDevices().size());
+    DeviceRemoteConfig.parseMultiLinesAndUpdateAll("");
+    assertEquals(0, DeviceRemoteConfig.getAllSubDevices().size());
   }
 
   @Test
@@ -77,12 +77,11 @@ public class DeviceRemoteConfigTest {
   }
 
   @Test
-  public void testEq(){
-    Map<String,Object> params1 = new HashMap<>();
-    params1.put("a",new Integer(1));
-    Map<String,Object> params2 = new HashMap<>();
-    params2.put("a",1);
-    assertTrue(DeviceRemoteConfig.dataEq(params1,params2));
+  public void testEq() {
+    Map<String, Object> params1 = new HashMap<>();
+    params1.put("a", new Integer(1));
+    Map<String, Object> params2 = new HashMap<>();
+    params2.put("a", 1);
+    assertTrue(DeviceRemoteConfig.dataEq(params1, params2));
   }
-
 }
