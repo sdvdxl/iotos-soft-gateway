@@ -104,7 +104,7 @@ public class DeviceRemoteConfig implements Serializable {
   public static void updateAll(Collection<DeviceRemoteConfig> deviceRemoteConfigs) {
     synchronized (SET) {
       // 先删除已经不存在的设备
-      Iterator<DeviceRemoteConfig> iterator = deviceRemoteConfigs.iterator();
+      Iterator<DeviceRemoteConfig> iterator = DeviceRemoteConfig.getAllSubDevices().iterator();
       while (iterator.hasNext()) {
         DeviceRemoteConfig next = iterator.next();
         boolean notExist =
@@ -114,7 +114,7 @@ public class DeviceRemoteConfig implements Serializable {
                         next.getPk().equals(oldDevice.getPk())
                             && next.getDevId().equals(oldDevice.getDevId()));
         if (notExist) {
-          iterator.remove();
+          DeviceRemoteConfig.remove(next);
         }
       }
 

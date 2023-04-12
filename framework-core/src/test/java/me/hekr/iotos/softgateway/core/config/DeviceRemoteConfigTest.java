@@ -45,7 +45,7 @@ public class DeviceRemoteConfigTest {
     DeviceRemoteConfig.clear();
     DeviceRemoteConfig.parseMultiLinesAndUpdateAll(
         "{\"pk\":\"pk_test\",\"devId\":\"1000004\",\"devName\":\"人脸识别\"}");
-    assertEquals(1, DeviceRemoteConfig.size());
+    assertEquals(1, DeviceRemoteConfig.getAllSubDevices().size());
     assertEquals("pk_test", DeviceRemoteConfig.getByPkAndDevId("pk_test", "1000004").get().getPk());
     assertEquals(1, DeviceRemoteConfig.getAllSubDevices().size());
     DeviceRemoteConfig.parseMultiLinesAndUpdateAll("");
