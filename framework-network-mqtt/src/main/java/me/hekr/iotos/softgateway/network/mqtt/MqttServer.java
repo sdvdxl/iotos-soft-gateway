@@ -6,6 +6,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.mqtt.MqttAuth;
 import io.vertx.mqtt.MqttEndpoint;
+import io.vertx.mqtt.MqttServerOptions;
 import io.vertx.mqtt.MqttTopicSubscription;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,22 +15,30 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.mqtt.listener.Listener;
 
-/** @author iotos */
+/**
+ * @author iotos
+ */
 @Slf4j
 public class MqttServer<T> {
   private final int poolSize = Runtime.getRuntime().availableProcessors() * 4;
   @Setter PacketCoder<T> packetCoder;
   private Vertx vertx;
   private io.vertx.mqtt.MqttServer server;
+  private MqttServerOptions mqttServerOptions;
   @Setter private int port;
   @Setter private Listener<T> listener;
 
-  public MqttServer(int port) {
+  public MqttServer(int port, MqttServerOptions mqttServerOptions) {
     this.port = port;
+    this.mqttServerOptions = mqttServerOptions;
+  }
+
+  public MqttServer(int port) {
+    this(port, new MqttServerOptions());
   }
 
   public MqttServer() {
-    this(1883);
+    this(MqttServerOptions.DEFAULT_PORT);
   }
 
   public void start() {
@@ -39,7 +48,9 @@ public class MqttServer<T> {
     options.setEventLoopPoolSize(poolSize);
     options.setWorkerPoolSize(poolSize);
     vertx = Vertx.vertx(options);
-    server = io.vertx.mqtt.MqttServer.create(vertx);
+
+    server = io.vertx.mqtt.MqttServer.create(vertx, mqttServerOptions);
+
     server.exceptionHandler(t -> log.error(t.getMessage(), t));
     server.endpointHandler(
         endpoint -> {
