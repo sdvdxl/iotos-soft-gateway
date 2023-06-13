@@ -11,6 +11,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.timeout.IdleStateHandler;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import lombok.Setter;
@@ -113,6 +114,7 @@ public class TcpServer<T> {
   }
 
   public void writeAndFlush(TcpServerConnectionContext<T> ctx, T msg) {
+    ctx.setLastSendTime(LocalDateTime.now());
     ctx.getChannel()
         .writeAndFlush(InternalPacket.wrap(msg))
         .addListener(

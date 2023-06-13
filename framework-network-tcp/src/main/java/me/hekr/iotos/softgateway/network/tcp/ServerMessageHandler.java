@@ -10,12 +10,14 @@ import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
-import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.ConnectionContext;
+import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.tcp.listener.EventListener;
 import me.hekr.iotos.softgateway.network.tcp.listener.TcpMessageListener;
 
-/** @author iotos */
+/**
+ * @author iotos
+ */
 @Sharable
 @Slf4j
 public class ServerMessageHandler<T> extends SimpleChannelInboundHandler<InternalPacket<T>> {
@@ -69,6 +71,7 @@ public class ServerMessageHandler<T> extends SimpleChannelInboundHandler<Interna
     TcpServerConnectionContext<T> packetContext = getPacketContext(ctx);
     packetContext.resetHeartbeatTimeoutCount();
     packetContext.setMessage(packet.getMessage());
+    packetContext.setLastReceiveTime(LocalDateTime.now());
     messageListener.onMessage(packetContext);
   }
 
