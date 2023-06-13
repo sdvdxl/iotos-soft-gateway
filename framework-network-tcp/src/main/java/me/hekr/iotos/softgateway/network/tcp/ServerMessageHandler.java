@@ -47,6 +47,7 @@ public class ServerMessageHandler<T> extends SimpleChannelInboundHandler<Interna
     CloseReason closeReason = packetContext.getCloseReason();
     if (closeReason == null) {
       closeReason = CloseReason.CLIENT_CLOSE;
+      packetContext.setCloseReason(closeReason);
     }
 
     eventListener.onDisconnect(packetContext, closeReason);
