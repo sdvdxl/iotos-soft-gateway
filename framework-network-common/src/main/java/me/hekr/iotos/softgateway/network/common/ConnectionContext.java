@@ -1,6 +1,7 @@
 package me.hekr.iotos.softgateway.network.common;
 
 import io.netty.channel.Channel;
+import io.netty.util.AttributeKey;
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -25,6 +26,8 @@ public class ConnectionContext<T> {
   @Getter @Setter protected LocalDateTime lastSendTime;
   /** 最后接收时间 */
   @Getter @Setter protected LocalDateTime lastReceiveTime;
+  /** 链接时间 */
+  protected LocalDateTime connectTime;
 
   protected ConnectionContext(InetSocketAddress address, T message) {
     this.address = address;
@@ -33,11 +36,11 @@ public class ConnectionContext<T> {
   }
 
   public void put(Object key, Object value) {
-    this.attr.put(key, value);
+    channel.attr(AttributeKey.newInstance(String.valueOf(key))).set(value);
   }
 
   public Object get(Object key) {
-    return attr.get(key);
+    return channel.attr(AttributeKey.newInstance(String.valueOf(key))).get();
   }
 
   public static <T> ConnectionContext<T> wrap(InetSocketAddress address) {
@@ -50,5 +53,9 @@ public class ConnectionContext<T> {
 
   public void close() {
     channel.close();
+  }
+
+  public void setConnectTime() {
+    this.connectTime = LocalDateTime.now();
   }
 }

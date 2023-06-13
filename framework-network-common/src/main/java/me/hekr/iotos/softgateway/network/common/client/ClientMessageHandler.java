@@ -61,6 +61,7 @@ public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<Interna
   public void channelActive(ChannelHandlerContext ctx) {
     ConnectionContext<T> connectionContext =
         ConnectionContext.wrap((InetSocketAddress) ctx.channel().remoteAddress());
+    connectionContext.setConnectTime();
     ctx.channel().attr(PACKET_CONTEXT).set(connectionContext);
 
     eventListener.onConnect(connectionContext);
