@@ -121,7 +121,7 @@ public class TcpServer<T> {
                 if (f.isSuccess()) {
                   log.debug("发送： " + msg + " 成功");
                 } else {
-                  log.error("发送消息：" + msg + " 失败，" + f.cause().getMessage());
+                  log.error("发送消息：" + msg + " 失败，" + f.cause().getMessage(), f.cause());
                 }
               }
             });

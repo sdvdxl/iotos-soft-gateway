@@ -8,14 +8,32 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
 import me.hekr.iotos.softgateway.network.common.ConnectionContext;
+import me.hekr.iotos.softgateway.network.common.InternalPacket;
 
-/** @author iotos */
+/**
+ * @author iotos
+ */
 @Slf4j
 public class TcpServerConnectionContext<T> extends ConnectionContext<T> {
   protected final ChannelHandlerContext ctx;
   @Getter @Setter protected CloseReason closeReason;
   @Getter @Setter protected int heartbeatTimeoutCount = 0;
   @Getter @Setter protected LocalDateTime occurTime;
+
+  public void writeAndFlush(T msg) {
+    getChannel()
+        .writeAndFlush(InternalPacket.wrap(msg))
+        .addListener(
+            f -> {
+              if (log.isDebugEnabled()) {
+                if (f.isSuccess()) {
+                  log.debug("发送： " + msg + " 成功");
+                } else {
+                  log.error("发送消息：" + msg + " 失败，" + f.cause().getMessage(), f.cause());
+                }
+              }
+            });
+  }
 
   TcpServerConnectionContext(ChannelHandlerContext ctx, InetSocketAddress address, T message) {
     super(address, message);

@@ -3,17 +3,22 @@ package me.hekr.iotos.softgateway.network.common;
 import io.netty.channel.Channel;
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
-/** @author iotos */
+/**
+ * @author iotos
+ */
 @Slf4j
 @ToString
 public class ConnectionContext<T> {
 
   @Getter protected final InetSocketAddress address;
+  private Map<Object, Object> attr;
   @Getter protected Channel channel;
   @Setter @Getter protected T message;
   /** 最后发送时间 */
@@ -24,6 +29,15 @@ public class ConnectionContext<T> {
   protected ConnectionContext(InetSocketAddress address, T message) {
     this.address = address;
     this.message = message;
+    this.attr = new ConcurrentHashMap<>();
+  }
+
+  public void put(Object key, Object value) {
+    this.attr.put(key, value);
+  }
+
+  public Object get(Object key) {
+    return attr.get(key);
   }
 
   public static <T> ConnectionContext<T> wrap(InetSocketAddress address) {

@@ -191,7 +191,8 @@ public abstract class AbstractClient<T> {
             .addListener(
                 f -> {
                   if (!f.isSuccess()) {
-                    log.error(f.cause().getMessage() + "，消息:" + internalPacket.getMessage());
+                    log.error(
+                        f.cause().getMessage() + "，消息:" + internalPacket.getMessage(), f.cause());
                   }
                 });
 
@@ -208,7 +209,7 @@ public abstract class AbstractClient<T> {
         .addListener(
             f -> {
               if (!f.isSuccess()) {
-                log.error(f.cause().getMessage() + "，消息:" + internalPacket.getMessage());
+                log.error(f.cause().getMessage() + "，消息:" + internalPacket.getMessage(), f.cause());
               }
             });
     return null;
