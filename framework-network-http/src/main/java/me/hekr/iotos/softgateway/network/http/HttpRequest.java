@@ -87,10 +87,11 @@ public class HttpRequest {
 
     private void handleMethodAndBody() {
       RequestBody requestBody = null;
-      if (okhttp3.internal.http.HttpMethod.requiresRequestBody(method.name())) {
-        if (body == null) {
+      if (body == null &&
+          okhttp3.internal.http.HttpMethod.requiresRequestBody(method.name())) {
           body = new byte[0];
-        }
+      }
+      if(body != null){
         requestBody = RequestBody.create(okhttp3.MediaType.parse(mediaType.toString()), body);
       }
       okHttpRequestBuilder.method(method.name(), requestBody);
