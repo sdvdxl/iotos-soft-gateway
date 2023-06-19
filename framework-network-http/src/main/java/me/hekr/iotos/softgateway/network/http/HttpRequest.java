@@ -68,6 +68,9 @@ public class HttpRequest {
     private final Headers.Builder headerBuilder = new Headers.Builder();
     Request.Builder okHttpRequestBuilder;
     private byte[] body;
+    /** 优先级高 */
+    RequestBody requestBody;
+
     private HttpMethod method = HttpMethod.GET;
     private MediaType mediaType = MediaType.APPLICATION_JSON;
     private String path = "";
@@ -86,14 +89,15 @@ public class HttpRequest {
     }
 
     private void handleMethodAndBody() {
-      RequestBody requestBody = null;
-      if (body == null &&
-          okhttp3.internal.http.HttpMethod.requiresRequestBody(method.name())) {
+      if (requestBody == null) {
+        if (body == null && okhttp3.internal.http.HttpMethod.requiresRequestBody(method.name())) {
           body = new byte[0];
+        }
+        if (body != null) {
+          requestBody = RequestBody.create(okhttp3.MediaType.parse(mediaType.toString()), body);
+        }
       }
-      if(body != null){
-        requestBody = RequestBody.create(okhttp3.MediaType.parse(mediaType.toString()), body);
-      }
+
       okHttpRequestBuilder.method(method.name(), requestBody);
     }
 
@@ -128,6 +132,13 @@ public class HttpRequest {
 
     public Builder mediaType(MediaType mediaType) {
       this.mediaType = mediaType;
+      return this;
+    }
+
+    public Builder body(HttpMethod method, MediaType mediaType, RequestBody body) {
+      method(method);
+      mediaType(mediaType);
+      this.requestBody = body;
       return this;
     }
   }
