@@ -2,7 +2,9 @@ package me.hekr.iotos.softgateway.network.tcp;
 
 import cn.hutool.core.thread.ThreadUtil;
 import java.nio.charset.Charset;
+import me.hekr.iotos.softgateway.network.common.ConnectionContext;
 import me.hekr.iotos.softgateway.network.common.DecodePacket;
+import me.hekr.iotos.softgateway.network.common.client.EventListenerAdapter;
 import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -24,15 +26,22 @@ public class TcpClientTest {
 
   @Test
   public void testSendAsync() {
-    TcpClient<String> client = new TcpClient<>("localhost", 1024);
-
+    TcpClient<String> client = new TcpClient<>("localhost", 10241);
+    client.setHeartbeatTime(3000);
     client.setMessageListener(
         ctx -> System.out.println("收到来自 " + ctx.getAddress() + " 的消息：" + ctx.getMessage()));
     client.setPacketCoder(packetCoder);
+    client.setEventListener(
+        new EventListenerAdapter<String>() {
+          @Override
+          public void onHeartbeatTimeout(ConnectionContext<String> ctx) {
+            client.send("ss");
+          }
+        });
     client.start();
     for (int i = 0; i < 100; i++) {
       client.send("hello" + i);
-      ThreadUtil.sleep(1000);
+      ThreadUtil.sleep(100000);
     }
   }
 

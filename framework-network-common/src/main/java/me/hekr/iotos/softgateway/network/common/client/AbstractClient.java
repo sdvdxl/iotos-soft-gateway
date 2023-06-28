@@ -12,6 +12,7 @@ import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import java.net.InetSocketAddress;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -38,8 +39,12 @@ public abstract class AbstractClient<T> {
   protected volatile Channel channel;
   /** 命令回复超时时间，毫秒 */
   @Setter protected int timeout = 2000;
+  /** 心跳超时毫秒，小于0不设置触发 */
+  @Setter protected int heartbeatTime = 0;
   /** 连接超时，毫秒 */
   @Setter protected int connectTimeout = 2000;
+  /** 重连等待时间毫秒 */
+  @Getter @Setter protected int reconnectWait = 3000;
   /**
    * 是不是同步；true 同步模式，即发送消息后等待数据返回
    *
@@ -137,6 +142,10 @@ public abstract class AbstractClient<T> {
                   ch.pipeline().addLast(new LoggingHandler());
                 }
 
+                if (heartbeatTime > 0) {
+                  ch.pipeline()
+                      .addLast(new IdleStateHandler(0, heartbeatTime, 0, TimeUnit.MILLISECONDS));
+                }
                 ch.pipeline()
                     .addLast(packetCoderHandlerFactory.getPacketCoderHandler())
                     .addLast(clientMessageHandler);

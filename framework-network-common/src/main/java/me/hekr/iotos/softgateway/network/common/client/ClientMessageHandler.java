@@ -3,15 +3,19 @@ package me.hekr.iotos.softgateway.network.common.client;
 import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
-import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.ConnectionContext;
+import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.listener.MessageListener;
 
-/** @author iotos */
+/**
+ * @author iotos
+ */
 @Sharable
 @Slf4j
 public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<InternalPacket<T>> {
@@ -73,6 +77,14 @@ public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<Interna
   }
 
   @Override
+  public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+    if (evt instanceof IdleStateEvent) {
+      ConnectionContext<T> packetContext = getPacketContext(ctx);
+      eventListener.onHeartbeatTimeout(packetContext);
+    }
+  }
+
+  @Override
   public void channelInactive(ChannelHandlerContext ctx) throws Exception {
     try {
       ConnectionContext<T> connectionContext = getPacketContext(ctx);
@@ -81,6 +93,9 @@ public class ClientMessageHandler<T> extends SimpleChannelInboundHandler<Interna
       log.error(e.getMessage(), e);
     }
 
-    ctx.channel().eventLoop().execute(client::loopConnect);
+    log.warn("链接断开，" + TimeUnit.MILLISECONDS.toSeconds(client.getReconnectWait()) + "s后重试");
+    ctx.channel()
+        .eventLoop()
+        .schedule(client::loopConnect, client.getReconnectWait(), TimeUnit.MILLISECONDS);
   }
 }

@@ -1,6 +1,5 @@
 package me.hekr.iotos.softgateway.network.common.client;
 
-import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.network.common.CloseReason;
 import me.hekr.iotos.softgateway.network.common.ConnectionContext;
@@ -24,7 +23,7 @@ public class EventListenerAdapter<T> implements EventListener<T> {
   }
 
   @Override
-  public void onHeartbeatTimeout(ConnectionContext<T> ctx, LocalDateTime lastOccurTime, int count) {}
+  public void onHeartbeatTimeout(ConnectionContext<T> ctx) {}
 
   @Override
   public void exceptionCaught(ConnectionContext<T> ctx, Throwable t) {

@@ -56,14 +56,13 @@ public class ServerMessageHandler<T> extends SimpleChannelInboundHandler<Interna
   @Override
   public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
     if (evt instanceof IdleStateEvent) {
-      if (((IdleStateEvent) evt).state() == IdleState.READER_IDLE) {
+      IdleState state = ((IdleStateEvent) evt).state();
         TcpServerConnectionContext<T> packetContext = getPacketContext(ctx);
         packetContext.increaseHeartbeatTimeoutCount();
         LocalDateTime lastOccurTime = packetContext.getOccurTime();
         packetContext.setOccurTime(LocalDateTime.now());
         eventListener.onHeartbeatTimeout(
             packetContext, lastOccurTime, packetContext.getHeartbeatTimeoutCount());
-      }
     }
   }
 
