@@ -8,7 +8,7 @@ public interface PacketCoderHandlerFactory {
   /**
    * 获取ChannelHandler
    *
-   * @return
+   * @return ChannelHandler
    */
   ChannelHandler getPacketCoderHandler();
 }
