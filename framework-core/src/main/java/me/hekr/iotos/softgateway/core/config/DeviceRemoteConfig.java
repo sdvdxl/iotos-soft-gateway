@@ -66,7 +66,16 @@ public class DeviceRemoteConfig implements Serializable {
   public static Set<DeviceRemoteConfig> parseMultiLines(String remoteConfig) {
     return Arrays.stream(remoteConfig.split("\n"))
         .filter(StringUtils::isNotBlank)
-        .map(DeviceRemoteConfig::parse)
+        .map(
+            line -> {
+              try {
+                return DeviceRemoteConfig.parse(line);
+              } catch (Exception e) {
+                log.error("json解析出错， 行：{} , 错误：{}", line, e.getMessage());
+                return null;
+              }
+            })
+        .filter(Objects::nonNull)
         .collect(Collectors.<DeviceRemoteConfig>toSet());
   }
 
