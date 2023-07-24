@@ -3,6 +3,7 @@ package me.hekr.iotos.softgateway.core.config;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ConcurrentHashSet;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.google.common.collect.ImmutableMap;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,7 +13,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import me.hekr.iotos.softgateway.core.dto.DeviceMapper;
-import me.hekr.iotos.softgateway.core.exception.IllegalRemoteConfigException;
+import me.hekr.iotos.softgateway.core.klink.KlinkService;
+import me.hekr.iotos.softgateway.core.util.SpringContextUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -50,15 +52,33 @@ public class DeviceRemoteConfig implements Serializable {
 
   @SuppressWarnings("unchecked")
   public static DeviceRemoteConfig parse(String line) {
+    KlinkService klinkService = SpringContextUtils.getBean(KlinkService.class);
+    IotOsConfig iotOsConfig = SpringContextUtils.getBean(IotOsConfig.class);
     Map<String, Object> map;
     try {
       map = JsonUtil.fromJson(line, Map.class);
     } catch (Exception e) {
-      throw new IllegalRemoteConfigException("远程配置不是合法的json，" + e.getMessage());
+      String msg = "解析远程配置失败, line:" + line + ", error:" + e.getMessage();
+      log.error(msg);
+      ImmutableMap<String, Object> params = ImmutableMap.of("desc", msg);
+      klinkService.devSend(
+          iotOsConfig.getGatewayConfig().getPk(),
+          iotOsConfig.getGatewayConfig().getDevId(),
+          "reportError",
+          params);
+      return null;
     }
     DeviceRemoteConfig m = new DeviceRemoteConfig(map);
     if (StringUtils.isAnyBlank(m.getPk(), m.getDevId())) {
-      throw new IllegalRemoteConfigException("远程配置pk和devId要填写完整");
+      String msg = "远程配置pk和devId要填写完整, line: " + line;
+      log.error(msg);
+      ImmutableMap<String, Object> params = ImmutableMap.of("desc", msg);
+      klinkService.devSend(
+          iotOsConfig.getGatewayConfig().getPk(),
+          iotOsConfig.getGatewayConfig().getDevId(),
+          "reportError",
+          params);
+      return null;
     }
     return new DeviceRemoteConfig(map);
   }
@@ -66,15 +86,7 @@ public class DeviceRemoteConfig implements Serializable {
   public static Set<DeviceRemoteConfig> parseMultiLines(String remoteConfig) {
     return Arrays.stream(remoteConfig.split("\n"))
         .filter(StringUtils::isNotBlank)
-        .map(
-            line -> {
-              try {
-                return DeviceRemoteConfig.parse(line);
-              } catch (Exception e) {
-                log.error("json解析出错， 行：{} , 错误：{}", line, e.getMessage());
-                return null;
-              }
-            })
+        .map(DeviceRemoteConfig::parse)
         .filter(Objects::nonNull)
         .collect(Collectors.<DeviceRemoteConfig>toSet());
   }
