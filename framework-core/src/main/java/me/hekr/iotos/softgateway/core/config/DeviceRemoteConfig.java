@@ -52,8 +52,6 @@ public class DeviceRemoteConfig implements Serializable {
 
   @SuppressWarnings("unchecked")
   public static DeviceRemoteConfig parse(String line) {
-    KlinkService klinkService = SpringContextUtils.getBean(KlinkService.class);
-    IotOsConfig iotOsConfig = SpringContextUtils.getBean(IotOsConfig.class);
     Map<String, Object> map;
     try {
       map = JsonUtil.fromJson(line, Map.class);
@@ -61,11 +59,17 @@ public class DeviceRemoteConfig implements Serializable {
       String msg = "解析远程配置失败, line:" + line + ", error:" + e.getMessage();
       log.error(msg);
       ImmutableMap<String, Object> params = ImmutableMap.of("desc", msg);
-      klinkService.devSend(
-          iotOsConfig.getGatewayConfig().getPk(),
-          iotOsConfig.getGatewayConfig().getDevId(),
-          "reportError",
-          params);
+      try {
+        KlinkService klinkService = SpringContextUtils.getBean(KlinkService.class);
+        IotOsConfig iotOsConfig = SpringContextUtils.getBean(IotOsConfig.class);
+        klinkService.devSend(
+            iotOsConfig.getGatewayConfig().getPk(),
+            iotOsConfig.getGatewayConfig().getDevId(),
+            "reportError",
+            params);
+      } catch (Exception ex) {
+        log.error(e.getMessage(), e);
+      }
       return null;
     }
     DeviceRemoteConfig m = new DeviceRemoteConfig(map);
@@ -73,11 +77,18 @@ public class DeviceRemoteConfig implements Serializable {
       String msg = "远程配置pk和devId要填写完整, line: " + line;
       log.error(msg);
       ImmutableMap<String, Object> params = ImmutableMap.of("desc", msg);
-      klinkService.devSend(
-          iotOsConfig.getGatewayConfig().getPk(),
-          iotOsConfig.getGatewayConfig().getDevId(),
-          "reportError",
-          params);
+      try {
+        KlinkService klinkService = SpringContextUtils.getBean(KlinkService.class);
+        IotOsConfig iotOsConfig = SpringContextUtils.getBean(IotOsConfig.class);
+
+        klinkService.devSend(
+            iotOsConfig.getGatewayConfig().getPk(),
+            iotOsConfig.getGatewayConfig().getDevId(),
+            "reportError",
+            params);
+      } catch (Exception e) {
+        log.error(e.getMessage());
+      }
       return null;
     }
     return new DeviceRemoteConfig(map);
