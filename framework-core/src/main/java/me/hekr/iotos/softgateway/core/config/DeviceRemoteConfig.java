@@ -28,14 +28,18 @@ public class DeviceRemoteConfig implements Serializable {
   public static final String PROPERTY_DEVICE_TYPE = "deviceType";
 
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
+
   /** 自定义属性 */
   private final Map<Object, Object> customData = new ConcurrentHashMap<>();
+
   /** 设备参数 */
   @Getter private final Map<String, Object> modelParams = new ConcurrentHashMap<>();
 
   private Map<String, Object> data = new HashMap<>();
+
   /** 在线状态 */
   private volatile boolean online;
+
   /** 是否是网关标识符，true 是网关否则是子设备 */
   @Setter @Getter private boolean gateway;
 
@@ -275,23 +279,6 @@ public class DeviceRemoteConfig implements Serializable {
   @SuppressWarnings("unchecked")
   public <T> T getProp(String prop) {
     return (T) data.get(prop);
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof DeviceRemoteConfig)) {
-      return false;
-    }
-    DeviceRemoteConfig that = (DeviceRemoteConfig) o;
-    return getPk().equals(that.getPk()) && getDevId().equals(that.getDevId());
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(getPk(), getDevId());
   }
 
   /**
