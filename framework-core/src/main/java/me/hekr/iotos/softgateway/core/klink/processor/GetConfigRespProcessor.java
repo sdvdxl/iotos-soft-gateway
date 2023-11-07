@@ -36,7 +36,7 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
   private void handleConfig(GetConfigResp klink) {
     if (StringUtils.isBlank(klink.getUrl())) {
       log.warn("远程配置url为空，code:{}", klink.getCode());
-    }else {
+    } else {
       log.info("远程配置url: {}", klink.getUrl());
 
       String content = HttpUtil.get(klink.getUrl(), 3000);
@@ -50,8 +50,6 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
             new DevSend(ModelData.cmd("reportError").param("error", e.getMessage())));
       }
     }
-
-
 
     addGateway();
 
@@ -68,7 +66,7 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
     gatewayConfig.setDevId(iotOsConfig.getGatewayConfig().getDevId());
     gatewayConfig.setGateway(true);
     gatewayConfig.setOnline();
-    DeviceRemoteConfig.update(gatewayConfig);
+    DeviceRemoteConfig.updateByPkAndDevId(gatewayConfig);
   }
 
   @Override

@@ -85,7 +85,7 @@ public class IotOsConfig {
     gateway.setDevId(gatewayDevId);
     gateway.setGateway(true);
     gateway.setOnline();
-    DeviceRemoteConfig.update(gateway);
+    DeviceRemoteConfig.updateByPkAndDevId(gateway);
 
     mqttConfig = new MqttConfig();
     MqttConfig mq = mqttConfig;

@@ -49,11 +49,6 @@ public class DeviceRemoteConfig implements Serializable {
     this.data = data;
   }
 
-  public static void parseAndUpdate(String line) {
-    update(parse(line));
-    log.info("after parseAndAdd: {}", getAllSubDevices());
-  }
-
   @SuppressWarnings("unchecked")
   public static DeviceRemoteConfig parse(String line) {
     Map<String, Object> map;
@@ -106,18 +101,6 @@ public class DeviceRemoteConfig implements Serializable {
         .collect(Collectors.<DeviceRemoteConfig>toSet());
   }
 
-  public static void update(DeviceRemoteConfig d) {
-    synchronized (SET) {
-      Optional<DeviceRemoteConfig> optConfig = SET.stream().filter(e -> e.equals(d)).findAny();
-
-      if (optConfig.isPresent()) {
-        optConfig.get().data = d.data;
-      } else {
-        add(d);
-      }
-    }
-  }
-
   private static void add(DeviceRemoteConfig d) {
     Objects.requireNonNull(d, "deviceRemoteConfig is null");
     Objects.requireNonNull(d.getPk(), "pk is null");
@@ -125,8 +108,9 @@ public class DeviceRemoteConfig implements Serializable {
     SET.add(d);
   }
 
-  public static void remove(DeviceRemoteConfig d) {
-    SET.remove(d);
+  public static void remove(Props p) {
+    SET.removeIf(d -> p.data.equals(d.data));
+    SET.remove(p);
     log.info("after remove: {}", getStatus());
   }
 
@@ -139,25 +123,8 @@ public class DeviceRemoteConfig implements Serializable {
    */
   public static void updateAll(Collection<DeviceRemoteConfig> deviceRemoteConfigs) {
     synchronized (SET) {
-      // 先删除已经不存在的设备
-      Iterator<DeviceRemoteConfig> iterator = DeviceRemoteConfig.getAllSubDevices().iterator();
-      while (iterator.hasNext()) {
-        DeviceRemoteConfig next = iterator.next();
-        boolean notExist =
-            deviceRemoteConfigs.stream()
-                .noneMatch(
-                    oldDevice ->
-                        next.getPk().equals(oldDevice.getPk())
-                            && next.getDevId().equals(oldDevice.getDevId()));
-        if (notExist) {
-          DeviceRemoteConfig.remove(next);
-        }
-      }
-
-      // 更新已经存在的
-      for (DeviceRemoteConfig d : deviceRemoteConfigs) {
-        update(d);
-      }
+      SET.clear();
+      SET.addAll(deviceRemoteConfigs);
     }
 
     log.info("after updateAll, {}", getStatus());
@@ -222,6 +189,15 @@ public class DeviceRemoteConfig implements Serializable {
 
   public static void clear() {
     SET.clear();
+  }
+
+  public static synchronized void updateByPkAndDevId(DeviceRemoteConfig deviceRemoteConfig) {
+    removeByPkAndDevId(deviceRemoteConfig.getPk(), deviceRemoteConfig.getDevId());
+    add(deviceRemoteConfig);
+  }
+
+  private static void removeByPkAndDevId(String pk, String devId) {
+    SET.removeIf(d -> d.getPk().equals(pk) && d.getDevId().equals(devId));
   }
 
   /**
