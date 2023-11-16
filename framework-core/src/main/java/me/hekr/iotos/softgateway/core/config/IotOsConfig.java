@@ -54,11 +54,11 @@ public class IotOsConfig {
   private String connectClusterMode;
 
   /** 缓存时间 */
-  @Value("${connect.mqtt.cacheExpireSeconds:3600}")
+  @Value("${connect.mqtt.data.cacheExpireSeconds:3600}")
   private int cacheExpireSeconds;
 
   /** 缓存大小 */
-  @Value("${connect.mqtt.cacheParamsSize:1000000}")
+  @Value("${connect.mqtt.data.cacheParamsSize:1000000}")
   private int cacheParamsSize;
 
   /** 网关 pk */

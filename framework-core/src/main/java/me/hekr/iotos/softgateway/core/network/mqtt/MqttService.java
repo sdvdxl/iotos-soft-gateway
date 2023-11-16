@@ -21,7 +21,6 @@ import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.config.MqttConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.AddTopo;
-import me.hekr.iotos.softgateway.core.klink.DevSend;
 import me.hekr.iotos.softgateway.core.klink.Klink;
 import me.hekr.iotos.softgateway.core.klink.KlinkDev;
 import me.hekr.iotos.softgateway.core.klink.Register;
@@ -228,9 +227,6 @@ public class MqttService {
   public void publish(KlinkDev klink) {
 
     klink.setNewMsgId();
-    if (log.isDebugEnabled()) {
-      log.debug("入队列 klink: {}", JsonUtil.toJson(klink));
-    }
 
     String pk = klink.getPk();
     String devId = klink.getDevId();
@@ -361,26 +357,19 @@ public class MqttService {
   }
 
   private void trySend(KlinkDev klink) {
-    if (log.isDebugEnabled()) {
-      log.debug("尝试发送到MQTT：{}", JsonUtil.toJson(klink));
+    if (log.isTraceEnabled()) {
+      log.trace("尝试发送到MQTT：{}", JsonUtil.toJson(klink));
     }
 
     String pk = klink.getPk();
     String devId = klink.getDevId();
     Optional<DeviceRemoteConfig> devOpt = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
     if (!devOpt.isPresent()) {
-      log.debug("DeviceRemoteConfig中 没找到设备，pk:{}, devId:{}", pk, devId);
+      log.warn("DeviceRemoteConfig中 没找到设备，pk:{}, devId:{}", pk, devId);
       return;
     }
 
     DeviceRemoteConfig dev = devOpt.get();
-    // 如果是 devSend ，判断是不是发生数据变化；不变化不发送
-    if (!isDataChanged(klink, dev)) {
-      if (log.isDebugEnabled()) {
-        log.debug("数据没变化，不发送");
-      }
-      return;
-    }
 
     Action action = Action.of(klink.getAction());
     // 报错就重试
@@ -400,39 +389,22 @@ public class MqttService {
         }
         break;
       } catch (MqttException e) {
-        log.error("mqtt发布报错：" + e.getMessage() + ",第 " + (i + 1) + "次重试", e);
+        log.error(
+            "mqtt发布报错：" + e.getMessage() + ",第 " + (i + 1) + "次重试, 消息内容：" + JsonUtil.toJson(klink),
+            e);
         ThreadUtil.sleep(1000);
       } catch (Exception e) {
-        log.error(e.getMessage(), e);
+        log.error(e.getMessage() + ", 消息内容：" + JsonUtil.toJson(klink), e);
       }
     }
   }
 
-  /** 是否数据发生变化 */
-  private boolean isDataChanged(Klink klink, DeviceRemoteConfig dev) {
-    // 禁用变更发送，直接发送
-    if (!iotOsConfig.getMqttConfig().isDataChanged()) {
-      return true;
-    }
-
-    if (!(klink instanceof DevSend)) {
-      return true;
-    }
-
-    DevSend devSend = (DevSend) klink;
-
-    return dev.updateDeviceParams(devSend.getData().getParams());
-  }
-
   private void doPublish(Object message) throws MqttException {
-    if (log.isDebugEnabled()) {
-      log.debug("发送消息：{}", JsonUtil.toJson(message));
-    }
 
     client.publish(
         iotOsConfig.getMqttConfig().getPublishTopic(), new MqttMessage(JsonUtil.toBytes(message)));
-    if (log.isTraceEnabled()) {
-      log.trace("发送消息成功：{}", JsonUtil.toJson(message));
+    if (log.isDebugEnabled()) {
+      log.debug("发送消息成功：{}", JsonUtil.toJson(message));
     }
   }
 

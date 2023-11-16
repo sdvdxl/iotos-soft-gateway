@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.ParseUtil;
@@ -24,6 +25,7 @@ import me.hekr.iotos.softgateway.core.enums.ErrorCode;
 import me.hekr.iotos.softgateway.core.network.mqtt.MqttService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 /**
@@ -35,19 +37,20 @@ import org.springframework.stereotype.Service;
 @SuppressWarnings("ALL")
 @Slf4j
 @Service
+@Getter
 public class KlinkService {
   public static volatile long sleepMills = 200;
   private final IotOsConfig iotOsConfig;
   private final MqttService mqttService;
-  private final Cache<CacheDeviceKey, String> VALUE_CACHE;
+  public final Cache<CacheDeviceKey, Object> VALUE_CACHE;
 
-  public KlinkService(IotOsConfig iotOsConfig, MqttService mqttService) {
+  public KlinkService(IotOsConfig iotOsConfig, @Lazy MqttService mqttService) {
     this.iotOsConfig = iotOsConfig;
     this.mqttService = mqttService;
     VALUE_CACHE =
         Caffeine.newBuilder()
             .maximumSize(iotOsConfig.getCacheParamsSize())
-            .expireAfterWrite(1, TimeUnit.HOURS)
+            .expireAfterWrite(iotOsConfig.getCacheExpireSeconds(), TimeUnit.SECONDS)
             .recordStats()
             .build();
     ThreadPoolUtil.DEFAULT_SCHEDULED.scheduleAtFixedRate(
@@ -55,7 +58,7 @@ public class KlinkService {
           log.info("缓存命中统计：{}", VALUE_CACHE.stats());
         },
         0,
-        5,
+        60,
         TimeUnit.SECONDS);
   }
 
@@ -372,7 +375,8 @@ public class KlinkService {
       String param = entry.getKey();
       Object value = entry.getValue();
       CacheDeviceKey cacheDeviceKey = CacheDeviceKey.of(pk, devId, param);
-      String cacheValue = VALUE_CACHE.getIfPresent(cacheDeviceKey);
+      Object cacheValue = VALUE_CACHE.getIfPresent(cacheDeviceKey);
+      String cacheValueStr = cacheValue == null ? null : String.valueOf(cacheValue);
       String newValueStr = String.valueOf(value);
       if (cacheValue != null && Objects.equals(cacheValue, newValueStr)) {
         log.debug("命中缓存，不发送参数。 pk: {}, devId: {}, param: {}, value: {}", pk, devId, param, value);
@@ -564,5 +568,30 @@ public class KlinkService {
    */
   public void sendCloudSendResp(DeviceMapper mapper, ErrorCode errorCode) {
     sendCloudSendResp(mapper, errorCode.getCode(), errorCode.getDesc());
+  }
+
+  /**
+   * 失效缓存
+   *
+   * @param key 缓存key
+   */
+  public void invalidCache(CacheDeviceKey key) {
+    VALUE_CACHE.invalidate(key);
+  }
+
+  /** 失效所有缓存 */
+  public void invalidAllCache() {
+    VALUE_CACHE.invalidateAll();
+  }
+
+  /**
+   * 获取所有缓存中的值
+   *
+   * <p>注意并不保证值存在，因为缓存过期时间是根据实际情况设置的
+   *
+   * @return
+   */
+  public Map<CacheDeviceKey, Object> getCahceValue() {
+    return VALUE_CACHE.asMap();
   }
 }

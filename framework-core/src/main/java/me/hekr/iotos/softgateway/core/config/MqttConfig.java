@@ -9,8 +9,6 @@ import me.hekr.iotos.softgateway.core.enums.ConnectClusterMode;
 @Data
 public class MqttConfig {
 
-  public boolean dataChanged;
-
   /** 缓存大小 */
   protected int cacheSize = 100_0000;
 
