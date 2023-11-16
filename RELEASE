@@ -1,3 +1,10 @@
+## 3.5.27-SNAPSHOT
+
+1. 去除 全量自动发送逻辑
+2. 优化 设备上报，缓存逻辑，增加 devSendWithCache 方法主动控制是否使用缓存；增加配置项 缓存时间：`connect.mqtt.data.cacheExpireSeconds`；缓存参数个数： `connect.mqtt.data.cacheParamSize`；
+3. 新增 缓存控制方法，参见 klinkService 类。
+
+
 ## 3.5.26
 
 1. 优化 支持 DeviceRemoteConfig 多个子系统设备映射到同一个iotos设备

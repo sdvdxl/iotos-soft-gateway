@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+connect:
+  mqtt:
+    endpoint: 'tcp://iotos-demo.hekr.me:1883'
+    #    endpoint: 'tcp://dev100:1883'
+
+    # 链接超时时间，秒
+    connectionTimeout: 10
+    # 心跳保持，秒
+    keepAliveTime: 60
+    # 集群模式 standalone 单机模式，不允许多个客户端登录
+    # cluster 集群模式，允许多个客户端同时登录，但是下发的消息只有1个客户端可以收到
+    # broadcast 广播模式，允许多个客户端同时登录，下发的消息所有客户端可以收到；
+    cluster.mode: standalone
+    # 是否自动回复cloudSendResp
+    autoCloudSendResp: true
+    data:
+      # 缓存失效时间，秒
+      cacheExpireSeconds: 10
+      # 缓存参数个数
+      cacheParamSize: 100000000
+spring:
+  main:
+    allow-circular-references: true
+
+gateway:
+  pk: 'b6e2cc8aaf6c4255a15106d4806cd7ec'
+  devId: 'du_gateway'
+  devSecret: '0abcbe87d37d4e5d9da07fae5856277f'
+
