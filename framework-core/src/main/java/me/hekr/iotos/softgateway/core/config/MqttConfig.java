@@ -1,27 +1,33 @@
 package me.hekr.iotos.softgateway.core.config;
 
-import lombok.Getter;
+import lombok.Data;
 import me.hekr.iotos.softgateway.core.enums.ConnectClusterMode;
 
 /**
  * @author iotos
  */
-@Getter
+@Data
 public class MqttConfig {
 
   public boolean dataChanged;
-  protected int dataFullInterval;
-  protected String dataFullCmd;
+
+  /** 缓存大小 */
+  protected int cacheSize = 100_0000;
+
+  protected int cacheExpireSeconds = 3600;
   protected String endpoint;
   protected String username;
   protected char[] password;
   protected String clientId;
+
   /** 连接超时时间，单位秒 */
   protected int connectTimeout;
+
   /** 心跳时间，单位秒 */
   protected int keepAliveTime;
 
   protected boolean autoCloudSendResp;
+
   /**
    * 集群模式
    *

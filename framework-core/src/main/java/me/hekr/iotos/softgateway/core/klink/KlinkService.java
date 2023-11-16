@@ -1,24 +1,29 @@
 package me.hekr.iotos.softgateway.core.klink;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import java.awt.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.ParseUtil;
+import me.hekr.iotos.softgateway.common.utils.ThreadPoolUtil;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig.Props;
 import me.hekr.iotos.softgateway.core.config.GatewayConfig;
 import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.constant.Constants;
+import me.hekr.iotos.softgateway.core.dto.CacheDeviceKey;
 import me.hekr.iotos.softgateway.core.dto.DeviceMapper;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.enums.ErrorCode;
 import me.hekr.iotos.softgateway.core.network.mqtt.MqttService;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,8 +37,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class KlinkService {
   public static volatile long sleepMills = 200;
-  @Autowired private IotOsConfig iotOsConfig;
-  @Autowired private MqttService mqttService;
+  private final IotOsConfig iotOsConfig;
+  private final MqttService mqttService;
+  private final Cache<CacheDeviceKey, String> VALUE_CACHE;
+
+  public KlinkService(IotOsConfig iotOsConfig, MqttService mqttService) {
+    this.iotOsConfig = iotOsConfig;
+    this.mqttService = mqttService;
+    VALUE_CACHE =
+        Caffeine.newBuilder()
+            .maximumSize(iotOsConfig.getCacheParamsSize())
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .recordStats()
+            .build();
+    ThreadPoolUtil.DEFAULT_SCHEDULED.scheduleAtFixedRate(
+        () -> {
+          log.info("缓存命中统计：{}", VALUE_CACHE.stats());
+        },
+        0,
+        5,
+        TimeUnit.SECONDS);
+  }
 
   /**
    * 动态注册设备
@@ -191,6 +215,7 @@ public class KlinkService {
   public void devLogout(String pk, String devId) {
     doDevLogout(pk, devId, null);
   }
+
   /**
    * 设备离线
    *
@@ -332,6 +357,38 @@ public class KlinkService {
   }
 
   /**
+   * 设备发送数据。 该方式会将 params 拆成多条，分别发送，cmd 命令是同一个
+   *
+   * <p>使用默认缓存配置
+   *
+   * @param pk pk
+   * @param devId devId
+   * @param data 物模型数据
+   * @param expireTime 参数缓存过期时间
+   * @param timeUnit 时间单位
+   */
+  public void devSendWithCache(String pk, String devId, ModelData data) {
+    for (Map.Entry<String, Object> entry : data.getParams().entrySet()) {
+      String param = entry.getKey();
+      Object value = entry.getValue();
+      CacheDeviceKey cacheDeviceKey = CacheDeviceKey.of(pk, devId, param);
+      String cacheValue = VALUE_CACHE.getIfPresent(cacheDeviceKey);
+      String newValueStr = String.valueOf(value);
+      if (cacheValue != null && Objects.equals(cacheValue, newValueStr)) {
+        log.debug("命中缓存，不发送参数。 pk: {}, devId: {}, param: {}, value: {}", pk, devId, param, value);
+        continue;
+      }
+
+      DevSend kLink = new DevSend();
+      kLink.setPk(pk);
+      kLink.setDevId(devId);
+      kLink.setData(ModelData.cmd(data.getCmd()).param(param, value));
+      mqttService.publish(kLink);
+      VALUE_CACHE.put(cacheDeviceKey, newValueStr);
+    }
+  }
+
+  /**
    * 设备发送数据
    *
    * @param pk pk
@@ -372,6 +429,7 @@ public class KlinkService {
     getConfig.setDevId(g.getDevId());
     mqttService.publish(getConfig);
   }
+
   /**
    * 发送数据
    *
@@ -383,6 +441,7 @@ public class KlinkService {
   public void devSend(DeviceMapper mapper, ModelData data) {
     devSend(mapper, data, null);
   }
+
   /**
    * 发送数据
    *

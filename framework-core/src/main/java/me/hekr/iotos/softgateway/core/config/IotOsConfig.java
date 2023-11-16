@@ -1,6 +1,8 @@
 package me.hekr.iotos.softgateway.core.config;
 
 import javax.annotation.PostConstruct;
+
+import lombok.Data;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 @Slf4j
 @ComponentScan("me.hekr.iotos.softgateway.core")
 @Configuration
+@Data
 public class IotOsConfig {
   @Getter private MqttConfig mqttConfig;
   @Getter private GatewayConfig gatewayConfig;
@@ -36,23 +39,12 @@ public class IotOsConfig {
 
   /** 发送的 klink queue 大小，默认1000，超过会阻塞 */
   @Value("${connect.mqtt.klink.queue.size:1000}")
-  @Getter
   private int klinkQueueSize;
 
   /** 是否自动回复cloudSend， true 自动回复， false 需要手动回复 */
   @Value("${connect.mqtt.autoCloudSendResp:true}")
   private boolean autoCloudSendResp;
 
-  /** 是否本地数据发生变化才发送数据 */
-  @Value("${connect.mqtt.data.changed:false}")
-  private boolean dataChanged;
-
-  /** 全量数据发送间隔； 小于等于0不发送 */
-  @Value("${connect.mqtt.data.full.interval:0}")
-  private int dataFullInterval;
-  /** 全量数据发送命令 */
-  @Value("${connect.mqtt.data.full.cmd:'report'}")
-  private String dataFullCmd;
   /**
    * 集群模式，默认单机模式
    *
@@ -60,6 +52,14 @@ public class IotOsConfig {
    */
   @Value("${connect.mqtt.cluster.mode:standalone}")
   private String connectClusterMode;
+
+  /** 缓存时间 */
+  @Value("${connect.mqtt.cacheExpireSeconds:3600}")
+  private int cacheExpireSeconds;
+
+  /** 缓存大小 */
+  @Value("${connect.mqtt.cacheParamsSize:1000000}")
+  private int cacheParamsSize;
 
   /** 网关 pk */
   @Value("${gateway.pk}")
@@ -96,9 +96,7 @@ public class IotOsConfig {
     mq.clusterMode = ConnectClusterMode.of(connectClusterMode);
     mq.clientId = "dev:" + gw.pk + ":" + gw.devId;
     mq.autoCloudSendResp = autoCloudSendResp;
-    mq.dataChanged = dataChanged;
-    mq.dataFullInterval = dataFullInterval;
-    mq.dataFullCmd = dataFullCmd;
+
     // 集群模式，clientId 要加 random，此处使用时间戳防止重复
     if (mq.clusterMode.isCluster()) {
       mq.clientId += ":" + System.currentTimeMillis();

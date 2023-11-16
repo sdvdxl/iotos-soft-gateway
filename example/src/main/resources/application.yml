@@ -14,14 +14,8 @@ connect:
     # cluster 集群模式，允许多个客户端同时登录，但是下发的消息只有1个客户端可以收到
     # broadcast 广播模式，允许多个客户端同时登录，下发的消息所有客户端可以收到；
     cluster.mode: standalone
-    # 否本地数据发生变化才发送数据; true 数据变化才发送； false 直接发送
-    data:
-      changed: true
-      full:
-        # 全量发送的时候命令
-        cmd: report
-        # 全量数据发送间隔； 小于等于0不发送; 单位秒； 建议配合 changed 用。 如果配置了 changed，则发送间隔建议设置为300（5分钟）
-        interval: 300
+    cacheExpireSeconds: 3600
+    cacheParamSize: 1000000
 spring:
   main:
     allow-circular-references: true

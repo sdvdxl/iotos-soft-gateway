@@ -1,5 +1,6 @@
 package me.hekr.iotos.softgateway.network.http;
 
+import cn.hutool.core.collection.CollectionUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +36,10 @@ public class PageUtil<T> implements Serializable {
     List<T> result = new ArrayList<>();
     for (int i = initPage; ; i++) {
       List<T> list = request.onPage(i, pageSize);
+      if (CollectionUtil.isEmpty(list)){
+        break;
+      }
+
       result.addAll(list);
       if (list.size() < pageSize) {
         break;
@@ -46,7 +51,7 @@ public class PageUtil<T> implements Serializable {
   public static <T> void onPage(int initPage, int pageSize, PageCall<T> request) {
     for (int i = initPage; ; i++) {
       List<T> list = request.onPage(i, pageSize);
-      if (list.size() < pageSize) {
+      if (CollectionUtil.isEmpty(list) || list.size() < pageSize) {
         break;
       }
     }
