@@ -2,12 +2,14 @@ package me.hekr.iotos.softgateway.core.klink;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import java.awt.*;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -42,12 +44,12 @@ public class KlinkService {
   public static volatile long sleepMills = 200;
   private final IotOsConfig iotOsConfig;
   private final MqttService mqttService;
-  public final Cache<CacheDeviceKey, Object> VALUE_CACHE;
+  public final Cache<CacheDeviceKey, Object> CACHE_PARAM_VALUE;
 
   public KlinkService(IotOsConfig iotOsConfig, @Lazy MqttService mqttService) {
     this.iotOsConfig = iotOsConfig;
     this.mqttService = mqttService;
-    VALUE_CACHE =
+    CACHE_PARAM_VALUE =
         Caffeine.newBuilder()
             .maximumSize(iotOsConfig.getCacheParamsSize())
             .expireAfterWrite(iotOsConfig.getCacheExpireSeconds(), TimeUnit.SECONDS)
@@ -55,7 +57,7 @@ public class KlinkService {
             .build();
     ThreadPoolUtil.DEFAULT_SCHEDULED.scheduleAtFixedRate(
         () -> {
-          log.info("缓存命中统计：{}", VALUE_CACHE.stats());
+          log.info("缓存命中统计：{}", CACHE_PARAM_VALUE.stats());
         },
         0,
         60,
@@ -375,7 +377,7 @@ public class KlinkService {
       String param = entry.getKey();
       Object value = entry.getValue();
       CacheDeviceKey cacheDeviceKey = CacheDeviceKey.of(pk, devId, param);
-      Object cacheValue = VALUE_CACHE.getIfPresent(cacheDeviceKey);
+      Object cacheValue = CACHE_PARAM_VALUE.getIfPresent(cacheDeviceKey);
       String cacheValueStr = cacheValue == null ? null : String.valueOf(cacheValue);
       String newValueStr = String.valueOf(value);
       if (cacheValue != null && Objects.equals(cacheValue, newValueStr)) {
@@ -388,7 +390,7 @@ public class KlinkService {
       kLink.setDevId(devId);
       kLink.setData(ModelData.cmd(data.getCmd()).param(param, value));
       mqttService.publish(kLink);
-      VALUE_CACHE.put(cacheDeviceKey, newValueStr);
+      CACHE_PARAM_VALUE.put(cacheDeviceKey, newValueStr);
     }
   }
 
@@ -576,12 +578,12 @@ public class KlinkService {
    * @param key 缓存key
    */
   public void invalidCache(CacheDeviceKey key) {
-    VALUE_CACHE.invalidate(key);
+    CACHE_PARAM_VALUE.invalidate(key);
   }
 
   /** 失效所有缓存 */
   public void invalidAllCache() {
-    VALUE_CACHE.invalidateAll();
+    CACHE_PARAM_VALUE.invalidateAll();
   }
 
   /**
@@ -592,6 +594,61 @@ public class KlinkService {
    * @return
    */
   public Map<CacheDeviceKey, Object> getCahceValue() {
-    return VALUE_CACHE.asMap();
+    return CACHE_PARAM_VALUE.asMap();
+  }
+
+  /**
+   * 强刷缓存的参数到iotos
+   *
+   * @param cacheDeviceKey
+   * @return true: 缓存存在 false:缓存不存在
+   */
+  public boolean flushCacheToCloud(CacheDeviceKey key, String cmd) {
+    Object cacheValue = CACHE_PARAM_VALUE.getIfPresent(key);
+    if (cacheValue == null) {
+      return false;
+    }
+
+    devSend(key.getPk(), key.getDevId(), ModelData.cmd(cmd).param(key.getParam(), cacheValue));
+    return true;
+  }
+
+  /**
+   * 强刷缓存的参数到iotos
+   *
+   * @param cacheDeviceKey
+   * @return 刷新参数个数
+   */
+  public int flushCacheToCloud(String pk, String devId) {
+    List<Map.Entry<CacheDeviceKey, Object>> list =
+        CACHE_PARAM_VALUE.asMap().entrySet().stream()
+            .filter(e -> e.getKey().equalsDev(pk, devId))
+            .collect(Collectors.toList());
+    for (Map.Entry<CacheDeviceKey, Object> entry : list) {
+      CacheDeviceKey key = entry.getKey();
+      devSend(
+          key.getPk(),
+          key.getDevId(),
+          ModelData.cmd(key.getCmd()).param(key.getParam(), entry.getValue()));
+    }
+    return list.size();
+  }
+
+  /**
+   * 强刷缓存的参数到iotos
+   *
+   * @return 刷新参数个数
+   */
+  public int flushCacheToCloud() {
+    ConcurrentMap<CacheDeviceKey, Object> map = CACHE_PARAM_VALUE.asMap();
+    for (Map.Entry<CacheDeviceKey, Object> entry : map.entrySet()) {
+      CacheDeviceKey key = entry.getKey();
+      devSend(
+          key.getPk(),
+          key.getDevId(),
+          ModelData.cmd(key.getCmd()).param(key.getParam(), entry.getValue()));
+    }
+
+    return map.size();
   }
 }

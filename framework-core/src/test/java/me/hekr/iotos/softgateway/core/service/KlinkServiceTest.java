@@ -59,12 +59,12 @@ public class KlinkServiceTest {
 
     String cacheValue = null;
     CacheDeviceKey cacheDeviceKey = CacheDeviceKey.of(pk, devId, "param1");
-    when(klinkService.getVALUE_CACHE().getIfPresent(cacheDeviceKey)).thenReturn(cacheValue);
+    when(klinkService.getCACHE_PARAM_VALUE().getIfPresent(cacheDeviceKey)).thenReturn(cacheValue);
 
     klinkService.devSendWithCache(pk, devId, data);
 
-    verify(klinkService.getVALUE_CACHE(), times(1)).getIfPresent(cacheDeviceKey);
-    verify(klinkService.getVALUE_CACHE(), times(1)).put(cacheDeviceKey, "1");
+    verify(klinkService.getCACHE_PARAM_VALUE(), times(1)).getIfPresent(cacheDeviceKey);
+    verify(klinkService.getCACHE_PARAM_VALUE(), times(1)).put(cacheDeviceKey, "1");
     verify(mockMqttService, times(1)).publish(any(DevSend.class));
   }
 }

@@ -1,6 +1,5 @@
 package me.hekr.iotos.softgateway.core.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -10,15 +9,25 @@ import lombok.NoArgsConstructor;
  * @date 2023/11/16 13:28
  */
 @Data
-@EqualsAndHashCode
-@AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = {"pk", "devId", "param"})
 public class CacheDeviceKey {
   private String pk;
   private String devId;
-  String param;
+  private String param;
+  private String cmd;
+
+  public CacheDeviceKey(String pk, String devId, String param) {
+    this.pk = pk;
+    this.devId = devId;
+    this.param = param;
+  }
 
   public static CacheDeviceKey of(String pk, String devId, String param) {
     return new CacheDeviceKey(pk, devId, param);
+  }
+
+  public boolean equalsDev(String pk, String devId) {
+    return this.pk.equals(pk) && this.devId.equals(devId);
   }
 }
