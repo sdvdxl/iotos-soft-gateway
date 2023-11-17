@@ -9,14 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
+ * <p>DevUpgradeProcessor class.</p>
+ *
  * @author iotos
  * @see GetConfigRespProcessor#handle(GetConfigResp)
+ * @version $Id: $Id
  */
 @Component
 @Slf4j
 public class DevUpgradeProcessor implements Processor<DevUpgrade> {
   @Autowired private GetConfigRespProcessor getConfigRespProcessor;
 
+  /** {@inheritDoc} */
   @Override
   public void handle(DevUpgrade klink) {
     handleConfig(klink);
@@ -28,6 +32,7 @@ public class DevUpgradeProcessor implements Processor<DevUpgrade> {
     getConfigRespProcessor.handle(getConfigResp);
   }
 
+  /** {@inheritDoc} */
   @Override
   public Action getAction() {
     return Action.DEV_UPGRADE;

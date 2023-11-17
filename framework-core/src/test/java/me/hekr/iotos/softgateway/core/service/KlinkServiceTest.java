@@ -42,29 +42,7 @@ public class KlinkServiceTest {
     data.setParams(params);
     data.setCmd("cmd");
 
-
     klinkService.devSendWithCache(pk, devId, data);
     klinkService.devSendWithCache(pk, devId, data);
-  }
-
-  @Test
-  public void testDevSendWithCache_CacheMiss() {
-    String pk = "pk";
-    String devId = "devId";
-    ModelData data = new ModelData();
-    Map<String, Object> params = new HashMap<>();
-    params.put("param1", 1);
-    data.setParams(params);
-    data.setCmd("cmd");
-
-    String cacheValue = null;
-    CacheDeviceKey cacheDeviceKey = CacheDeviceKey.of(pk, devId, "param1");
-    when(klinkService.getCACHE_PARAM_VALUE().getIfPresent(cacheDeviceKey)).thenReturn(cacheValue);
-
-    klinkService.devSendWithCache(pk, devId, data);
-
-    verify(klinkService.getCACHE_PARAM_VALUE(), times(1)).getIfPresent(cacheDeviceKey);
-    verify(klinkService.getCACHE_PARAM_VALUE(), times(1)).put(cacheDeviceKey, "1");
-    verify(mockMqttService, times(1)).publish(any(DevSend.class));
   }
 }

@@ -1,5 +1,11 @@
 package me.hekr.iotos.softgateway.core.enums;
 
+/**
+ * <p>DeviceType class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 public enum DeviceType {
   /**
    * 普通独立设备

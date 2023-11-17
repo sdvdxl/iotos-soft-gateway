@@ -8,12 +8,17 @@ import me.hekr.iotos.softgateway.core.network.mqtt.MqttService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/** @author iotos */
+/**
+ * <p>AddTopoRespProcessor class.</p>
+ *
+ * @version $Id: $Id
+ */
 @Component
 @Slf4j
 public class AddTopoRespProcessor implements Processor<AddTopoResp> {
   @Autowired private MqttService mqttService;
 
+  /** {@inheritDoc} */
   @Override
   public void handle(AddTopoResp klink) {
     // 不成功打印信息
@@ -28,6 +33,7 @@ public class AddTopoRespProcessor implements Processor<AddTopoResp> {
     mqttService.noticeAddTopoSuccess();
   }
 
+  /** {@inheritDoc} */
   @Override
   public Action getAction() {
     return Action.ADD_TOPO_RESP;

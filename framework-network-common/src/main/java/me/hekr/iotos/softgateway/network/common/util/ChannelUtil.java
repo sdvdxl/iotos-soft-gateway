@@ -1,4 +1,8 @@
 package me.hekr.iotos.softgateway.network.common.util;
 
-/** @author iotos */
+/**
+ * <p>ChannelUtil class.</p>
+ *
+ * @version $Id: $Id
+ */
 public class ChannelUtil {}

@@ -2,7 +2,11 @@ package me.hekr.iotos.softgateway.network.common;
 
 import lombok.Getter;
 
-/** @author iotos */
+/**
+ * <p>CloseReason class.</p>
+ *
+ * @version $Id: $Id
+ */
 public enum CloseReason {
   CLIENT_CLOSE("客户端主动关闭"),
   SERVER_CLOSED("服务端主动关闭"),
@@ -15,6 +19,7 @@ public enum CloseReason {
     this.reason = reason;
   }
 
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return this.name() + "(" + reason + ")";

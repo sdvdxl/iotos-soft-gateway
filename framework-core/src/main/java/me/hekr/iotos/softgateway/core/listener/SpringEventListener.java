@@ -8,11 +8,22 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * <p>SpringEventListener class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 @Slf4j
 @Component
 public class SpringEventListener {
   @Autowired private ResourcesConfig resourcesConfig;
 
+  /**
+   * <p>onApplicationStartedEvent.</p>
+   *
+   * @param event a {@link org.springframework.boot.context.event.ApplicationReadyEvent} object
+   */
   @EventListener(value = {ApplicationReadyEvent.class})
   public void onApplicationStartedEvent(ApplicationReadyEvent event) {
     log.info("应用启动成功， 开始链接MQTT，初始化业务流程");

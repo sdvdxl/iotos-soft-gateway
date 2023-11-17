@@ -4,6 +4,12 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import me.hekr.iotos.softgateway.core.enums.Action;
 
+/**
+ * <p>Register class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Register extends KlinkDev {
@@ -16,6 +22,7 @@ public class Register extends KlinkDev {
   private String imei;
   private String batchName;
 
+  /** {@inheritDoc} */
   @Override
   public String getAction() {
     return Action.REGISTER.getAction();

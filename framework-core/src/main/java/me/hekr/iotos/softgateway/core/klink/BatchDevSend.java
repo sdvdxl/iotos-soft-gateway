@@ -6,7 +6,11 @@ import lombok.Setter;
 import lombok.ToString;
 import me.hekr.iotos.softgateway.core.enums.Action;
 
-/** @author iotos */
+/**
+ * <p>BatchDevSend class.</p>
+ *
+ * @version $Id: $Id
+ */
 @Getter
 @Setter
 @ToString(callSuper = true)
@@ -14,6 +18,7 @@ public class BatchDevSend extends KlinkDev {
 
   private List<SuModelData> data;
 
+  /** {@inheritDoc} */
   @Override
   public String getAction() {
     return Action.BATCH_DEV_SEND.getAction();

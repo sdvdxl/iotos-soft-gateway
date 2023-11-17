@@ -16,8 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
 /** @author du */
+/**
+ * <p>ThreadPoolUtil class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 @Slf4j
 public class ThreadPoolUtil {
+  /** Constant <code>DEFAULT_UNCAUGHT_EXCEPTION_HANDLER</code> */
   public static final UncaughtExceptionHandler DEFAULT_UNCAUGHT_EXCEPTION_HANDLER =
       (t, e) ->
           log.error(
@@ -28,6 +35,7 @@ public class ThreadPoolUtil {
   private static final ConcurrentHashMap<String, ThreadPoolExecutor>
       THREAD_POOL_EXECUTOR_CONCURRENT_HASH_MAP = new ConcurrentHashMap<>();
 
+  /** Constant <code>DEFAULT_SCHEDULED</code> */
   public static final ScheduledExecutorService DEFAULT_SCHEDULED =
       (ScheduledExecutorService)
           new Builder()
@@ -68,6 +76,12 @@ public class ThreadPoolUtil {
     Thread.setDefaultUncaughtExceptionHandler(DEFAULT_UNCAUGHT_EXCEPTION_HANDLER);
   }
 
+  /**
+   * <p>get.</p>
+   *
+   * @param name a {@link java.lang.String} object
+   * @return a {@link java.util.concurrent.ThreadPoolExecutor} object
+   */
   public static ThreadPoolExecutor get(String name) {
     return THREAD_POOL_EXECUTOR_CONCURRENT_HASH_MAP.get(name);
   }
@@ -81,6 +95,9 @@ public class ThreadPoolUtil {
     Thread.setDefaultUncaughtExceptionHandler(enable ? DEFAULT_UNCAUGHT_EXCEPTION_HANDLER : null);
   }
 
+  /**
+   * <p>close.</p>
+   */
   public static void close() {
     THREAD_POOL_EXECUTOR_CONCURRENT_HASH_MAP.values().forEach(ThreadPoolExecutor::shutdown);
   }

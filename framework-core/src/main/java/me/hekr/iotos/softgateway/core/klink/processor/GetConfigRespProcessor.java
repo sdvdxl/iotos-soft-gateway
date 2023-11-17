@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
  * @author du
  * @see GetTopoRespProcessor#handle(GetTopoResp)
  * @see CoreMqttConnectedListenerImpl#onConnected()
+ * @version $Id: $Id
  */
 @Component
 @Slf4j
@@ -28,6 +29,7 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
   @Autowired private KlinkService klinkService;
   @Autowired private IotOsConfig iotOsConfig;
 
+  /** {@inheritDoc} */
   @Override
   public void handle(GetConfigResp klink) {
     handleConfig(klink);
@@ -69,6 +71,7 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
     DeviceRemoteConfig.updateByPkAndDevId(gatewayConfig);
   }
 
+  /** {@inheritDoc} */
   @Override
   public Action getAction() {
     return Action.GET_CONFIG_RESP;

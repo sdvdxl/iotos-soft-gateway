@@ -3,7 +3,11 @@ package me.hekr.iotos.softgateway.core.klink.processor;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.Klink;
 
-/** @author iotos */
+/**
+ * <p>Processor interface.</p>
+ *
+ * @version $Id: $Id
+ */
 public interface Processor<T extends Klink> {
 
   /**

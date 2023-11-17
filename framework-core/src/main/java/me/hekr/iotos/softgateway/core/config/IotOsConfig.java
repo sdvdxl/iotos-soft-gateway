@@ -15,7 +15,10 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * <p>IotOsConfig class.</p>
+ *
  * @author iotos
+ * @version $Id: $Id
  */
 @Slf4j
 @ComponentScan("me.hekr.iotos.softgateway.core")
@@ -73,6 +76,9 @@ public class IotOsConfig {
   @Value("${gateway.devSecret}")
   private String gatewayDevSecret;
 
+  /**
+   * <p>init.</p>
+   */
   @PostConstruct
   public void init() {
     gatewayConfig = new GatewayConfig();

@@ -3,6 +3,12 @@ package me.hekr.iotos.softgateway.core.enums;
 import lombok.Getter;
 
 @Getter
+/**
+ * <p>CheckType class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 public enum CheckType {
   /** 范围校验 */
   RANGE("range"),

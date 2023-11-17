@@ -6,11 +6,16 @@ package me.hekr.iotos.softgateway.core.listener;
  * <p>如果需要监听，实现一个或者多个 bean
  *
  * @author du
+ * @version $Id: $Id
  */
 public interface MqttDisConnectListener {
 
-  /** 连接失败 */
+  /**
+   * 连接失败
+   */
   void onConnectFailed();
-  /** 连接断开 */
+  /**
+   * 连接断开
+   */
   void onDisconnect();
 }

@@ -6,7 +6,10 @@ import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig.Props;
 
 /**
+ * <p>DeviceMapper interface.</p>
+ *
  * @author iotos
+ * @version $Id: $Id
  */
 public interface DeviceMapper {
 

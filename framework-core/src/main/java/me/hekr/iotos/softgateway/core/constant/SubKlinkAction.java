@@ -1,5 +1,11 @@
 package me.hekr.iotos.softgateway.core.constant;
 
+/**
+ * <p>SubKlinkAction class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 public class SubKlinkAction {
   /** 设备上报-注册 */
   public static final String REGISTER = "register";
@@ -22,6 +28,7 @@ public class SubKlinkAction {
   /** 平台下发-登录回复 */
   public static final String DEV_LOGIN_RESP = "devLoginResp";
 
+  /** Constant <code>CLOUD_SEND="cloudSend"</code> */
   public static final String CLOUD_SEND = "cloudSend";
 
   /** 平台下发-注册回复 */

@@ -4,6 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * <p>MessageIdKlinkResp class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 @ToString(callSuper = true)
 @Getter
 @Setter

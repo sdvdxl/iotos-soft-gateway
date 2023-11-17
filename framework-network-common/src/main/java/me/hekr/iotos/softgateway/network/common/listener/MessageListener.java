@@ -2,7 +2,11 @@ package me.hekr.iotos.softgateway.network.common.listener;
 
 import me.hekr.iotos.softgateway.network.common.ConnectionContext;
 
-/** @author iotos */
+/**
+ * <p>MessageListener interface.</p>
+ *
+ * @version $Id: $Id
+ */
 public interface MessageListener<T extends ConnectionContext<?>> {
 
   /**

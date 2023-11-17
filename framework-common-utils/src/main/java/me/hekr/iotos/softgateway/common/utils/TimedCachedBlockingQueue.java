@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
  * <p>Bag 没满但是有值，到时间也会被发送到Queue中
  *
  * @author du
+ * @version $Id: $Id
  */
 @Slf4j
 public class TimedCachedBlockingQueue<T> {
@@ -39,6 +40,7 @@ public class TimedCachedBlockingQueue<T> {
    * @param timeUnit 定时单位
    * @param batchSize 批量缓存大小
    * @param queueSize 队列大小
+   * @param name a {@link java.lang.String} object
    */
   public TimedCachedBlockingQueue(
       String name, int interval, TimeUnit timeUnit, int batchSize, int queueSize) {
@@ -94,9 +96,9 @@ public class TimedCachedBlockingQueue<T> {
   /**
    * 放入元素（阻塞）
    *
-   * @param t
-   * @return
-   * @throws InterruptedException
+   * @param t a T object
+   * @throws java.lang.InterruptedException if any.
+   * @return a {@link me.hekr.iotos.softgateway.common.utils.TimedCachedBlockingQueue} object
    */
   public synchronized TimedCachedBlockingQueue put(T t) throws InterruptedException {
     if (bag == null) {
@@ -116,10 +118,10 @@ public class TimedCachedBlockingQueue<T> {
   /**
    * 拉取背包（注意该方法不能使用 synchronized， 会和 put 方法发生死锁）
    *
-   * @param timeout
-   * @param timeUnit
-   * @return
-   * @throws InterruptedException
+   * @param timeout a long
+   * @param timeUnit a {@link java.util.concurrent.TimeUnit} object
+   * @throws java.lang.InterruptedException if any.
+   * @return a {@link me.hekr.iotos.softgateway.common.utils.TimedCachedBlockingQueue.Bag} object
    */
   public Bag<T> poll(long timeout, TimeUnit timeUnit) throws InterruptedException {
     Bag<T> tBag = bagQueue.poll(timeout, timeUnit);

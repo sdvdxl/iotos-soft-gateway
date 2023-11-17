@@ -10,6 +10,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter
+/**
+ * <p>Klink class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 @Setter
 @ToString
 @JsonInclude(Include.NON_NULL)
@@ -17,6 +23,11 @@ public class Klink implements Serializable {
   private static AtomicInteger msgIdCounter = new AtomicInteger();
   @JsonIgnore private boolean msgIdSet;
 
+  /**
+   * <p>getNextMsgId.</p>
+   *
+   * @return a int.
+   */
   public static int getNextMsgId() {
     return msgIdCounter.accumulateAndGet(
         1,
@@ -29,15 +40,26 @@ public class Klink implements Serializable {
         });
   }
 
+  /**
+   * <p>getCurMsgId.</p>
+   *
+   * @return a int.
+   */
   public static int getCurMsgId() {
     return msgIdCounter.get();
   }
 
+  /** Constant <code>CMD="cmd"</code> */
   @JsonIgnore public static final String CMD = "cmd";
   private static final long serialVersionUID = -4341021820638489039L;
   protected String action;
   protected long msgId;
 
+  /**
+   * <p>Setter for the field <code>msgId</code>.</p>
+   *
+   * @param msgId a long.
+   */
   public void setMsgId(long msgId) {
     this.msgId = msgId;
     msgIdSet = true;
@@ -46,6 +68,9 @@ public class Klink implements Serializable {
   /** 定制前置机使用，发送原始数据 */
   protected String sysCustomRaw;
 
+  /**
+   * <p>setNewMsgId.</p>
+   */
   public void setNewMsgId() {
     if (!msgIdSet) {
       msgId = getNextMsgId();

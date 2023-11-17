@@ -9,6 +9,7 @@ import org.apache.commons.codec.binary.Hex;
  * 用于格式转换以及hash加密算法
  *
  * @author iotos
+ * @version $Id: $Id
  */
 public class ParseUtil {
   /** hash加密方法 */
@@ -20,7 +21,7 @@ public class ParseUtil {
    * @param encryptText 要哈希的值
    * @param encryptKey key
    * @return 哈希后的字节数组
-   * @throws Exception 异常
+   * @throws java.lang.Exception 异常
    */
   public static byte[] hmacSHA1Encrypt(String encryptText, String encryptKey) throws Exception {
     byte[] data = encryptKey.getBytes();

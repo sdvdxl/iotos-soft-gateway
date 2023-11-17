@@ -18,10 +18,16 @@ import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 class UdpCodecHandler<T> extends MessageToMessageCodec<DatagramPacket, InternalPacket<T>> {
   private final PacketCoder<T> packetCoder;
 
+  /**
+   * <p>Constructor for UdpCodecHandler.</p>
+   *
+   * @param udCoder a {@link me.hekr.iotos.softgateway.network.common.coder.PacketCoder} object.
+   */
   public UdpCodecHandler(PacketCoder<T> udCoder) {
     this.packetCoder = udCoder;
   }
 
+  /** {@inheritDoc} */
   @Override
   protected void encode(ChannelHandlerContext ctx, InternalPacket<T> msg, List<Object> out) {
     byte[] bytes = packetCoder.encode(msg.getMessage());
@@ -33,6 +39,7 @@ class UdpCodecHandler<T> extends MessageToMessageCodec<DatagramPacket, InternalP
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   protected void decode(ChannelHandlerContext ctx, DatagramPacket msg, List<Object> out) {
     ByteBuf buf = msg.content();

@@ -8,12 +8,17 @@ import me.hekr.iotos.softgateway.core.network.mqtt.MqttService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/** @author iotos */
+/**
+ * <p>RegisterRespProcessor class.</p>
+ *
+ * @version $Id: $Id
+ */
 @Component
 @Slf4j
 public class RegisterRespProcessor implements Processor<RegisterResp> {
   @Autowired private MqttService mqttService;
 
+  /** {@inheritDoc} */
   @Override
   public void handle(RegisterResp klink) {
     // 不成功打印信息
@@ -28,6 +33,7 @@ public class RegisterRespProcessor implements Processor<RegisterResp> {
     mqttService.noticeRegisterSuccess();
   }
 
+  /** {@inheritDoc} */
   @Override
   public Action getAction() {
     return Action.REGISTER_RESP;

@@ -17,18 +17,32 @@ import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
  * <p>异步模式需要设置 MessageListener，不严格要求是一问一答模式，有消息收到就会进入回调函数
  *
  * @author iotos
+ * @version $Id: $Id
  */
 @Slf4j
 public class UdpServer<T> extends UdpClient<T> {
 
+  /**
+   * <p>Constructor for UdpServer.</p>
+   *
+   * @param host a {@link java.lang.String} object.
+   * @param port a int.
+   * @param bindPort a int.
+   */
   public UdpServer(String host, int port, int bindPort) {
     super(host, port, bindPort);
   }
 
+  /**
+   * <p>Constructor for UdpServer.</p>
+   *
+   * @param bindPort a int.
+   */
   public UdpServer(int bindPort) {
     super(null, 0, bindPort);
   }
 
+  /** {@inheritDoc} */
   @Override
   public void setPacketCoder(PacketCoder<T> packetCoder) {
     this.packetCoderHandlerFactory = () -> new UdpCodecHandler<>(packetCoder);
@@ -48,11 +62,25 @@ public class UdpServer<T> extends UdpClient<T> {
     return doSend(internalPacket);
   }
 
+  /**
+   * <p>send.</p>
+   *
+   * @param ctx a {@link me.hekr.iotos.softgateway.network.common.ConnectionContext} object.
+   * @param t a T object.
+   * @return a T object.
+   */
   @SneakyThrows
   public T send(ConnectionContext<T> ctx, T t) {
     return send(ctx.getAddress(), t);
   }
 
+  /**
+   * <p>send.</p>
+   *
+   * @param address a {@link java.net.InetSocketAddress} object.
+   * @param t a T object.
+   * @return a T object.
+   */
   @SneakyThrows
   public T send(InetSocketAddress address, T t) {
     InternalPacket<T> internalPacket = InternalPacket.wrap(t, address);

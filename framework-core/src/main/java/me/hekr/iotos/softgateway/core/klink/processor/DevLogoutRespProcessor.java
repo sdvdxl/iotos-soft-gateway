@@ -6,15 +6,21 @@ import me.hekr.iotos.softgateway.core.klink.DevLogoutResp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-/** @author iotos */
+/**
+ * <p>DevLogoutRespProcessor class.</p>
+ *
+ * @version $Id: $Id
+ */
 @Component
 @Slf4j
 public class DevLogoutRespProcessor implements Processor<DevLogoutResp> {
   @Autowired private GetConfigRespProcessor getConfigRespProcessor;
 
+  /** {@inheritDoc} */
   @Override
   public void handle(DevLogoutResp klink) {}
 
+  /** {@inheritDoc} */
   @Override
   public Action getAction() {
     return Action.DEV_LOGOUT_RESP;

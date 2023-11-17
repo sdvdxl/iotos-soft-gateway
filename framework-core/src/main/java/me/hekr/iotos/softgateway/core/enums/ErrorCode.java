@@ -7,7 +7,12 @@ import java.util.Map;
 import java.util.function.Function;
 import lombok.Getter;
 
-/** 错误码 */
+/**
+ * 错误码
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 @Getter
 public enum ErrorCode {
   /** 成功 */
@@ -131,6 +136,7 @@ public enum ErrorCode {
   DEVICE_LOGIN_TOO_FREQUENTLY(1139, "device login too frequently"),
   /** 系统内部错误 */
   INTERNAL_ERROR(500, "internal error");
+  /** Constant <code>ERROR_CODE_MAP</code> */
   private static final Map<Integer, ErrorCode> ERROR_CODE_MAP;
 
   static {
@@ -148,6 +154,12 @@ public enum ErrorCode {
     this.desc = desc;
   }
 
+  /**
+   * <p>of.</p>
+   *
+   * @param code a int.
+   * @return a {@link me.hekr.iotos.softgateway.core.enums.ErrorCode} object.
+   */
   public static ErrorCode of(int code) {
     return ERROR_CODE_MAP.getOrDefault(code, UNDEFINED);
   }

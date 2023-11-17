@@ -25,7 +25,10 @@ import me.hekr.iotos.softgateway.network.common.InternalPacket;
 import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
 
 /**
+ * <p>Abstract AbstractClient class.</p>
+ *
  * @author iotos
+ * @version $Id: $Id
  */
 @Slf4j
 public abstract class AbstractClient<T> {
@@ -65,11 +68,22 @@ public abstract class AbstractClient<T> {
 
   private EventListener<T> eventListener;
 
+  /**
+   * <p>Constructor for AbstractClient.</p>
+   *
+   * @param channelClass a {@link java.lang.Class} object.
+   */
   public AbstractClient(Class<? extends Channel> channelClass) {
     this.channelClass = channelClass;
     this.maxDatagramSize = 2048;
   }
 
+  /**
+   * <p>Constructor for AbstractClient.</p>
+   *
+   * @param channelClass a {@link java.lang.Class} object.
+   * @param maxDatagramSize a int.
+   */
   public AbstractClient(Class<? extends Channel> channelClass, int maxDatagramSize) {
     this.channelClass = channelClass;
     this.maxDatagramSize = maxDatagramSize;
@@ -82,9 +96,14 @@ public abstract class AbstractClient<T> {
    */
   public abstract void setPacketCoder(PacketCoder<T> packetCoder);
 
-  /** 初始化工作 */
+  /**
+   * 初始化工作
+   */
   protected void init() {}
 
+  /**
+   * <p>close.</p>
+   */
   public void close() {
     log.info("准备关闭服务 " + this.getClass().getName());
     try {
@@ -103,10 +122,14 @@ public abstract class AbstractClient<T> {
     }
   }
 
-  /** 准备关闭 */
+  /**
+   * 准备关闭
+   */
   protected void preDestroy() {}
 
-  /** 启动 */
+  /**
+   * 启动
+   */
   public void start() {
     log.info("init");
     init();
@@ -182,6 +205,14 @@ public abstract class AbstractClient<T> {
     return doSend(internalPacket);
   }
 
+  /**
+   * <p>doSend.</p>
+   *
+   * @param internalPacket a {@link me.hekr.iotos.softgateway.network.common.InternalPacket} object.
+   * @return a T object.
+   * @throws java.lang.InterruptedException if any.
+   * @throws java.util.concurrent.TimeoutException if any.
+   */
   protected T doSend(InternalPacket<T> internalPacket)
       throws InterruptedException, TimeoutException {
     if (log.isDebugEnabled()) {
@@ -224,23 +255,39 @@ public abstract class AbstractClient<T> {
     return null;
   }
 
+  /**
+   * <p>signalAll.</p>
+   */
   public void signalAll() {
     synchronized (LOCK) {
       LOCK.notifyAll();
     }
   }
 
+  /**
+   * <p>await.</p>
+   *
+   * @param timeout a long.
+   * @throws java.lang.InterruptedException if any.
+   */
   public void await(long timeout) throws InterruptedException {
     synchronized (LOCK) {
       LOCK.wait(timeout);
     }
   }
 
+  /**
+   * <p>Setter for the field <code>eventListener</code>.</p>
+   *
+   * @param eventListener a {@link me.hekr.iotos.softgateway.network.common.client.EventListener} object.
+   */
   public void setEventListener(EventListener<T> eventListener) {
     this.eventListener = eventListener;
   }
 
-  /** 直到连接成功 */
+  /**
+   * 直到连接成功
+   */
   protected void loopConnect() {
     if (eventLoop.isShuttingDown() || eventLoop.isShutdown() || eventLoop.isTerminated()) {
       log.error("服务关闭，不能重连");
@@ -257,10 +304,18 @@ public abstract class AbstractClient<T> {
     }
   }
 
+  /**
+   * <p>isConnected.</p>
+   *
+   * @return a boolean.
+   */
   public boolean isConnected() {
     return channel != null && channel.isActive();
   }
 
+  /**
+   * <p>connect.</p>
+   */
   protected synchronized void connect() {
     log.info("尝试连接到 {}:{}", host, port);
     if (isConnected()) {

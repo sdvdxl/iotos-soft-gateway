@@ -30,6 +30,12 @@ import me.hekr.iotos.softgateway.core.klink.NotSupport;
 import me.hekr.iotos.softgateway.core.klink.Register;
 import me.hekr.iotos.softgateway.core.klink.RegisterResp;
 
+/**
+ * <p>Action class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 @ToString(of = "action")
 public enum Action {
 
@@ -98,6 +104,7 @@ public enum Action {
   /** 获取远程配置信息回复 */
   GET_CONFIG_RESP("getConfigResp", FrameType.DEV_DOWN, GetConfigResp.class);
 
+  /** Constant <code>ACTION_NAME="action"</code> */
   public static final String ACTION_NAME = "action";
   private static final Map<String, Action> ACTION_MAP =
       Arrays.stream(Action.values()).collect(toMap(Action::getAction, Function.identity()));
@@ -120,6 +127,8 @@ public enum Action {
   }
 
   /**
+   * <p>of.</p>
+   *
    * @param action ，etcd：devSend
    * @return 找不到对应的返回 NOT_SUPPORT
    */
@@ -144,10 +153,20 @@ public enum Action {
     return this;
   }
 
+  /**
+   * <p>isResp.</p>
+   *
+   * @return a boolean.
+   */
   public boolean isResp() {
     return this.action.endsWith("Resp");
   }
 
+  /**
+   * <p>isSend.</p>
+   *
+   * @return a boolean.
+   */
   public boolean isSend() {
     return this != NOT_SUPPORT && !this.isResp();
   }

@@ -18,8 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
+ * <p>GetTopoRespProcessor class.</p>
+ *
  * @author du
  *     <p>设备登录流程，包含所有设备类型
+ * @version $Id: $Id
  */
 @Component
 @Slf4j
@@ -32,6 +35,7 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
   @Autowired(required = false)
   private List<DeviceRemoteConfigListener> deviceRemoteConfigListeners;
 
+  /** {@inheritDoc} */
   @Override
   public void handle(GetTopoResp klink) {
     handleTopo(klink);
@@ -105,6 +109,7 @@ public class GetTopoRespProcessor implements Processor<GetTopoResp> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public Action getAction() {
     return Action.GET_TOPO_RESP;

@@ -15,6 +15,7 @@ import me.hekr.iotos.softgateway.core.klink.ModelData;
  * <p>{#deviceType} 是对应的远程配置中的 deviceType 的值，注意只能使用英文，可以不填。
  *
  * @author iotos
+ * @version $Id: $Id
  */
 public interface SubsystemCommandService {
 

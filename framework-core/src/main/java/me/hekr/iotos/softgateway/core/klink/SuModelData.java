@@ -4,7 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-/** @author iotos */
+/**
+ * <p>SuModelData class.</p>
+ *
+ * @version $Id: $Id
+ */
 @ToString(callSuper = true)
 @Getter
 @Setter

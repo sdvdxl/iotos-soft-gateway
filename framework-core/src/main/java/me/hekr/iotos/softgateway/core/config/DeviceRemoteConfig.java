@@ -18,13 +18,20 @@ import me.hekr.iotos.softgateway.core.util.SpringContextUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
+ * <p>DeviceRemoteConfig class.</p>
+ *
  * @author iotos
+ * @version $Id: $Id
  */
 @Slf4j
 public class DeviceRemoteConfig implements Serializable {
+  /** Constant <code>PROPERTY_PK="pk"</code> */
   public static final String PROPERTY_PK = "pk";
+  /** Constant <code>PROPERTY_DEVID="devId"</code> */
   public static final String PROPERTY_DEVID = "devId";
+  /** Constant <code>PROPERTY_DEVICE_NAME="devName"</code> */
   public static final String PROPERTY_DEVICE_NAME = "devName";
+  /** Constant <code>PROPERTY_DEVICE_TYPE="deviceType"</code> */
   public static final String PROPERTY_DEVICE_TYPE = "deviceType";
 
   private static final Set<DeviceRemoteConfig> SET = new ConcurrentHashSet<>();
@@ -43,12 +50,26 @@ public class DeviceRemoteConfig implements Serializable {
   /** 是否是网关标识符，true 是网关否则是子设备 */
   @Setter @Getter private boolean gateway;
 
+  /**
+   * <p>Constructor for DeviceRemoteConfig.</p>
+   */
   public DeviceRemoteConfig() {}
 
+  /**
+   * <p>Constructor for DeviceRemoteConfig.</p>
+   *
+   * @param data a {@link java.util.Map} object.
+   */
   public DeviceRemoteConfig(Map<String, Object> data) {
     this.data = data;
   }
 
+  /**
+   * <p>parse.</p>
+   *
+   * @param line a {@link java.lang.String} object.
+   * @return a {@link me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig} object.
+   */
   @SuppressWarnings("unchecked")
   public static DeviceRemoteConfig parse(String line) {
     Map<String, Object> map;
@@ -93,6 +114,12 @@ public class DeviceRemoteConfig implements Serializable {
     return new DeviceRemoteConfig(map);
   }
 
+  /**
+   * <p>parseMultiLines.</p>
+   *
+   * @param remoteConfig a {@link java.lang.String} object.
+   * @return a {@link java.util.Set} object.
+   */
   public static Set<DeviceRemoteConfig> parseMultiLines(String remoteConfig) {
     return Arrays.stream(remoteConfig.split("\n"))
         .filter(StringUtils::isNotBlank)
@@ -108,6 +135,11 @@ public class DeviceRemoteConfig implements Serializable {
     SET.add(d);
   }
 
+  /**
+   * <p>remove.</p>
+   *
+   * @param p a {@link me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig.Props} object.
+   */
   public static void remove(Props p) {
     SET.removeIf(d -> p.data.equals(d.data));
     SET.remove(p);
@@ -130,6 +162,11 @@ public class DeviceRemoteConfig implements Serializable {
     log.info("after updateAll, {}", getStatus());
   }
 
+  /**
+   * <p>getStatus.</p>
+   *
+   * @return a {@link java.lang.String} object.
+   */
   public static String getStatus() {
     return "deviceRemoteConfig size: " + size();
   }
@@ -137,16 +174,26 @@ public class DeviceRemoteConfig implements Serializable {
   /**
    * 获取所有子设备（不包含网关）
    *
-   * @return
+   * @return 所有子设备集合
    */
   public static Set<DeviceRemoteConfig> getAllSubDevices() {
     return SET.stream().filter(d -> !d.isGateway()).collect(Collectors.toSet());
   }
 
+  /**
+   * <p>getAll.</p>
+   *
+   * @return a {@link java.util.Set} object.
+   */
   public static Set<DeviceRemoteConfig> getAll() {
     return new HashSet<>(SET);
   }
 
+  /**
+   * 获取网关设备
+   *
+   * @return 网关设备
+   */
   public static DeviceRemoteConfig getGatewayDevice() {
     return SET.stream().filter(d -> !d.isGateway()).findAny().get();
   }
@@ -161,41 +208,90 @@ public class DeviceRemoteConfig implements Serializable {
     return getAll().stream().filter(d -> dataEq(d.data, p.data)).findAny();
   }
 
+  /**
+   * 判断两个map是否相等
+   *
+   * @param data 待比较的map
+   * @param properties 待比较的map
+   * @return 是否相等
+   */
   static boolean dataEq(Map<String, Object> data, Map<String, Object> properties) {
     return data.entrySet().containsAll(properties.entrySet());
   }
 
+  /**
+   * 获取所有子设备数量
+   *
+   * @return 数量
+   */
   public static int size() {
     return getAllSubDevices().size();
   }
 
+  /**
+   * 根据pk和devId获取设备
+   *
+   * @param pk pk
+   * @param devId devId
+   * @return 设备
+   */
   public static Optional<DeviceRemoteConfig> getByPkAndDevId(String pk, String devId) {
     return getBySubSystemProperties(Props.p(PROPERTY_PK, pk).put(PROPERTY_DEVID, devId).get());
   }
 
+  /**
+   * 根据设备映射器获取设备
+   *
+   * @param deviceMapper 设备映射器
+   * @return 设备
+   */
   public static Optional<DeviceRemoteConfig> getByDeviceMapper(DeviceMapper deviceMapper) {
     return getBySubSystemProperties(deviceMapper.getProps());
   }
 
+  /**
+   * 解析多行配置，并更新所有设备
+   *
+   * @param content 多行配置
+   */
   public static void parseMultiLinesAndUpdateAll(String content) {
     Set<DeviceRemoteConfig> deviceRemoteConfigs = DeviceRemoteConfig.parseMultiLines(content);
     DeviceRemoteConfig.updateAll(deviceRemoteConfigs);
     log.info("after parseMultiLinesAndUpdateAll: {}", getStatus());
   }
 
+  /**
+   * 判断是有子设备
+   *
+   * @return 有子设备返回true，否则返回false
+   */
   public static boolean isEmpty() {
     return getAllSubDevices().isEmpty();
   }
 
+  /**
+   * 清空所有设备
+   */
   public static void clear() {
     SET.clear();
   }
 
+  /**
+   * 根据 pk 和 devId 更新设备
+   *
+   * @param deviceRemoteConfig 设备
+   */
   public static synchronized void updateByPkAndDevId(DeviceRemoteConfig deviceRemoteConfig) {
     removeByPkAndDevId(deviceRemoteConfig.getPk(), deviceRemoteConfig.getDevId());
     add(deviceRemoteConfig);
   }
 
+  /**
+   * 根据 pk 和 devId 删除设备
+   *
+   * @param pk pk
+   * @param devId devId
+   */
   private static void removeByPkAndDevId(String pk, String devId) {
     SET.removeIf(d -> d.getPk().equals(pk) && d.getDevId().equals(devId));
   }
@@ -231,27 +327,51 @@ public class DeviceRemoteConfig implements Serializable {
     return this.customData.remove(key);
   }
 
+  /**
+   * <p>Setter for the field <code>online</code>.</p>
+   */
   public void setOnline() {
     online = true;
   }
 
+  /**
+   * <p>setOffline.</p>
+   */
   public void setOffline() {
     online = false;
   }
 
+  /**
+   * <p>isOffline.</p>
+   *
+   * @return a boolean.
+   */
   public boolean isOffline() {
     return !isOnline();
   }
 
+  /**
+   * <p>isOnline.</p>
+   *
+   * @return a boolean.
+   */
   public boolean isOnline() {
     return online;
   }
 
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return data.toString();
   }
 
+  /**
+   * <p>getProp.</p>
+   *
+   * @param prop a {@link java.lang.String} object.
+   * @param <T> a T object.
+   * @return a T object.
+   */
   @SuppressWarnings("unchecked")
   public <T> T getProp(String prop) {
     return (T) data.get(prop);

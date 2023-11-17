@@ -39,6 +39,7 @@ import org.springframework.stereotype.Component;
  * connect方法用来将数据平台软网关连接至IoTOS
  *
  * @author iotos
+ * @version $Id: $Id
  */
 @Slf4j
 @Component
@@ -73,6 +74,12 @@ public class MqttService {
   private MqttConnectOptions options;
   @Lazy @Autowired private MqttCallBackImpl mqttCallBackImpl;
 
+  /**
+   * <p>Constructor for MqttService.</p>
+   *
+   * @param iotOsConfig a {@link me.hekr.iotos.softgateway.core.config.IotOsConfig} object.
+   * @throws org.eclipse.paho.client.mqttv3.MqttException if any.
+   */
   @Autowired
   public MqttService(IotOsConfig iotOsConfig) throws MqttException {
     this.iotOsConfig = iotOsConfig;
@@ -98,6 +105,9 @@ public class MqttService {
     }
   }
 
+  /**
+   * <p>noticeAddTopoSuccess.</p>
+   */
   public void noticeAddTopoSuccess() {
     synchronized (addTopoLock) {
       addTopoQueue.poll();
@@ -119,6 +129,9 @@ public class MqttService {
     options.setKeepAliveInterval(mqtt.getKeepAliveTime());
   }
 
+  /**
+   * <p>connect.</p>
+   */
   public void connect() {
     log.info("软件网关开始连接");
 
@@ -180,6 +193,9 @@ public class MqttService {
     }
   }
 
+  /**
+   * <p>start.</p>
+   */
   public void start() {
     connectExecutor.execute(this::loopConnect);
   }
@@ -213,6 +229,9 @@ public class MqttService {
     }
   }
 
+  /**
+   * <p>noticeRegisterSuccess.</p>
+   */
   public void noticeRegisterSuccess() {
     synchronized (registerLock) {
       registerQueue.poll();
@@ -221,6 +240,8 @@ public class MqttService {
   }
 
   /**
+   * <p>publish.</p>
+   *
    * @param klink 消息，发送的时候会被 toJson
    */
   @SneakyThrows
@@ -258,6 +279,11 @@ public class MqttService {
     }
   }
 
+  /**
+   * <p>isDisconnected.</p>
+   *
+   * @return a boolean.
+   */
   public boolean isDisconnected() {
     return !client.isConnected();
   }
@@ -408,6 +434,9 @@ public class MqttService {
     }
   }
 
+  /**
+   * <p>close.</p>
+   */
   public void close() {
     closeMqttClient();
     try {
@@ -417,10 +446,20 @@ public class MqttService {
     }
   }
 
+  /**
+   * <p>peekRegisterMessage.</p>
+   *
+   * @return a {@link me.hekr.iotos.softgateway.core.klink.KlinkDev} object.
+   */
   public KlinkDev peekRegisterMessage() {
     return registerQueue.peek();
   }
 
+  /**
+   * <p>peekAddTopoMessage.</p>
+   *
+   * @return a {@link me.hekr.iotos.softgateway.core.klink.Klink} object.
+   */
   public Klink peekAddTopoMessage() {
     return addTopoQueue.peek();
   }

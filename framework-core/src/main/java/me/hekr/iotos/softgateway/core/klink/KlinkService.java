@@ -35,17 +35,25 @@ import org.springframework.stereotype.Service;
  * 此为模拟烟雾传感器连接至智慧消防平台，并且其与IoTOS平台进行交互的代码 添加设备和配置流程详情请见《设备连接软网关数据上报说明书》
  *
  * @author iotos
+ * @version $Id: $Id
  */
 @SuppressWarnings("ALL")
 @Slf4j
 @Service
 @Getter
 public class KlinkService {
+  /** Constant <code>sleepMills=200</code> */
   public static volatile long sleepMills = 200;
   private final IotOsConfig iotOsConfig;
   private final MqttService mqttService;
   public final Cache<CacheDeviceKey, Object> CACHE_PARAM_VALUE;
 
+  /**
+   * <p>Constructor for KlinkService.</p>
+   *
+   * @param iotOsConfig a {@link me.hekr.iotos.softgateway.core.config.IotOsConfig} object.
+   * @param mqttService a {@link me.hekr.iotos.softgateway.core.network.mqtt.MqttService} object.
+   */
   public KlinkService(IotOsConfig iotOsConfig, @Lazy MqttService mqttService) {
     this.iotOsConfig = iotOsConfig;
     this.mqttService = mqttService;
@@ -241,7 +249,9 @@ public class KlinkService {
     mqttService.publish(devLogout);
   }
 
-  /** 获取拓扑关系 */
+  /**
+   * 获取拓扑关系
+   */
   @SneakyThrows
   public void getTopo() {
     doGetTopo();
@@ -369,8 +379,6 @@ public class KlinkService {
    * @param pk pk
    * @param devId devId
    * @param data 物模型数据
-   * @param expireTime 参数缓存过期时间
-   * @param timeUnit 时间单位
    */
   public void devSendWithCache(String pk, String devId, ModelData data) {
     for (Map.Entry<String, Object> entry : data.getParams().entrySet()) {
@@ -426,7 +434,9 @@ public class KlinkService {
     mqttService.publish(kLink);
   }
 
-  /** 获取远程配置文件 */
+  /**
+   * 获取远程配置文件
+   */
   @SneakyThrows
   public void getConfig() {
     GetConfig getConfig = new GetConfig();
@@ -581,7 +591,9 @@ public class KlinkService {
     CACHE_PARAM_VALUE.invalidate(key);
   }
 
-  /** 失效所有缓存 */
+  /**
+   * 失效所有缓存
+   */
   public void invalidAllCache() {
     CACHE_PARAM_VALUE.invalidateAll();
   }
@@ -591,7 +603,7 @@ public class KlinkService {
    *
    * <p>注意并不保证值存在，因为缓存过期时间是根据实际情况设置的
    *
-   * @return
+   * @return 缓存中所有的参数信息
    */
   public Map<CacheDeviceKey, Object> getCahceValue() {
     return CACHE_PARAM_VALUE.asMap();
@@ -600,23 +612,25 @@ public class KlinkService {
   /**
    * 强刷缓存的参数到iotos
    *
-   * @param cacheDeviceKey
+   * @param key 缓存key
    * @return true: 缓存存在 false:缓存不存在
    */
-  public boolean flushCacheToCloud(CacheDeviceKey key, String cmd) {
+  public boolean flushCacheToCloud(CacheDeviceKey key) {
     Object cacheValue = CACHE_PARAM_VALUE.getIfPresent(key);
     if (cacheValue == null) {
       return false;
     }
 
-    devSend(key.getPk(), key.getDevId(), ModelData.cmd(cmd).param(key.getParam(), cacheValue));
+    devSend(
+        key.getPk(), key.getDevId(), ModelData.cmd(key.getCmd()).param(key.getParam(), cacheValue));
     return true;
   }
 
   /**
    * 强刷缓存的参数到iotos
    *
-   * @param cacheDeviceKey
+   * @param pk pk
+   * @param devId devId
    * @return 刷新参数个数
    */
   public int flushCacheToCloud(String pk, String devId) {

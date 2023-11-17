@@ -2,7 +2,11 @@ package me.hekr.iotos.softgateway.network.common.client;
 
 import io.netty.channel.ChannelHandler;
 
-/** @author du */
+/**
+ * <p>PacketCoderHandlerFactory interface.</p>
+ *
+ * @version $Id: $Id
+ */
 public interface PacketCoderHandlerFactory {
 
   /**

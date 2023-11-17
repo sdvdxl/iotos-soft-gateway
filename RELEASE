@@ -1,4 +1,4 @@
-## 3.5.27-SNAPSHOT
+## 3.5.27
 
 1. 去除 全量自动发送逻辑
 2. 优化 设备上报，缓存逻辑，增加 devSendWithCache 方法主动控制是否使用缓存；增加配置项 缓存时间：`connect.mqtt.data.cacheExpireSeconds`；缓存参数个数： `connect.mqtt.data.cacheParamSize`；

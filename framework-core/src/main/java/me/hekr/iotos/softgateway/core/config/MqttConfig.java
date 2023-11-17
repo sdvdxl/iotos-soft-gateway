@@ -4,7 +4,10 @@ import lombok.Data;
 import me.hekr.iotos.softgateway.core.enums.ConnectClusterMode;
 
 /**
+ * <p>MqttConfig class.</p>
+ *
  * @author iotos
+ * @version $Id: $Id
  */
 @Data
 public class MqttConfig {
@@ -38,6 +41,7 @@ public class MqttConfig {
   protected String publishTopic;
   protected String subscribeTopic;
 
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return "MqttConfig{"

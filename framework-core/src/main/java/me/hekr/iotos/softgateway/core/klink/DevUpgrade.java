@@ -6,6 +6,12 @@ import lombok.ToString;
 import me.hekr.iotos.softgateway.core.enums.Action;
 
 @Getter
+/**
+ * <p>DevUpgrade class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 @Setter
 @ToString(callSuper = true)
 public class DevUpgrade extends KlinkDev {
@@ -15,6 +21,7 @@ public class DevUpgrade extends KlinkDev {
   private String version;
   private String type;
 
+  /** {@inheritDoc} */
   @Override
   public String getAction() {
     return Action.DEV_UPGRADE.getAction();

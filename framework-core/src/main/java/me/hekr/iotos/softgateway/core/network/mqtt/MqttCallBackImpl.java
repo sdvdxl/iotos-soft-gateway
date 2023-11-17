@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
  * MqttClient.connect 激活此回调。
  *
  * @author iotos
+ * @version $Id: $Id
  */
 @Slf4j
 @Service
@@ -47,6 +48,7 @@ public class MqttCallBackImpl implements MqttCallback {
   @Autowired private KlinkProcessorManager klinkProcessorManager;
   @Autowired private MqttService mqttService;
 
+  /** {@inheritDoc} */
   @Override
   @SneakyThrows
   public void connectionLost(Throwable cause) {
@@ -68,6 +70,9 @@ public class MqttCallBackImpl implements MqttCallback {
     }
   }
 
+  /**
+   * <p>triggerConnectFailed.</p>
+   */
   public void triggerConnectFailed() {
     if (mqttDisConnectListenerList != null) {
       for (MqttDisConnectListener listener : mqttDisConnectListenerList) {
@@ -80,6 +85,7 @@ public class MqttCallBackImpl implements MqttCallback {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void deliveryComplete(IMqttDeliveryToken token) {
     if (log.isTraceEnabled()) {
@@ -87,6 +93,7 @@ public class MqttCallBackImpl implements MqttCallback {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void messageArrived(String topic, MqttMessage message) {
     // 注意 ，如果抛出异常，mqtt client 会断开链接

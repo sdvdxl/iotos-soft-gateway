@@ -3,7 +3,11 @@ package me.hekr.iotos.softgateway.network.common.coder;
 import java.nio.charset.StandardCharsets;
 import me.hekr.iotos.softgateway.network.common.DecodePacket;
 
-/** @author iotos */
+/**
+ * <p>PacketCoder interface.</p>
+ *
+ * @version $Id: $Id
+ */
 public interface PacketCoder<T> {
 
   /** 如果传输数据是 String，可以使用这个编解码实现 */

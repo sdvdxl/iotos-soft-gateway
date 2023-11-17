@@ -6,6 +6,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter
+/**
+ * <p>TopoSub class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 @Setter
 @ToString(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -1,5 +1,11 @@
 package me.hekr.iotos.softgateway.core.enums;
 
+/**
+ * <p>DataCheckMode class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 public enum DataCheckMode {
   /** 严格模式，协议参数完全按照协议规定上报或者下发，不能多也不能少 */
   STRICT,

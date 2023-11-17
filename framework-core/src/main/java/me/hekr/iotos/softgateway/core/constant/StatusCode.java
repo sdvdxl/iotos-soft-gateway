@@ -2,7 +2,12 @@ package me.hekr.iotos.softgateway.core.constant;
 
 import lombok.Getter;
 
-/** HTTP 请求回复状态码 */
+/**
+ * HTTP 请求回复状态码
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 @Getter
 public enum StatusCode {
   SUCCESS(200, "成功"),

@@ -12,6 +12,7 @@ import lombok.Getter;
  * <p>BROADCAST 广播模式，给设备发送的同一条消息，所有的客户端都能收到，即使这条回复不是该客户端发送的
  *
  * @author iot
+ * @version $Id: $Id
  */
 public enum ConnectClusterMode {
   /** 单机模式 */
@@ -43,10 +44,16 @@ public enum ConnectClusterMode {
         .orElse(STANDALONE);
   }
 
+  /**
+   * <p>isCluster.</p>
+   *
+   * @return a boolean.
+   */
   public boolean isCluster() {
     return this != STANDALONE;
   }
 
+  /** {@inheritDoc} */
   @Override
   public String toString() {
     return "mode='" + mode + '\'' + ", desc='" + desc + '\'';

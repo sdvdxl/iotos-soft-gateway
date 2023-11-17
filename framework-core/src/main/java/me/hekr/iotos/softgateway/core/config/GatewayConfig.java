@@ -5,7 +5,11 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
-/** @author iotos */
+/**
+ * <p>GatewayConfig class.</p>
+ *
+ * @version $Id: $Id
+ */
 @Getter
 @ToString
 public class GatewayConfig {

@@ -5,6 +5,12 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter
+/**
+ * <p>KlinkDev class.</p>
+ *
+ * @author du
+ * @version $Id: $Id
+ */
 @Setter
 @ToString(callSuper = true)
 public class KlinkDev extends Klink {

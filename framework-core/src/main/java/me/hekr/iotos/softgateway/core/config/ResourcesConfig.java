@@ -8,17 +8,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
+ * <p>ResourcesConfig class.</p>
+ *
  * @author iotos
+ * @version $Id: $Id
  */
 @Slf4j
 @Component
 public class ResourcesConfig {
   @Autowired private MqttService mqttService;
 
+  /**
+   * <p>init.</p>
+   */
   public void init() {
     mqttService.start();
   }
 
+  /**
+   * <p>close.</p>
+   */
   @PreDestroy
   public void close() {
     try {

@@ -7,6 +7,7 @@ import me.hekr.iotos.softgateway.network.common.ConnectionContext;
  * 新的客户端连接上来监听
  *
  * @author iotos
+ * @version $Id: $Id
  */
 public interface EventListener<T> {
 

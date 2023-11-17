@@ -15,7 +15,11 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/** @author iotos */
+/**
+ * <p>KlinkProcessorManager class.</p>
+ *
+ * @version $Id: $Id
+ */
 @Slf4j
 @Service
 @SuppressWarnings("rawtypes")
@@ -24,17 +28,35 @@ public class KlinkProcessorManager {
   @Autowired private KlinkService klinkService;
   @Autowired private IotOsConfig iotOsConfig;
 
+  /**
+   * <p>Constructor for KlinkProcessorManager.</p>
+   *
+   * @param processorList a {@link java.util.List} object.
+   */
   public KlinkProcessorManager(List<Processor> processorList) {
 
     processorMap =
         processorList.stream().collect(Collectors.toMap(Processor::getAction, Function.identity()));
   }
 
+  /**
+   * <p>getProcessor.</p>
+   *
+   * @param action a {@link me.hekr.iotos.softgateway.core.enums.Action} object.
+   * @return a {@link me.hekr.iotos.softgateway.core.klink.processor.Processor} object.
+   */
   public Processor getProcessor(Action action) {
     Processor processor = processorMap.get(action);
     return processor == null ? processorMap.get(Action.NOT_SUPPORT) : processor;
   }
 
+  /**
+   * <p>handle.</p>
+   *
+   * @param topic a {@link java.lang.String} object.
+   * @param message a {@link org.eclipse.paho.client.mqttv3.MqttMessage} object.
+   * @param action a {@link me.hekr.iotos.softgateway.core.enums.Action} object.
+   */
   @SuppressWarnings("unchecked")
   public void handle(String topic, MqttMessage message, Action action) {
     if (action == null) {

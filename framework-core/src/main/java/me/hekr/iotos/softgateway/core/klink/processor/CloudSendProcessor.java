@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
  * <p>不抛出异常视为成功，错误码为0
  *
  * @author iotos
+ * @version $Id: $Id
  */
 @Slf4j
 @Component
@@ -40,6 +41,9 @@ public class CloudSendProcessor implements Processor<CloudSend> {
   @Autowired private KlinkService klinkService;
   @Autowired private IotOsConfig iotOsConfig;
 
+  /**
+   * <p>init.</p>
+   */
   @PostConstruct
   public void init() {
     if (subsystemCommandServices == null) {
@@ -47,6 +51,7 @@ public class CloudSendProcessor implements Processor<CloudSend> {
     }
   }
 
+  /** {@inheritDoc} */
   @Override
   public void handle(CloudSend klink) {
     CloudSendResp resp = new CloudSendResp();
@@ -158,6 +163,7 @@ public class CloudSendProcessor implements Processor<CloudSend> {
     return match;
   }
 
+  /** {@inheritDoc} */
   @Override
   public Action getAction() {
     return Action.CLOUD_SEND;

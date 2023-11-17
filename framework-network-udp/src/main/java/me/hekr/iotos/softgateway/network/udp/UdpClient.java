@@ -18,10 +18,18 @@ import me.hekr.iotos.softgateway.network.common.coder.PacketCoder;
  * <p>异步模式需要设置 MessageListener，不严格要求是一问一答模式，有消息收到就会进入回调函数
  *
  * @author iotos
+ * @version $Id: $Id
  */
 @Slf4j
 public class UdpClient<T> extends AbstractClient<T> {
 
+  /**
+   * <p>Constructor for UdpClient.</p>
+   *
+   * @param host a {@link java.lang.String} object.
+   * @param port a int.
+   * @param bindPort a int.
+   */
   public UdpClient(String host, int port, int bindPort) {
     super(NioDatagramChannel.class, 2048);
     this.host = host;
@@ -29,6 +37,14 @@ public class UdpClient<T> extends AbstractClient<T> {
     this.bindPort = bindPort;
   }
 
+  /**
+   * <p>Constructor for UdpClient.</p>
+   *
+   * @param host a {@link java.lang.String} object.
+   * @param port a int.
+   * @param bindPort a int.
+   * @param maxDatagramSize a int.
+   */
   public UdpClient(String host, int port, int bindPort, int maxDatagramSize) {
     super(NioDatagramChannel.class, maxDatagramSize);
     this.host = host;
@@ -36,6 +52,7 @@ public class UdpClient<T> extends AbstractClient<T> {
     this.bindPort = bindPort;
   }
 
+  /** {@inheritDoc} */
   @Override
   public void setPacketCoder(PacketCoder<T> packetCoder) {
     this.packetCoderHandlerFactory = () -> new UdpCodecHandler<>(packetCoder);

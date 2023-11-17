@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
  * typeA或者typeB的，下发命令是 cmdA 或者 cmdB的数据。
  *
  * @author sdvdxl
+ * @version $Id: $Id
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
