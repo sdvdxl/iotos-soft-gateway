@@ -44,12 +44,13 @@ import org.springframework.stereotype.Service;
 public class KlinkService {
   /** Constant <code>sleepMills=200</code> */
   public static volatile long sleepMills = 200;
+
   private final IotOsConfig iotOsConfig;
   private final MqttService mqttService;
   public final Cache<CacheDeviceKey, Object> CACHE_PARAM_VALUE;
 
   /**
-   * <p>Constructor for KlinkService.</p>
+   * Constructor for KlinkService.
    *
    * @param iotOsConfig a {@link me.hekr.iotos.softgateway.core.config.IotOsConfig} object.
    * @param mqttService a {@link me.hekr.iotos.softgateway.core.network.mqtt.MqttService} object.
@@ -249,9 +250,7 @@ public class KlinkService {
     mqttService.publish(devLogout);
   }
 
-  /**
-   * 获取拓扑关系
-   */
+  /** 获取拓扑关系 */
   @SneakyThrows
   public void getTopo() {
     doGetTopo();
@@ -398,7 +397,9 @@ public class KlinkService {
       kLink.setDevId(devId);
       kLink.setData(ModelData.cmd(data.getCmd()).param(param, value));
       mqttService.publish(kLink);
-      CACHE_PARAM_VALUE.put(cacheDeviceKey, newValueStr);
+      if (value != null) {
+        CACHE_PARAM_VALUE.put(cacheDeviceKey, value);
+      }
     }
   }
 
@@ -434,9 +435,7 @@ public class KlinkService {
     mqttService.publish(kLink);
   }
 
-  /**
-   * 获取远程配置文件
-   */
+  /** 获取远程配置文件 */
   @SneakyThrows
   public void getConfig() {
     GetConfig getConfig = new GetConfig();
@@ -591,9 +590,7 @@ public class KlinkService {
     CACHE_PARAM_VALUE.invalidate(key);
   }
 
-  /**
-   * 失效所有缓存
-   */
+  /** 失效所有缓存 */
   public void invalidAllCache() {
     CACHE_PARAM_VALUE.invalidateAll();
   }

@@ -1,6 +1,5 @@
 package me.hekr.iotos.softgateway.core.config;
 
-import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.collection.ConcurrentHashSet;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.google.common.collect.ImmutableMap;
@@ -8,6 +7,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,19 +18,23 @@ import me.hekr.iotos.softgateway.core.util.SpringContextUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * <p>DeviceRemoteConfig class.</p>
+ * DeviceRemoteConfig class.
  *
  * @author iotos
  * @version $Id: $Id
  */
 @Slf4j
+@Data
 public class DeviceRemoteConfig implements Serializable {
   /** Constant <code>PROPERTY_PK="pk"</code> */
   public static final String PROPERTY_PK = "pk";
+
   /** Constant <code>PROPERTY_DEVID="devId"</code> */
   public static final String PROPERTY_DEVID = "devId";
+
   /** Constant <code>PROPERTY_DEVICE_NAME="devName"</code> */
   public static final String PROPERTY_DEVICE_NAME = "devName";
+
   /** Constant <code>PROPERTY_DEVICE_TYPE="deviceType"</code> */
   public static final String PROPERTY_DEVICE_TYPE = "deviceType";
 
@@ -38,9 +42,6 @@ public class DeviceRemoteConfig implements Serializable {
 
   /** 自定义属性 */
   private final Map<Object, Object> customData = new ConcurrentHashMap<>();
-
-  /** 设备参数 */
-  @Getter private final Map<String, Object> modelParams = new ConcurrentHashMap<>();
 
   private Map<String, Object> data = new HashMap<>();
 
@@ -50,13 +51,11 @@ public class DeviceRemoteConfig implements Serializable {
   /** 是否是网关标识符，true 是网关否则是子设备 */
   @Setter @Getter private boolean gateway;
 
-  /**
-   * <p>Constructor for DeviceRemoteConfig.</p>
-   */
+  /** Constructor for DeviceRemoteConfig. */
   public DeviceRemoteConfig() {}
 
   /**
-   * <p>Constructor for DeviceRemoteConfig.</p>
+   * Constructor for DeviceRemoteConfig.
    *
    * @param data a {@link java.util.Map} object.
    */
@@ -65,7 +64,7 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   /**
-   * <p>parse.</p>
+   * parse.
    *
    * @param line a {@link java.lang.String} object.
    * @return a {@link me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig} object.
@@ -115,7 +114,7 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   /**
-   * <p>parseMultiLines.</p>
+   * parseMultiLines.
    *
    * @param remoteConfig a {@link java.lang.String} object.
    * @return a {@link java.util.Set} object.
@@ -136,7 +135,7 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   /**
-   * <p>remove.</p>
+   * remove.
    *
    * @param p a {@link me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig.Props} object.
    */
@@ -163,7 +162,7 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   /**
-   * <p>getStatus.</p>
+   * getStatus.
    *
    * @return a {@link java.lang.String} object.
    */
@@ -181,7 +180,7 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   /**
-   * <p>getAll.</p>
+   * getAll.
    *
    * @return a {@link java.util.Set} object.
    */
@@ -269,9 +268,7 @@ public class DeviceRemoteConfig implements Serializable {
     return getAllSubDevices().isEmpty();
   }
 
-  /**
-   * 清空所有设备
-   */
+  /** 清空所有设备 */
   public static void clear() {
     SET.clear();
   }
@@ -327,22 +324,18 @@ public class DeviceRemoteConfig implements Serializable {
     return this.customData.remove(key);
   }
 
-  /**
-   * <p>Setter for the field <code>online</code>.</p>
-   */
+  /** Setter for the field <code>online</code>. */
   public void setOnline() {
     online = true;
   }
 
-  /**
-   * <p>setOffline.</p>
-   */
+  /** setOffline. */
   public void setOffline() {
     online = false;
   }
 
   /**
-   * <p>isOffline.</p>
+   * isOffline.
    *
    * @return a boolean.
    */
@@ -351,7 +344,7 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   /**
-   * <p>isOnline.</p>
+   * isOnline.
    *
    * @return a boolean.
    */
@@ -366,7 +359,7 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   /**
-   * <p>getProp.</p>
+   * getProp.
    *
    * @param prop a {@link java.lang.String} object.
    * @param <T> a T object.
@@ -433,27 +426,6 @@ public class DeviceRemoteConfig implements Serializable {
    */
   public String getDeviceType() {
     return getProp(PROPERTY_DEVICE_TYPE);
-  }
-
-  /**
-   * 更新本地参数
-   *
-   * @param params 新参数
-   * @return true 发生了变化； false 没有变化
-   */
-  public boolean updateDeviceParams(Map<String, Object> params) {
-    if (CollectionUtil.isEmpty(params)) {
-      return false;
-    }
-
-    boolean notChanged =
-        params.entrySet().stream()
-            .filter(e -> Objects.nonNull(e.getKey()))
-            .filter(e -> Objects.nonNull(e.getValue()))
-            .allMatch(e -> e.getValue().equals(modelParams.get(e.getKey())));
-
-    modelParams.putAll(params);
-    return !notChanged;
   }
 
   @JsonIgnoreType
