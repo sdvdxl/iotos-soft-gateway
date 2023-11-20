@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  me.hekr.iotos.softgateway.network.http.config.HttpAutoConfiguration

@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 @ComponentScan("me.hekr.iotos.softgateway.core")
 @Configuration
 @Data
-public class IotOsConfig {
+public class IotOsAutoConfiguration {
   @Getter private MqttConfig mqttConfig;
   @Getter private GatewayConfig gatewayConfig;
 

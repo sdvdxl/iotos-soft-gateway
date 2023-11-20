@@ -18,7 +18,7 @@ import me.hekr.iotos.softgateway.common.utils.ThreadPoolUtil;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig.Props;
 import me.hekr.iotos.softgateway.core.config.GatewayConfig;
-import me.hekr.iotos.softgateway.core.config.IotOsConfig;
+import me.hekr.iotos.softgateway.core.config.IotOsAutoConfiguration;
 import me.hekr.iotos.softgateway.core.constant.Constants;
 import me.hekr.iotos.softgateway.core.dto.CacheDeviceKey;
 import me.hekr.iotos.softgateway.core.dto.DeviceMapper;
@@ -45,23 +45,23 @@ public class KlinkService {
   /** Constant <code>sleepMills=200</code> */
   public static volatile long sleepMills = 200;
 
-  private final IotOsConfig iotOsConfig;
+  private final IotOsAutoConfiguration iotOsAutoConfiguration;
   private final MqttService mqttService;
   public final Cache<CacheDeviceKey, Object> CACHE_PARAM_VALUE;
 
   /**
    * Constructor for KlinkService.
    *
-   * @param iotOsConfig a {@link me.hekr.iotos.softgateway.core.config.IotOsConfig} object.
+   * @param iotOsAutoConfiguration a {@link IotOsAutoConfiguration} object.
    * @param mqttService a {@link me.hekr.iotos.softgateway.core.network.mqtt.MqttService} object.
    */
-  public KlinkService(IotOsConfig iotOsConfig, @Lazy MqttService mqttService) {
-    this.iotOsConfig = iotOsConfig;
+  public KlinkService(IotOsAutoConfiguration iotOsAutoConfiguration, @Lazy MqttService mqttService) {
+    this.iotOsAutoConfiguration = iotOsAutoConfiguration;
     this.mqttService = mqttService;
     CACHE_PARAM_VALUE =
         Caffeine.newBuilder()
-            .maximumSize(iotOsConfig.getCacheParamsSize())
-            .expireAfterWrite(iotOsConfig.getCacheExpireSeconds(), TimeUnit.SECONDS)
+            .maximumSize(iotOsAutoConfiguration.getCacheParamsSize())
+            .expireAfterWrite(iotOsAutoConfiguration.getCacheExpireSeconds(), TimeUnit.SECONDS)
             .recordStats()
             .build();
     ThreadPoolUtil.DEFAULT_SCHEDULED.scheduleAtFixedRate(
@@ -182,7 +182,7 @@ public class KlinkService {
                   pk + devId + subDevSecret + Constants.RANDOM, subDevSecret)));
     }
     addTopo.setSub(topoSub);
-    GatewayConfig g = iotOsConfig.getGatewayConfig();
+    GatewayConfig g = iotOsAutoConfiguration.getGatewayConfig();
     addTopo.setPk(g.getPk());
     addTopo.setDevId(g.getDevId());
     mqttService.publish(addTopo);
@@ -258,8 +258,8 @@ public class KlinkService {
 
   private void doGetTopo() {
     GetTopo getTopo = new GetTopo();
-    getTopo.setPk(iotOsConfig.getGatewayConfig().getPk());
-    getTopo.setDevId(iotOsConfig.getGatewayConfig().getDevId());
+    getTopo.setPk(iotOsAutoConfiguration.getGatewayConfig().getPk());
+    getTopo.setDevId(iotOsAutoConfiguration.getGatewayConfig().getDevId());
     mqttService.publish(getTopo);
   }
 
@@ -276,7 +276,7 @@ public class KlinkService {
     topoSub.setPk(pk);
     topoSub.setDevId(devId);
     delTopo.setSub(topoSub);
-    GatewayConfig g = iotOsConfig.getGatewayConfig();
+    GatewayConfig g = iotOsAutoConfiguration.getGatewayConfig();
     delTopo.setPk(g.getPk());
     delTopo.setDevId(g.getDevId());
     mqttService.publish(delTopo);
@@ -439,7 +439,7 @@ public class KlinkService {
   @SneakyThrows
   public void getConfig() {
     GetConfig getConfig = new GetConfig();
-    GatewayConfig g = iotOsConfig.getGatewayConfig();
+    GatewayConfig g = iotOsAutoConfiguration.getGatewayConfig();
     getConfig.setPk(g.getPk());
     getConfig.setDevId(g.getDevId());
     mqttService.publish(getConfig);

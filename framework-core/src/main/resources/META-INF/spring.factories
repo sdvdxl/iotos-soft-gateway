@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  me.hekr.iotos.softgateway.core.config.IotOsConfig
+  me.hekr.iotos.softgateway.core.config.IotOsAutoConfiguration

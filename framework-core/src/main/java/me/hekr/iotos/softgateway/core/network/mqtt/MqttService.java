@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
 import me.hekr.iotos.softgateway.common.utils.ThreadPoolUtil;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
-import me.hekr.iotos.softgateway.core.config.IotOsConfig;
+import me.hekr.iotos.softgateway.core.config.IotOsAutoConfiguration;
 import me.hekr.iotos.softgateway.core.config.MqttConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.AddTopo;
@@ -47,7 +47,7 @@ public class MqttService {
   private static final int MAX_RETRY_COUNT = 3;
   private final Object registerLock = new Object();
   private final Object addTopoLock = new Object();
-  private final IotOsConfig iotOsConfig;
+  private final IotOsAutoConfiguration iotOsAutoConfiguration;
   private final String defaultQueueSize = "1000";
   private final BlockingQueue<KlinkDev> queue =
       new ArrayBlockingQueue<>(
@@ -77,13 +77,13 @@ public class MqttService {
   /**
    * <p>Constructor for MqttService.</p>
    *
-   * @param iotOsConfig a {@link me.hekr.iotos.softgateway.core.config.IotOsConfig} object.
+   * @param iotOsAutoConfiguration a {@link IotOsAutoConfiguration} object.
    * @throws org.eclipse.paho.client.mqttv3.MqttException if any.
    */
   @Autowired
-  public MqttService(IotOsConfig iotOsConfig) throws MqttException {
-    this.iotOsConfig = iotOsConfig;
-    initConfig(iotOsConfig);
+  public MqttService(IotOsAutoConfiguration iotOsAutoConfiguration) throws MqttException {
+    this.iotOsAutoConfiguration = iotOsAutoConfiguration;
+    initConfig(iotOsAutoConfiguration);
     publishExecutor.execute(this::startPublishTask);
     ThreadPoolUtil.DEFAULT_SCHEDULED.scheduleAtFixedRate(
         () -> {
@@ -115,8 +115,8 @@ public class MqttService {
     }
   }
 
-  private void initConfig(IotOsConfig iotOsConfig) throws MqttException {
-    MqttConfig mqtt = iotOsConfig.getMqttConfig();
+  private void initConfig(IotOsAutoConfiguration iotOsAutoConfiguration) throws MqttException {
+    MqttConfig mqtt = iotOsAutoConfiguration.getMqttConfig();
     // MemoryPersistence设置clientid的保存形式，默认为以内存保存
     client = new MqttClient(mqtt.getEndpoint(), mqtt.getClientId(), new MemoryPersistence());
     options = new MqttConnectOptions();
@@ -141,7 +141,7 @@ public class MqttService {
       log.info("软件网关开始连接连接成功！");
 
       // 订阅
-      client.subscribe(iotOsConfig.getMqttConfig().getSubscribeTopic(), 0);
+      client.subscribe(iotOsAutoConfiguration.getMqttConfig().getSubscribeTopic(), 0);
       ThreadUtil.safeSleep(1000);
 
       CompletableFuture.runAsync(this::triggerConnectedListeners);
@@ -203,7 +203,7 @@ public class MqttService {
   private void loopConnect() {
     while (isDisconnected()) {
       long diff = System.currentTimeMillis() - lastConnectTime;
-      long millis = TimeUnit.SECONDS.toMillis(iotOsConfig.getMqttConfig().getConnectTimeout() + 3);
+      long millis = TimeUnit.SECONDS.toMillis(iotOsAutoConfiguration.getMqttConfig().getConnectTimeout() + 3);
       long rest = millis - diff;
       if (rest > 0) {
         log.warn("连接频繁，等待 {}s 后重连", TimeUnit.MILLISECONDS.toSeconds(rest));
@@ -222,7 +222,7 @@ public class MqttService {
       }
 
       try {
-        TimeUnit.SECONDS.sleep(iotOsConfig.getMqttConfig().getConnectTimeout() + 3);
+        TimeUnit.SECONDS.sleep(iotOsAutoConfiguration.getMqttConfig().getConnectTimeout() + 3);
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
       }
@@ -253,7 +253,7 @@ public class MqttService {
     String devId = klink.getDevId();
     Optional<DeviceRemoteConfig> byPkAndDevId = DeviceRemoteConfig.getByPkAndDevId(pk, devId);
     // 网关本身不做处理
-    if (!iotOsConfig.getGatewayConfig().getPk().equals(pk)) {
+    if (!iotOsAutoConfiguration.getGatewayConfig().getPk().equals(pk)) {
       if (!byPkAndDevId.isPresent()) {
         log.warn("没找到设备，pk:{}, devId:{}", pk, devId);
         return;
@@ -294,7 +294,7 @@ public class MqttService {
         ThreadUtil.sleep(1000);
         continue;
       }
-      int waitTime = iotOsConfig.getMqttConfig().getConnectTimeout() * 1000;
+      int waitTime = iotOsAutoConfiguration.getMqttConfig().getConnectTimeout() * 1000;
 
       // 优先发送注册信息
       try {
@@ -428,7 +428,7 @@ public class MqttService {
   private void doPublish(Object message) throws MqttException {
 
     client.publish(
-        iotOsConfig.getMqttConfig().getPublishTopic(), new MqttMessage(JsonUtil.toBytes(message)));
+        iotOsAutoConfiguration.getMqttConfig().getPublishTopic(), new MqttMessage(JsonUtil.toBytes(message)));
     if (log.isDebugEnabled()) {
       log.debug("发送消息成功：{}", JsonUtil.toJson(message));
     }
