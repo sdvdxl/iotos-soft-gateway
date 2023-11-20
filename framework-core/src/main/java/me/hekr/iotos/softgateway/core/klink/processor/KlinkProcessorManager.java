@@ -6,7 +6,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.common.utils.JsonUtil;
-import me.hekr.iotos.softgateway.core.config.IotOsAutoConfiguration;
+import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.Klink;
 import me.hekr.iotos.softgateway.core.klink.KlinkResp;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 public class KlinkProcessorManager {
   private final Map<Action, Processor> processorMap;
   @Autowired private KlinkService klinkService;
-  @Autowired private IotOsAutoConfiguration iotOsAutoConfiguration;
+  @Autowired private IotOsConfig iotOsConfig;
 
   /**
    * <p>Constructor for KlinkProcessorManager.</p>

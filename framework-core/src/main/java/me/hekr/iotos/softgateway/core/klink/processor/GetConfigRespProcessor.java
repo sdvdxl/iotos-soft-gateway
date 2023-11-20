@@ -3,7 +3,7 @@ package me.hekr.iotos.softgateway.core.klink.processor;
 import cn.hutool.http.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
-import me.hekr.iotos.softgateway.core.config.IotOsAutoConfiguration;
+import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.klink.DevSend;
 import me.hekr.iotos.softgateway.core.klink.GetConfigResp;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class GetConfigRespProcessor implements Processor<GetConfigResp> {
   @Autowired private KlinkService klinkService;
-  @Autowired private IotOsAutoConfiguration iotOsAutoConfiguration;
+  @Autowired private IotOsConfig iotOsConfig;
 
   /** {@inheritDoc} */
   @Override
@@ -64,8 +64,8 @@ public class GetConfigRespProcessor implements Processor<GetConfigResp> {
   private void addGateway() {
     DeviceRemoteConfig gatewayConfig = new DeviceRemoteConfig();
     gatewayConfig = new DeviceRemoteConfig();
-    gatewayConfig.setPk(iotOsAutoConfiguration.getGatewayConfig().getPk());
-    gatewayConfig.setDevId(iotOsAutoConfiguration.getGatewayConfig().getDevId());
+    gatewayConfig.setPk(iotOsConfig.getGatewayConfig().getPk());
+    gatewayConfig.setDevId(iotOsConfig.getGatewayConfig().getDevId());
     gatewayConfig.setGateway(true);
     gatewayConfig.setOnline();
     DeviceRemoteConfig.updateByPkAndDevId(gatewayConfig);

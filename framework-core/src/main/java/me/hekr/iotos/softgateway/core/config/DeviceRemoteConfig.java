@@ -80,10 +80,10 @@ public class DeviceRemoteConfig implements Serializable {
       ImmutableMap<String, Object> params = ImmutableMap.of("desc", msg);
       try {
         KlinkService klinkService = SpringContextUtils.getBean(KlinkService.class);
-        IotOsAutoConfiguration iotOsAutoConfiguration = SpringContextUtils.getBean(IotOsAutoConfiguration.class);
+        IotOsConfig iotOsConfig = SpringContextUtils.getBean(IotOsConfig.class);
         klinkService.devSend(
-            iotOsAutoConfiguration.getGatewayConfig().getPk(),
-            iotOsAutoConfiguration.getGatewayConfig().getDevId(),
+            iotOsConfig.getGatewayConfig().getPk(),
+            iotOsConfig.getGatewayConfig().getDevId(),
             "reportError",
             params);
       } catch (Exception ex) {
@@ -98,11 +98,11 @@ public class DeviceRemoteConfig implements Serializable {
       ImmutableMap<String, Object> params = ImmutableMap.of("desc", msg);
       try {
         KlinkService klinkService = SpringContextUtils.getBean(KlinkService.class);
-        IotOsAutoConfiguration iotOsAutoConfiguration = SpringContextUtils.getBean(IotOsAutoConfiguration.class);
+        IotOsConfig iotOsConfig = SpringContextUtils.getBean(IotOsConfig.class);
 
         klinkService.devSend(
-            iotOsAutoConfiguration.getGatewayConfig().getPk(),
-            iotOsAutoConfiguration.getGatewayConfig().getDevId(),
+            iotOsConfig.getGatewayConfig().getPk(),
+            iotOsConfig.getGatewayConfig().getDevId(),
             "reportError",
             params);
       } catch (Exception e) {

@@ -8,7 +8,7 @@ import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import me.hekr.iotos.softgateway.core.annotation.CloudSendCommand;
 import me.hekr.iotos.softgateway.core.config.DeviceRemoteConfig;
-import me.hekr.iotos.softgateway.core.config.IotOsAutoConfiguration;
+import me.hekr.iotos.softgateway.core.config.IotOsConfig;
 import me.hekr.iotos.softgateway.core.enums.Action;
 import me.hekr.iotos.softgateway.core.enums.ErrorCode;
 import me.hekr.iotos.softgateway.core.exception.CloudSendException;
@@ -39,7 +39,7 @@ public class CloudSendProcessor implements Processor<CloudSend> {
 
   @Autowired private ApplicationContext context;
   @Autowired private KlinkService klinkService;
-  @Autowired private IotOsAutoConfiguration iotOsAutoConfiguration;
+  @Autowired private IotOsConfig iotOsConfig;
 
   /**
    * <p>init.</p>
@@ -73,7 +73,7 @@ public class CloudSendProcessor implements Processor<CloudSend> {
     }
 
     // 如果配置为自动回复，则发送 cloudSendResp
-    if (iotOsAutoConfiguration.getMqttConfig().isAutoCloudSendResp()) {
+    if (iotOsConfig.getMqttConfig().isAutoCloudSendResp()) {
       klinkService.sendKlink(resp);
     }
   }
