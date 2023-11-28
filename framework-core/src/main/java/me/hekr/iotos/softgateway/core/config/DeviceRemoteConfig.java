@@ -219,6 +219,33 @@ public class DeviceRemoteConfig implements Serializable {
   }
 
   /**
+   * 判断属性是否一样
+   *
+   * @param mapper 设备映射
+   * @return 属性包含mapper的属性并且值一样返回true，否则返回false
+   */
+  public boolean propsEq(DeviceMapper mapper) {
+    if (mapper == null) {
+      return false;
+    }
+
+    return propsEq(mapper.getProps());
+  }
+
+  /**
+   * 判断属性是否一样
+   *
+   * @param props 属性
+   * @return 属性包含mapper的属性并且值一样返回true，否则返回false
+   */
+  public boolean propsEq(Props props) {
+    if (props == null) {
+      return false;
+    }
+    return dataEq(data, props.data);
+  }
+
+  /**
    * 获取所有子设备数量
    *
    * @return 数量
